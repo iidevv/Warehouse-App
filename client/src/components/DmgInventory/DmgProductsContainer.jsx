@@ -1,8 +1,12 @@
 import React from "react";
 import { connect } from "react-redux";
 import DmgProducts from "./DmgProducts";
-import { getProducts } from "./../../redux/reducers/dmg-inventory-reducer";
 import { compose } from "redux";
+
+import {
+  getProducts,
+  setProducts,
+} from "./../../redux/reducers/dmg-inventory-reducer";
 
 class DmgProductsContainer extends React.Component {
   componentDidMount() {
@@ -23,7 +27,7 @@ class DmgProductsContainer extends React.Component {
 
 let mapStateToProps = (state) => {
   return {
-    products: state.dmgInventory.users,
+    products: state.dmgInventory.products,
     pageSize: state.dmgInventory.pageSize,
     totalCount: state.dmgInventory.totalCount,
     currentPage: state.dmgInventory.currentPage,
@@ -34,5 +38,6 @@ export default compose(
   // withAuthRedirect,
   connect(mapStateToProps, {
     getProducts,
+    setProducts
   })
 )(DmgProductsContainer);

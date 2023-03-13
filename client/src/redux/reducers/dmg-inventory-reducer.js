@@ -47,7 +47,7 @@ export const getProducts = (currentPage, pageSize) => {
   return (dispatch) => {
     dmgProductAPI.getProducts(currentPage, pageSize).then((data) => {
       dispatch(setCurrentPage(currentPage));
-      dispatch(setProducts(data));
+      dispatch(setProducts(data.data));
     });
   };
 };

@@ -9,6 +9,7 @@ import Settings from "./routes/Settings";
 import Index from "./routes/Index";
 import store from "./redux/store";
 import { Provider } from "react-redux";
+import WPSInventory from './routes/WPSInventory';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Index />,
+      },
+      {
+        path: "/wps-inventory",
+        element: <WPSInventory />,
       },
       {
         path: "/settings",

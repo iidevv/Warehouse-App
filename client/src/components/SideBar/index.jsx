@@ -429,7 +429,15 @@ const SideBar = (props) => {
                 to="/"
                 className={({isPending, isActive}) => isActive ? "active-menu-link" : "menu-link"}
                 >
-                    <span className="mx-4 text-sm font-normal">Dashboard</span>
+                    <span className="mx-4 text-sm font-normal">Inventory</span>
+                </NavLink>
+            </li>
+            <li>
+                <NavLink 
+                to="/wps-inventory"
+                className={({isPending, isActive}) => isActive ? "active-menu-link" : "menu-link"}
+                >
+                    <span className="mx-4 text-sm font-normal">WPS</span>
                 </NavLink>
             </li>
             <li>
