@@ -1,0 +1,5 @@
+*.log
+.env
+# Ignore node_modules directory
+client/node_modules/
+server/node_modules/
