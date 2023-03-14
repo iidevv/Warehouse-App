@@ -17,8 +17,10 @@ const instance = axios.create({
 });
 
 router.get("/products/", async (req, res) => {
+  let cursor = req.query.cursor ? req.query.cursor : "";
+  let name = req.query.name ? req.query.name : "";
   await instance
-    .get("items")
+    .get(`products/?filter[name][pre]=${name}&page[cursor]=${cursor}`)
     .then((response) => {
       res.json(response.data);
     })
