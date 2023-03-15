@@ -14,10 +14,29 @@ export const dmgProductAPI = {
   },
 };
 
-export const wpsProductAPI = {
-  getProducts(currentPage) {
+export const wpsProductsAPI = {
+  getProducts(name, cursor) {
     return instance
-      .get(`/wps/products/`)
+      .get(`/wps/products/`, {
+        params: {
+          name,
+          cursor,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+};
+
+export const wpsProductAPI = {
+  getProduct(id) {
+    return instance
+      .get(`/wps/product/`, {
+        params: {
+          id,
+        },
+      })
       .then((response) => {
         return response.data;
       });

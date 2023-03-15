@@ -10,9 +10,7 @@ const DmgProduct = (props) => {
       </td>
       <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
         <div className="flex items-center">
-          <div className="ml-3">
             <p className="text-gray-900 whitespace-no-wrap">{props.name}</p>
-          </div>
         </div>
       </td>
       <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">

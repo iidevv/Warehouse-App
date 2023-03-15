@@ -1,39 +1,20 @@
+import { NavLink } from 'react-router-dom';
+
 const WpsProduct = (props) => {
   return (
     <tr>
       <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
         <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <p className="text-gray-900 whitespace-no-wrap">{props.sku}</p>
-          </div>
+            <p className="text-gray-900 whitespace-no-wrap">{props.id}</p>
         </div>
       </td>
       <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-        <div className="flex items-center">
-          <div className="ml-3">
-            <p className="text-gray-900 whitespace-no-wrap">{props.name}</p>
-          </div>
-        </div>
+        <NavLink to={"/wps-product/" + props.id} target="_blank" className="text-gray-900 whitespace-no-wrap">
+          {props.name}
+        </NavLink>
       </td>
       <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-        <p className="text-gray-900 whitespace-no-wrap">{props.price}</p>
-      </td>
-      <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-        <p className="text-gray-900 whitespace-no-wrap"></p>
-      </td>
-      <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-        <span className="relative inline-block px-3 py-1 font-semibold leading-tight text-green-900">
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 bg-green-200 rounded-full opacity-50"
-          ></span>
-          <span className="relative"></span>
-        </span>
-      </td>
-      <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-          Edit
-        </a>
+        <p className="text-gray-900 whitespace-no-wrap">{props.updated_at}</p>
       </td>
     </tr>
   );

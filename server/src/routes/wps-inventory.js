@@ -1,5 +1,4 @@
 import express from "express";
-import BigCommerce from "node-bigcommerce";
 import { config } from "dotenv";
 import axios from "axios";
 

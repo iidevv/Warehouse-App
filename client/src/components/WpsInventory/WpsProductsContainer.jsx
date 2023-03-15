@@ -6,11 +6,19 @@ import { compose } from "redux";
 import {
   getProducts,
   setProducts,
+  setSearchKeyword
 } from "../../redux/reducers/wps-inventory-reducer";
 
 class WpsProductsContainer extends React.Component {
   componentDidMount() {
     this.props.getProducts();
+  }
+  onCursorChanged = (p) => {
+    this.props.getProducts(this.props.searchKeyword, p);
+  }
+  onSearch = (name) => {
+    this.props.setSearchKeyword(name);
+    this.props.getProducts(name, "");
   }
 
   render() {
@@ -18,7 +26,10 @@ class WpsProductsContainer extends React.Component {
       <>
         <WpsProducts
           products={this.props.products}
-          currentPage={this.props.currentPage}
+          cursor={this.props.cursor}
+          onCursorChanged={this.onCursorChanged}
+          onSearch={this.onSearch}
+          searchKeyword={this.props.searchKeyword}
         />
       </>
     );
@@ -28,7 +39,8 @@ class WpsProductsContainer extends React.Component {
 let mapStateToProps = (state) => {
   return {
     products: state.wpsInventory.products,
-    currentPage: state.wpsInventory.currentPage,
+    cursor: state.wpsInventory.cursor,
+    searchKeyword: state.wpsInventory.searchKeyword,
   };
 };
 
@@ -36,6 +48,7 @@ export default compose(
   // withAuthRedirect,
   connect(mapStateToProps, {
     getProducts,
-    setProducts
+    setProducts,
+    setSearchKeyword
   })
 )(WpsProductsContainer);
