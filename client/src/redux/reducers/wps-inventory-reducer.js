@@ -3,7 +3,7 @@ import { wpsProductsAPI } from "./../../api/api";
 const SET_PRODUCTS = "SET_PRODUCTS";
 const SET_SEARCH_KEYWORD = "SET_SEARCH_KEYWORD";
 const SET_CURSOR = "SET_CURSOR";
-
+const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 let initialState = {
   products: [],
   totalCount: 0,
@@ -35,6 +35,12 @@ const wpsProductsReducer = (state = initialState, action) => {
         searchKeyword: action.searchKeyword,
       };
 
+    case TOGGLE_IS_FETCHING:
+      return {
+        ...state,
+        isFetching: action.isFetching,
+      };
+
     default:
       return state;
   }
@@ -61,11 +67,20 @@ export const setSearchKeyword = (searchKeyword) => {
   };
 };
 
+export const setToggleIsFetching = (isFetching) => {
+  return {
+    type: TOGGLE_IS_FETCHING,
+    isFetching,
+  };
+};
+
 export const getProducts = (name, cursor) => {
   return (dispatch) => {
+    dispatch(setToggleIsFetching(true));
     wpsProductsAPI.getProducts(name, cursor).then((data) => {
       dispatch(setProducts(data.data));
       dispatch(setCursor(data.meta.cursor));
+      dispatch(setToggleIsFetching(false));
     });
   };
 };

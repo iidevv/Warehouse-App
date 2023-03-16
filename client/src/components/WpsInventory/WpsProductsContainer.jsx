@@ -2,11 +2,13 @@ import React from "react";
 import { connect } from "react-redux";
 import WpsProducts from "./WpsProducts";
 import { compose } from "redux";
+import Preloader from '../common/preloader/Preloader';
 
 import {
   getProducts,
   setProducts,
-  setSearchKeyword
+  setSearchKeyword,
+  setToggleIsFetching
 } from "../../redux/reducers/wps-inventory-reducer";
 
 class WpsProductsContainer extends React.Component {
@@ -24,6 +26,7 @@ class WpsProductsContainer extends React.Component {
   render() {
     return (
       <>
+      {this.props.isFetching ? <Preloader /> : null}
         <WpsProducts
           products={this.props.products}
           cursor={this.props.cursor}
@@ -41,6 +44,7 @@ let mapStateToProps = (state) => {
     products: state.wpsInventory.products,
     cursor: state.wpsInventory.cursor,
     searchKeyword: state.wpsInventory.searchKeyword,
+    isFetching: state.wpsInventory.isFetching
   };
 };
 
@@ -49,6 +53,7 @@ export default compose(
   connect(mapStateToProps, {
     getProducts,
     setProducts,
-    setSearchKeyword
+    setSearchKeyword,
+    setToggleIsFetching
   })
 )(WpsProductsContainer);

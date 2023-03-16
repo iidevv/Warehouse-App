@@ -24,20 +24,23 @@ const fetchData = async (id) => {
 
     
     let itemsId = items.data.data.map((item) => item.id);
+
+    const itemImagesPromises = itemsId.map((id) => id
+      // instance.get(`/items/${id}/images`).catch((error) => error),
+    );
+
     itemsId = itemsId.toString();
 
-    const [inventory, images] = await Promise.all([
-      instance.get(`/inventory/${itemsId}`),
-      instance.get(`/images/${itemsId}`),
-    ]);
+    const inventory = await instance.get(`/inventory/${itemsId}`);
 
+    const images = await Promise.all(itemImagesPromises);
+    console.log(images.data);
     const combinedData = {};
 
     combinedData.product = product.data;
     combinedData.items = items.data;
     combinedData.inventory = inventory.data;
-    combinedData.images = images.data;
-
+    combinedData.images = images;
     return combinedData;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -51,7 +54,7 @@ router.get("/product/", async (req, res) => {
     const combinedData = await fetchData(id);
     res.json(combinedData);
   } catch (error) {
-    res.status(500).json({ error: "Error fetching combined data" });
+    res.status(500).json({ error: error });
   }
 });
 

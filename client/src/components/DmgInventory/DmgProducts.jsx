@@ -72,6 +72,7 @@ const DmgProducts = (props) => {
                   {props.products.map((m) => {
                     return (
                       <DmgProduct
+                        key={m.id}
                         sku={m.sku}
                         name={m.name}
                         price={m.price}

@@ -63,6 +63,7 @@ const WpsProducts = (props) => {
                   {props.products.map((m) => {
                     return (
                       <WpsProduct
+                        key={m.id}
                         id={m.id}
                         name={m.name}
                         updated_at={m.updated_at}
