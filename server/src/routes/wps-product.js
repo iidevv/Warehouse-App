@@ -29,6 +29,11 @@ const fetchData = async (id) => {
       // instance.get(`/items/${id}/images`).catch((error) => error),
     );
 
+    // product page
+    // https://api.wps-inc.com/products/1569/?include=items.images,items.inventory,items.brand
+
+    // https://api.wps-inc.com/products/1569/?include=items.images
+
     itemsId = itemsId.toString();
 
     const inventory = await instance.get(`/inventory/${itemsId}`);
