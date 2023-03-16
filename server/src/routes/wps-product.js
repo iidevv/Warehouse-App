@@ -22,21 +22,21 @@ const fetchData = async (id) => {
       instance.get(`/products/${id}/items/`).catch((error) => error),
     ]);
 
+    
+    let itemsId = items.data.data.map((item) => item.id);
+    itemsId = itemsId.toString();
+
+    const [inventory, images] = await Promise.all([
+      instance.get(`/inventory/${itemsId}`),
+      instance.get(`/images/${itemsId}`),
+    ]);
+
     const combinedData = {};
 
-    if (product instanceof Error || product.response === 404) {
-      console.warn("Error fetching product:", product.message);
-    } else {
-      combinedData.product = product.data;
-    }
-
-    if (items instanceof Error || items.response === 404) {
-      console.warn("Error fetching items:", items.message);
-    } else {
-      combinedData.items = items.data;
-    }
-
-    
+    combinedData.product = product.data;
+    combinedData.items = items.data;
+    combinedData.inventory = inventory.data;
+    combinedData.images = images.data;
 
     return combinedData;
   } catch (error) {
@@ -47,7 +47,6 @@ const fetchData = async (id) => {
 
 router.get("/product/", async (req, res) => {
   let id = req.query.id;
-  // let id = 38250;
   try {
     const combinedData = await fetchData(id);
     res.json(combinedData);

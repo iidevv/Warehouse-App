@@ -1,17 +1,27 @@
 import defaultImg from "../../assets/default-image.png";
 
 const WpsProductPage = (props) => {
-  let name, description, items;
+  let name, description, items, image;
   if (props.product) {
     name = props.product.data.name;
     description = props.product.data.description;
     items = props.items.data;
+    console.log(props.images.data.lenght);
+    image =
+      "https://" +
+      props.images.data.domain +
+      props.images.data.path +
+      props.images.data.filename;
   }
   return (
     <div className="md:flex items-start justify-center py-12 2xl:px-20 md:px-6 px-4">
       <div className="xl:w-2/6 lg:w-2/5 w-80 md:block hidden">
         <div className="bg-white shadow-lg p-2">
-          <img className="w-full" alt="img" src={defaultImg} />
+          {image ? (
+            <img className="w-full" alt="img" src={image} />
+          ) : (
+            <img className="w-full" alt="img" src={defaultImg} />
+          )}
         </div>
       </div>
       <div className="md:hidden">

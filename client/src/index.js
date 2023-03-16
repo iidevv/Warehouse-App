@@ -10,7 +10,7 @@ import Index from "./routes/Index";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 import WPSInventory from './routes/WPSInventory';
-import WpsProductPageContainer from "./components/WPSInventory/WpsProductPageContainer";
+import WpsProductPageContainer from "./components/WpsInventory/WpsProductPageContainer";
 const router = createBrowserRouter([
   {
     path: "/",

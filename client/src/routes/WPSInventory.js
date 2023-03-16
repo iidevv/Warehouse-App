@@ -1,4 +1,4 @@
-import WpsProductsContainer from "../components/WPSInventory/WpsProductsContainer";
+import WpsProductsContainer from "../components/WpsInventory/WpsProductsContainer";
 
 const WPSInventory = (props) => {
   return (
