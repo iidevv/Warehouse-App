@@ -1,10 +1,11 @@
-import { wpsProductAPI } from "./../../api/api";
+import { wpsProductAPI, dmgProductAPI } from "./../../api/api";
 
 const SET_PRODUCT_PAGE = "SET_PRODUCT_PAGE";
-
+const SET_INFO_ALERT = "SET_INFO_ALERT";
 let initialState = {
   productData: [],
   isFetching: true,
+  info: {}
 };
 
 const wpsProductReducer = (state = initialState, action) => {
@@ -14,6 +15,11 @@ const wpsProductReducer = (state = initialState, action) => {
         ...state,
         productData: action.productData,
       };
+    case SET_INFO_ALERT:
+      return {
+        ...state,
+        info: action.message,
+      }; 
     default:
       return state;
   }
@@ -25,6 +31,21 @@ export const setProduct = (productData) => {
     productData,
   };
 };
+
+export const setAlert = (message) => {
+  return {
+    type: SET_INFO_ALERT,
+    message
+  };
+}
+
+export const createBigcommerceProduct = (data) => {
+  return (dispatch) => {
+    dmgProductAPI.createProduct(data).then((message) => {
+      dispatch(setAlert(message.data));
+    });
+  }
+}
 
 export const getProduct = (id) => {
   return (dispatch) => {

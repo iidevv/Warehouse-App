@@ -12,6 +12,11 @@ export const dmgProductAPI = {
         return response.data;
       });
   },
+  createProduct(data) {
+    return instance.post("products/create", data).then((response) => {
+      return response;
+    });
+  },
 };
 
 export const wpsProductsAPI = {

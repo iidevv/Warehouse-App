@@ -15,63 +15,48 @@ const instance = axios.create({
   },
 });
 
-// product page
-// https://api.wps-inc.com/products/1569/?include=items.images,items.inventory,items.brand
-// big com
-// https://developer.bigcommerce.com/docs/rest-management/catalog/products#create-a-product
-// https://api.wps-inc.com/products/1569/?include=items.images
-const productEx = {
-  name: "My Product",
-  type: "physical",
-  description: "A description of my product",
-  price: "10.99",
-  weight: "1",
-  categories: [
-    {
-      id: 1, // ID of the category the product belongs to
-    },
-  ],
-  images: [
-    {
-      url: "https://example.com/image.jpg", // URL of the product image
-    },
-  ],
-  variants: [
-    {
-      option_values: [
-        {
-          option_display_name: "Color",
-          label: "Red",
-        },
-      ],
-      sku: "PROD-123",
-      price: "12.99",
-      inventory_level: 10,
-    },
-    {
-      option_values: [
-        {
-          option_display_name: "Color",
-          label: "Blue",
-        },
-      ],
-      sku: "PROD-124",
-      price: "14.99",
-      inventory_level: 5,
-    },
-  ],
-};
-
 const createProduct = (obj) => {
   const data = obj.data;
   const variants = obj.data.items.data;
 
-  const product = {}
-  product.name = data.name;
-  product.type = "physical";
-  product.description = data.description;
-  product.price = variants[0].list_price;
-  product.variants = [];
+  const product = {
+    name: data.name,
+    type: 'physical',
+    weight: variants[0].weight,
+    price: variants[0].list_price,
+    description: data.description || "",
+    brand_name: variants[0].brand.data.name || "",
+    inventory_tracking: "variant",
+    // categories: [
+    //   {
+    //     id: null
+    //   },
+    // ],
+    images: variants.map((item) => {
+      const imageUrl = item.images.data.length
+      ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
+      : null;
+      return {
+        url: imageUrl,
+      }
+    }),
+    variants: variants.map((item) => {
+      const option = item.name
+      ? item.name.toLowerCase()
+      : null;
+      return {
+        sku: item.sku,
+        price: item.list_price,
+        inventory_level: item.inventory.data.total,
+        option_values: [
+          {
+            option_display_name: "Options",
+            label: option,
+          },
+        ],
+      }
+    },
+  )}
   return product
 }
 
@@ -88,8 +73,7 @@ const fetchData = async (id) => {
 };
 
 router.get("/product/", async (req, res) => {
-  // let id = req.query.id;
-  let id = 1569;
+  const id = req.query.id;
   try {
     const product = await fetchData(id);
     res.json(product);
