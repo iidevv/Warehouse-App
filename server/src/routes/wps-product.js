@@ -15,49 +15,84 @@ const instance = axios.create({
   },
 });
 
+// product page
+// https://api.wps-inc.com/products/1569/?include=items.images,items.inventory,items.brand
+// big com
+// https://developer.bigcommerce.com/docs/rest-management/catalog/products#create-a-product
+// https://api.wps-inc.com/products/1569/?include=items.images
+const productEx = {
+  name: "My Product",
+  type: "physical",
+  description: "A description of my product",
+  price: "10.99",
+  weight: "1",
+  categories: [
+    {
+      id: 1, // ID of the category the product belongs to
+    },
+  ],
+  images: [
+    {
+      url: "https://example.com/image.jpg", // URL of the product image
+    },
+  ],
+  variants: [
+    {
+      option_values: [
+        {
+          option_display_name: "Color",
+          label: "Red",
+        },
+      ],
+      sku: "PROD-123",
+      price: "12.99",
+      inventory_level: 10,
+    },
+    {
+      option_values: [
+        {
+          option_display_name: "Color",
+          label: "Blue",
+        },
+      ],
+      sku: "PROD-124",
+      price: "14.99",
+      inventory_level: 5,
+    },
+  ],
+};
+
+const createProduct = (obj) => {
+  const data = obj.data;
+  const variants = obj.data.items.data;
+
+  const product = {}
+  product.name = data.name;
+  product.type = "physical";
+  product.description = data.description;
+  product.price = variants[0].list_price;
+  product.variants = [];
+  return product
+}
+
 const fetchData = async (id) => {
   try {
-    const [product, items] = await Promise.all([
-      instance.get(`/products/${id}`).catch((error) => error),
-      instance.get(`/products/${id}/items/`).catch((error) => error),
-    ]);
-
-    
-    let itemsId = items.data.data.map((item) => item.id);
-
-    const itemImagesPromises = itemsId.map((id) => id
-      // instance.get(`/items/${id}/images`).catch((error) => error),
+    const wpsProduct = await instance.get(
+      `/products/${id}/?include=items.images,items.inventory,items.brand`
     );
-
-    // product page
-    // https://api.wps-inc.com/products/1569/?include=items.images,items.inventory,items.brand
-
-    // https://api.wps-inc.com/products/1569/?include=items.images
-
-    itemsId = itemsId.toString();
-
-    const inventory = await instance.get(`/inventory/${itemsId}`);
-
-    const images = await Promise.all(itemImagesPromises);
-    console.log(images.data);
-    const combinedData = {};
-
-    combinedData.product = product.data;
-    combinedData.items = items.data;
-    combinedData.inventory = inventory.data;
-    combinedData.images = images;
-    return combinedData;
+    return createProduct(wpsProduct.data);
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.log(error);
     return error;
   }
 };
 
 router.get("/product/", async (req, res) => {
-  let id = req.query.id;
+  // let id = req.query.id;
+  let id = 1569;
   try {
-    const combinedData = await fetchData(id);
-    res.json(combinedData);
+    const product = await fetchData(id);
+    res.json(product);
   } catch (error) {
     res.status(500).json({ error: error });
   }
