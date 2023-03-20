@@ -15,6 +15,81 @@ const instance = axios.create({
   },
 });
 
+{
+  "name": "Test Product",
+  "type": "physical",
+  "price": "19.99",
+  "weight": 1.5,
+  "variants": [
+    {
+      "sku": "TEST-PRODUCT-RED-SM",
+      "option_values": [
+        {
+          "option_display_name": "Color",
+          "label": "Red"
+        },
+        {
+          "option_display_name": "Size",
+          "label": "Small"
+        }
+      ],
+      "price": "19.99",
+      "inventory_level": 10,
+      "image_url": "https://cdn.wpsstatic.com/images/430c-572a4ec101ed8.jpg",
+      "is_default": true
+    },
+    {
+      "sku": "TEST-PRODUCT-RED-MD",
+      "option_values": [
+        {
+          "option_display_name": "Color",
+          "label": "Red"
+        },
+        {
+          "option_display_name": "Size",
+          "label": "Medium"
+        }
+      ],
+      "price": "19.99",
+      "inventory_level": 5,
+      "image_url": "https://cdn.wpsstatic.com/images/430c-572a4ec101ed8.jpg"
+    },
+    {
+      "sku": "TEST-PRODUCT-BLUE-SM",
+      "option_values": [
+        {
+          "option_display_name": "Color",
+          "label": "Blue"
+        },
+        {
+          "option_display_name": "Size",
+          "label": "Small"
+        }
+      ],
+      "price": "19.99",
+      "inventory_level": 3,
+      "image_url": "https://cdn.wpsstatic.com/images/430c-572a4ec101ed8.jpg"
+    }
+  ],
+  "images": [
+    {
+      "is_thumbnail": true,
+      "sort_order": 1,
+      "image_url": "https://cdn.wpsstatic.com/images/430c-572a4ec101ed8.jpg"
+    },
+    {
+      "is_thumbnail": false,
+      "sort_order": 2,
+      "image_url": "https://cdn.wpsstatic.com/images/430c-572a4ec101ed8.jpg"
+    },
+    {
+      "is_thumbnail": false,
+      "sort_order": 3,
+      "image_url": "https://cdn.wpsstatic.com/images/430c-572a4ec101ed8.jpg"
+    }
+  ]
+}
+
 const fetchData = async (id) => {
   try {
     const [product, items] = await Promise.all([

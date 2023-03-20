@@ -1,12 +1,12 @@
 import defaultImg from "../../assets/default-image.png";
 
 const WpsProductPage = (props) => {
-  const productImg = (props.product.images && props.product.images.length) ? props.product.images[0].url : defaultImg;
+  const productImg = (props.product.images && props.product.images.length) ? props.product.images[0].image_url : defaultImg;
   return (
     <>
       <div className="md:flex items-start justify-center py-12 2xl:px-20 md:px-6 px-4">
         <div className="xl:w-2/6 lg:w-2/5 w-80 bg-white shadow-lg">
-            <img className="p-4 w-full h-96 object-contain" alt="main img" src={productImg} />
+            <img className="p-4 w-full h-96 object-contain" alt="main img" src={productImg || defaultImg} />
         </div>
         <div className="xl:w-2/5 md:w-1/2 lg:ml-8 md:ml-6 md:mt-0 mt-6 bg-white shadow-lg px-8 py-10">
           <div>
@@ -67,12 +67,13 @@ const WpsProductPage = (props) => {
                       scope="col"
                       className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                     >
-                      #
                     </th>
                     <th
                       scope="col"
                       className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                    ></th>
+                    >
+                      #
+                    </th>
 
                     <th
                       scope="col"
@@ -90,7 +91,7 @@ const WpsProductPage = (props) => {
                       scope="col"
                       className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                     >
-                      QTY
+                      Stock
                     </th>
                     <th
                       scope="col"
@@ -107,7 +108,7 @@ const WpsProductPage = (props) => {
                         <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
                           <img
                             className="w-28 h-28 object-contain"
-                            src={props.product.images[i].url || defaultImg}
+                            src={props.product.images[i].image_url || defaultImg}
                             alt="variant"
                           />
                         </td>

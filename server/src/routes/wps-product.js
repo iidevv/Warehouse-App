@@ -21,44 +21,48 @@ const createProduct = (obj) => {
 
   const product = {
     name: data.name,
-    type: 'physical',
+    type: "physical",
     weight: variants[0].weight,
     price: variants[0].list_price,
     description: data.description || "",
     brand_name: variants[0].brand.data.name || "",
     inventory_tracking: "variant",
-    // categories: [
-    //   {
-    //     id: null
-    //   },
-    // ],
-    images: variants.map((item) => {
+    variants: variants.map((item, i) => {
+      const option = item.name ? item.name.toLowerCase() : "";
       const imageUrl = item.images.data.length
-      ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
-      : null;
-      return {
-        url: imageUrl,
-      }
-    }),
-    variants: variants.map((item) => {
-      const option = item.name
-      ? item.name.toLowerCase()
-      : null;
+        ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
+        : "";
+      i++;
+      const is_default = i === 1;
       return {
         sku: item.sku,
-        price: item.list_price,
-        inventory_level: item.inventory.data.total,
         option_values: [
           {
             option_display_name: "Options",
             label: option,
           },
         ],
-      }
-    },
-  )}
-  return product
-}
+        price: item.list_price,
+        inventory_level: item.inventory.data.total,
+        image_url: imageUrl,
+        is_default: is_default,
+      };
+    }),
+    images: variants.map((item, i) => {
+      const imageUrl = item.images.data.length
+        ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
+        : "";
+      i++;
+      const is_thumbnail = i === 1;
+      return {
+        is_thumbnail: is_thumbnail,
+        sort_order: i,
+        image_url: imageUrl,
+      };
+    }),
+  };
+  return product;
+};
 
 const fetchData = async (id) => {
   try {
