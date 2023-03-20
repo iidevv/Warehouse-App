@@ -429,7 +429,7 @@ const SideBar = (props) => {
                 to="/"
                 className={({isPending, isActive}) => isActive ? "active-menu-link" : "menu-link"}
                 >
-                    <span className="mx-4 text-sm font-normal">Inventory</span>
+                    <span className="mx-4 text-sm font-normal">Dashboard</span>
                 </NavLink>
             </li>
             <li>

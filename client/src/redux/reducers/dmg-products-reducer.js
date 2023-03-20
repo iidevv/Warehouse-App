@@ -1,4 +1,4 @@
-import { dmgProductAPI } from "./../../api/api";
+import { dmgProductAPI } from "../../api/api";
 
 const SET_PRODUCTS = "SET_PRODUCTS";
 const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";

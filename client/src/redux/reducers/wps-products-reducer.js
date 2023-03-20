@@ -1,4 +1,4 @@
-import { wpsProductsAPI } from "./../../api/api";
+import { wpsProductsAPI } from "../../api/api";
 
 const SET_PRODUCTS = "SET_PRODUCTS";
 const SET_SEARCH_KEYWORD = "SET_SEARCH_KEYWORD";

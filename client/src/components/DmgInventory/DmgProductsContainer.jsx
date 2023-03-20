@@ -6,7 +6,7 @@ import { compose } from "redux";
 import {
   getProducts,
   setProducts,
-} from "./../../redux/reducers/dmg-inventory-reducer";
+} from "./../../redux/reducers/dmg-products-reducer";
 
 class DmgProductsContainer extends React.Component {
   componentDidMount() {

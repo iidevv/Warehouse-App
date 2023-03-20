@@ -47,3 +47,18 @@ export const wpsProductAPI = {
       });
   },
 };
+
+export const inventoryAPI = {
+  getProducts(name, page) {
+    return instance
+      .get(`/inventory/products/`, {
+        params: {
+          name,
+          page
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+};

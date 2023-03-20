@@ -3,11 +3,13 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import WpsProductPage from "./WpsProductPage";
 import withRouter from "../../hoc/withRouter";
-import Notifications from '../common/notifications/Notifications';
+import Preloader from "../common/preloader/Preloader";
+import Notifications from "../common/notifications/Notifications";
 import {
   getProduct,
   setProduct,
-  createBigcommerceProduct
+  createBigcommerceProduct,
+  setToggleIsFetching
 } from "../../redux/reducers/wps-product-reducer";
 
 class WpsProductContainer extends React.Component {
@@ -26,11 +28,12 @@ class WpsProductContainer extends React.Component {
   render() {
     return (
       <>
-      <Notifications info={this.props.info}/>
-      <WpsProductPage
-        product={this.props.productData}
-        pushToCatalog={this.pushToCatalog}
-      />
+        {this.props.isFetching ? <Preloader /> : null}
+        <Notifications info={this.props.info} />
+        <WpsProductPage
+          product={this.props.productData}
+          pushToCatalog={this.pushToCatalog}
+        />
       </>
     );
   }
@@ -40,11 +43,17 @@ let mapStateToProps = (state) => {
   return {
     productData: state.wpsProduct.productData,
     info: state.wpsProduct.info,
+    isFetching: state.wpsProduct.isFetching,
   };
 };
 
 export default compose(
-  connect(mapStateToProps, { setProduct, getProduct, createBigcommerceProduct }),
+  connect(mapStateToProps, {
+    setProduct,
+    getProduct,
+    createBigcommerceProduct,
+    setToggleIsFetching
+  }),
   // withAuthRedirect,
   withRouter
 )(WpsProductContainer);

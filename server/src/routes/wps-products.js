@@ -28,4 +28,4 @@ router.get("/products/", async (req, res) => {
     });
 });
 
-export { router as WPSInventoryRouter };
+export { router as WPSProductsRouter };

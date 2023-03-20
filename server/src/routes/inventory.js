@@ -1,49 +1,78 @@
 import express from "express";
-import BigCommerce from "node-bigcommerce";
-import { config } from "dotenv";
-
-config();
-
+import { InventoryModel } from "../models/Inventory.js";
 const router = express.Router();
 
-const clientId = process.env.BIGCOMMERCE_CLIENT_ID;
-const accessToken = process.env.BIGCOMMERCE_ACCESS_TOKEN;
-const storeHash = process.env.BIGCOMMERCE_STORE_HASH;
-
-const bigCommerce = new BigCommerce({
-  clientId: clientId,
-  accessToken: accessToken,
-  storeHash: storeHash,
-  responseType: "json",
-  callback: "https://localhost:3001/auth",
-  headers: { "Accept-Encoding": "*", "Content-Type": "application/json" },
-  apiVersion: "v3",
+// get
+router.get("/products", async (req, res) => {
+  const {
+    vendor,
+    vendor_id,
+    bigcommerce_id,
+    product_name,
+    last_updated,
+    status,
+  } = req.body;
+  const Inventory = await InventoryModel.find();
+  const total = await InventoryModel.count();
+  res.json({ products: Inventory, total: total });
 });
 
-router.get("/list", (req, res) => {
-  bigCommerce
-    .get("/catalog/products")
-    .then((products) => {
-      console.log(products);
-      res.json(products);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
+// add
+router.post("/products", async (req, res) => {
+  const {
+    vendor,
+    vendor_id,
+    bigcommerce_id,
+    product_name,
+    last_updated,
+    status,
+  } = req.body;
+  const Inventory = await InventoryModel.findOne({
+    product_name,
+    bigcommerce_id,
+    vendor_id,
+  });
+  if (Inventory) return res.json({ message: "Product already exists!" });
+
+  const newProduct = new InventoryModel({
+    vendor,
+    vendor_id,
+    bigcommerce_id,
+    product_name,
+    last_updated,
+    status,
+  });
+  await newProduct.save();
+
+  res.json(newProduct);
 });
 
-router.post("/create", (req, res) => {
-  let product = req.body;
-  bigCommerce
-    .post("/catalog/products", product)
-    .then((message) => {
-      res.json(message);
-      console.log(message);
-    })
-    .catch((err) => {
-      res.json(err);
-      console.log(err);
-    });
+// update
+router.put("/products", async (req, res) => {
+  const {
+    vendor,
+    vendor_id,
+    bigcommerce_id,
+    product_name,
+    last_updated,
+    status,
+  } = req.body;
+  const Inventory = await InventoryModel.findOneAndUpdate(
+    { product_name, bigcommerce_id, vendor_id },
+    { vendor, vendor_id, bigcommerce_id, product_name, last_updated, status }
+  );
+  if (!Inventory) return res.json({ message: "Product doesn't exists!" });
+
+  res.json({ message: `${product_name} Updated Successfully` });
+});
+
+// delete
+router.delete("/products", async (req, res) => {
+  const { bigcommerce_id } = req.body;
+  const Inventory = await InventoryModel.findOneAndDelete({ bigcommerce_id });
+  if (!Inventory) return res.json({ message: "Product doesn't exists!" });
+
+  res.json({ message: 'Deleted Successfully' });
 });
 
 export { router as inventoryRouter };

@@ -1,8 +1,9 @@
-import DmgProductsContainer from "../components/DmgInventory/DmgProductsContainer";
+import DashboardContainer from "../components/Dashboard/DashboardContainer";
+
 const Index = (props) => {
   return (
     <>
-      <DmgProductsContainer/>
+      <DashboardContainer/>
     </>
   );
 };

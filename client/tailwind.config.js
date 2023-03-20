@@ -9,14 +9,14 @@ module.exports = {
         DEFAULT: "1rem",
       },
       screens: {
-        sm: '600px',
-        '2xl': '1200px',
+        sm: "1000px",
+        "2xl": "1600px",
       },
     },
   },
   variants: {
     extend: {},
-    opacity: ({ after }) => after(['disabled'])
+    opacity: ({ after }) => after(["disabled"]),
   },
   plugins: [],
 };

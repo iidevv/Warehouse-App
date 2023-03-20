@@ -29,9 +29,9 @@ const createProduct = (obj) => {
     inventory_tracking: "variant",
     variants: variants.map((item, i) => {
       const option = item.name ? item.name.toLowerCase() : "";
-      const imageUrl = item.images.data.length
+      const imageUrl = item.images.data[0]
         ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
-        : "";
+        : 'https://cdn11.bigcommerce.com/s-4n3dh09e13/images/stencil/original/image-manager/dmg-img.jpg';
       i++;
       const is_default = i === 1;
       return {
@@ -49,9 +49,9 @@ const createProduct = (obj) => {
       };
     }),
     images: variants.map((item, i) => {
-      const imageUrl = item.images.data.length
+      const imageUrl = item.images.data[0]
         ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
-        : "";
+        : 'https://cdn11.bigcommerce.com/s-4n3dh09e13/images/stencil/original/image-manager/dmg-img.jpg';
       i++;
       const is_thumbnail = i === 1;
       return {
@@ -71,7 +71,6 @@ const fetchData = async (id) => {
     );
     return createProduct(wpsProduct.data);
   } catch (error) {
-    console.log(error);
     return error;
   }
 };

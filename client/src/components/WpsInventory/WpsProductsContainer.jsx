@@ -9,7 +9,7 @@ import {
   setProducts,
   setSearchKeyword,
   setToggleIsFetching
-} from "../../redux/reducers/wps-inventory-reducer";
+} from "../../redux/reducers/wps-products-reducer";
 
 class WpsProductsContainer extends React.Component {
   componentDidMount() {
