@@ -9,21 +9,32 @@ import {
   getProduct,
   setProduct,
   createBigcommerceProduct,
-  setToggleIsFetching
+  setToggleIsFetching,
+  searchCategories,
+  setCategories,
+  setCategory,
+  resetCategories
 } from "../../redux/reducers/wps-product-reducer";
 
 class WpsProductContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.pushToCatalog = this.pushToCatalog.bind(this);
-  }
   componentDidMount() {
     let id = this.props.params.id;
     if (!id) id = 1;
     this.props.getProduct(id);
+    this.props.setCategory(localStorage.getItem('category_name'), localStorage.getItem('category_id'));
   }
-  pushToCatalog(data) {
+  pushToCatalog = (data) => {
+    data.categories = {
+      id: +localStorage.getItem('category_id')
+    }
     this.props.createBigcommerceProduct(data);
+  }
+  onSearchCategories = (query) => {
+    this.props.searchCategories(query);
+  }
+  onSetCategory = () => {
+    this.props.setCategory(localStorage.getItem('category_name'), localStorage.getItem('category_id'));
+    this.props.resetCategories();
   }
   render() {
     return (
@@ -33,6 +44,10 @@ class WpsProductContainer extends React.Component {
         <WpsProductPage
           product={this.props.productData}
           pushToCatalog={this.pushToCatalog}
+          onSearchCategories={this.onSearchCategories}
+          onSetCategory={this.onSetCategory}
+          categories={this.props.categories}
+          current_category={this.props.current_category}
         />
       </>
     );
@@ -44,6 +59,8 @@ let mapStateToProps = (state) => {
     productData: state.wpsProduct.productData,
     info: state.wpsProduct.info,
     isFetching: state.wpsProduct.isFetching,
+    categories: state.wpsProduct.categories,
+    current_category: state.wpsProduct.current_category
   };
 };
 
@@ -52,7 +69,11 @@ export default compose(
     setProduct,
     getProduct,
     createBigcommerceProduct,
-    setToggleIsFetching
+    setToggleIsFetching,
+    searchCategories,
+    setCategories,
+    setCategory,
+    resetCategories
   }),
   // withAuthRedirect,
   withRouter

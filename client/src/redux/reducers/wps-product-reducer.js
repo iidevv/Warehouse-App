@@ -2,12 +2,16 @@ import { wpsProductAPI, dmgProductAPI } from "./../../api/api";
 
 const SET_PRODUCT_PAGE = "SET_PRODUCT_PAGE";
 const SET_INFO_ALERT = "SET_INFO_ALERT";
+const SET_CATEGORIES = "SET_CATEGORIES";
+const SET_CURRENT_CATEGORY = "SET_CURRENT_CATEGORY"; 
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 
 let initialState = {
   productData: [],
   isFetching: true,
   info: {},
+  categories: [],
+  current_category: {}
 };
 
 const wpsProductReducer = (state = initialState, action) => {
@@ -22,10 +26,20 @@ const wpsProductReducer = (state = initialState, action) => {
         ...state,
         info: action.message,
       };
+    case SET_CATEGORIES:
+      return {
+        ...state,
+        categories: action.categories,
+      };
     case TOGGLE_IS_FETCHING:
       return {
         ...state,
         isFetching: action.isFetching,
+      };
+    case SET_CURRENT_CATEGORY:
+      return {
+        ...state,
+        current_category: action.current_category,
       };
     default:
       return state;
@@ -50,6 +64,37 @@ export const setToggleIsFetching = (isFetching) => {
   return {
     type: TOGGLE_IS_FETCHING,
     isFetching,
+  };
+};
+
+export const setCategories = (categories) => {
+  return {
+    type: SET_CATEGORIES,
+    categories,
+  };
+};
+
+export const setCategory = (name, id) => {
+  return {
+    type: SET_CURRENT_CATEGORY,
+    current_category: {name, id},
+  };
+}
+
+export const resetCategories = () => {
+  return {
+    type: SET_CATEGORIES,
+    categories: [],
+  };
+}
+
+export const searchCategories = (query) => {
+  return (dispatch) => {
+    dispatch(setToggleIsFetching(true));
+    dmgProductAPI.getCategories(query).then((data) => {
+      dispatch(setCategories(data.data.data));
+      dispatch(setToggleIsFetching(false));
+    });
   };
 };
 

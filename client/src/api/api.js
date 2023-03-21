@@ -17,6 +17,11 @@ export const dmgProductAPI = {
       return response;
     });
   },
+  getCategories(query) {
+    return instance.get(`products/categories?name:like=${query}`).then((response) => {
+      return response;
+    });
+  }
 };
 
 export const wpsProductsAPI = {

@@ -1,4 +1,5 @@
 import defaultImg from "../../assets/default-image.png";
+import CategoriesSearch from './../common/categoriesSearch/CategoriesSearch';
 
 const WpsProductPage = (props) => {
   const productImg = (props.product.images && props.product.images.length) ? props.product.images[0].image_url : defaultImg;
@@ -35,9 +36,12 @@ const WpsProductPage = (props) => {
               {props.product.description ? props.product.description : "No description"}
             </p>
           </div>
+          <CategoriesSearch categories={props.categories} current_category={props.current_category} onSearchCategories={props.onSearchCategories} onSetCategory={props.onSetCategory}/>
           <button
             onClick={() => {props.pushToCatalog(props.product)}}
+            disabled={props.current_category.id ? false : true}
             className="
+            disabled:opacity-50
 						focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800
 						text-base
 						flex
