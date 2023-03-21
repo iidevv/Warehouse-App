@@ -8,7 +8,7 @@ const router = express.Router();
 
 const WPSToken = process.env.WPS_TOKEN;
 
-const instance = axios.create({
+export const wpsInstance = axios.create({
   baseURL: "https://api.wps-inc.com/",
   headers: {
     Authorization: `Bearer ${WPSToken}`,
@@ -20,6 +20,8 @@ const createProduct = (obj) => {
   const variants = obj.data.items.data;
 
   const product = {
+    vendor: "WPS",
+    vendor_id: data.id,
     name: data.name,
     type: "physical",
     weight: variants[0].weight,
@@ -35,6 +37,7 @@ const createProduct = (obj) => {
       i++;
       const is_default = i === 1;
       return {
+        id: item.id,
         sku: item.sku,
         option_values: [
           {
@@ -66,7 +69,7 @@ const createProduct = (obj) => {
 
 const fetchData = async (id) => {
   try {
-    const wpsProduct = await instance.get(
+    const wpsProduct = await wpsInstance.get(
       `/products/${id}/?include=items.images,items.inventory,items.brand`
     );
     return createProduct(wpsProduct.data);

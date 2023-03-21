@@ -55,6 +55,16 @@ export const setToggleIsFetching = (isFetching) => {
   };
 };
 
+export const deleteProduct = (id) => {
+  return (dispatch) => {
+    dispatch(setToggleIsFetching(true));
+    inventoryAPI.deleteProduct(id).then((data) => {
+      dispatch(setToggleIsFetching(false));
+      dispatch(getProducts());
+    });
+  };
+};
+
 export const getProducts = (name, page) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));

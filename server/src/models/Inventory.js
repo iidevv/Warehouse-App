@@ -5,6 +5,8 @@ const InventorySchema = new mongoose.Schema({
     vendor_id: {type: Number, required: true, unique: true},
     bigcommerce_id: {type: Number, required: true, unique: true},
     product_name: {type: String, required: true, unique: true},
+    price: {type: Number, required: true},
+    variants: [],
     last_updated: {type: Date, required: true},
     status: {type: String, required: true},
 });

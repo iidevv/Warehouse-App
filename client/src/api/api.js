@@ -66,4 +66,13 @@ export const inventoryAPI = {
         return response.data;
       });
   },
+  deleteProduct(id) {
+    return instance
+      .delete(`/inventory/products/`, {
+        params: {id},
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
 };

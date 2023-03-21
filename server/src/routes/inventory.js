@@ -4,17 +4,15 @@ const router = express.Router();
 
 // get
 router.get("/products", async (req, res) => {
-  const {
-    vendor,
-    vendor_id,
-    bigcommerce_id,
-    product_name,
-    last_updated,
-    status,
-  } = req.body;
-  const Inventory = await InventoryModel.find();
-  const total = await InventoryModel.count();
-  res.json({ products: Inventory, total: total });
+  const bigcommerce_id = req.query.id;
+  if (bigcommerce_id) {
+    const product = await InventoryModel.findOne({bigcommerce_id});
+    res.json(product);
+  } else {
+    const Inventory = await InventoryModel.find().sort({ last_updated: -1 });
+    const total = await InventoryModel.count();
+    res.json({ products: Inventory, total: total });
+  }
 });
 
 // add
@@ -23,6 +21,8 @@ router.post("/products", async (req, res) => {
     vendor,
     vendor_id,
     bigcommerce_id,
+    price,
+    variants,
     product_name,
     last_updated,
     status,
@@ -38,6 +38,8 @@ router.post("/products", async (req, res) => {
     vendor,
     vendor_id,
     bigcommerce_id,
+    price,
+    variants,
     product_name,
     last_updated,
     status,
@@ -68,11 +70,11 @@ router.put("/products", async (req, res) => {
 
 // delete
 router.delete("/products", async (req, res) => {
-  const { bigcommerce_id } = req.body;
+  const bigcommerce_id = req.query.id;
   const Inventory = await InventoryModel.findOneAndDelete({ bigcommerce_id });
   if (!Inventory) return res.json({ message: "Product doesn't exists!" });
 
-  res.json({ message: 'Deleted Successfully' });
+  res.json({ message: "Deleted Successfully" });
 });
 
 export { router as inventoryRouter };

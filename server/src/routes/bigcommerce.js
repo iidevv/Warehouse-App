@@ -1,6 +1,7 @@
 import express from "express";
 import BigCommerce from "node-bigcommerce";
 import { config } from "dotenv";
+import { createInventoryProduct } from '../sync-products/inventory-manager.js';
 
 config();
 
@@ -10,7 +11,7 @@ const clientId = process.env.BIGCOMMERCE_CLIENT_ID;
 const accessToken = process.env.BIGCOMMERCE_ACCESS_TOKEN;
 const storeHash = process.env.BIGCOMMERCE_STORE_HASH;
 
-const bigCommerce = new BigCommerce({
+export const bigCommerce = new BigCommerce({
   clientId: clientId,
   accessToken: accessToken,
   storeHash: storeHash,
@@ -48,6 +49,7 @@ router.post("/create", (req, res) => {
   bigCommerce
     .post("/catalog/products", product)
     .then((message) => {
+      createInventoryProduct(product, message, 'Created');
       res.json(message);
     })
     .catch((err) => {

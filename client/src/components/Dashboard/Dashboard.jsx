@@ -1,8 +1,32 @@
 const Dashboard = (props) => {
+  debugger
+  const createNewDate = (current_date) => {
+    const date = new Date(current_date);
+    const options = {
+      timeZone: "America/Los_Angeles",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    };
+    return date.toLocaleString("en-US", options);
+  };
+  const handleDeleteClick = (event) => {
+    const id = +event.target.id;
+    props.onDeleteProduct(id);
+  };
+  const handleUpdateClick = (event) => {
+    const id = +event.target.id;
+    console.log(id);
+  }
   return (
     <div className="py-8">
       <div className="flex flex-row justify-between w-full mb-1 sm:mb-0">
-        <h2 className="text-2xl leading-tight mb-4">Synced Products ({props.total})</h2>
+        <h2 className="text-2xl leading-tight mb-4">
+          Synced Products ({props.total})
+        </h2>
       </div>
       <div className="inline-block min-w-full overflow-hidden rounded-lg shadow">
         <table className="min-w-full leading-normal">
@@ -45,7 +69,9 @@ const Dashboard = (props) => {
               return (
                 <tr key={i}>
                   <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">{m.vendor}</p>
+                    <p className="text-gray-900 whitespace-no-wrap">
+                      {m.vendor}
+                    </p>
                   </td>
                   <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
                     <p className="text-gray-900 whitespace-no-wrap">
@@ -54,16 +80,21 @@ const Dashboard = (props) => {
                   </td>
                   <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
                     <p className="text-gray-900 whitespace-no-wrap">
-                      {m.last_updated}
+                      {createNewDate(m.last_updated)}
                     </p>
                   </td>
                   <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">{m.status}</p>
+                    <p className="text-gray-900 whitespace-no-wrap">
+                      {m.status}
+                    </p>
                   </td>
                   <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    <a href="#" className="text-red-600 hover:text-indigo-900">
+                    <button onClick={handleUpdateClick} id={m.bigcommerce_id} className="text-blue-600 hover:text-indigo-900 mr-6 pr-6 border-r-2">
+                      Update
+                    </button>
+                    <button onClick={handleDeleteClick} id={m.bigcommerce_id} className="text-red-600 hover:text-indigo-900">
                       Remove
-                    </a>
+                    </button>
                   </td>
                 </tr>
               );

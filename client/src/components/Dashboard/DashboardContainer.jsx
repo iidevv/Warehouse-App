@@ -8,18 +8,22 @@ import {
   getProducts,
   setProducts,
   setToggleIsFetching,
+  deleteProduct
 } from "./../../redux/reducers/inventory-reducer";
 
 class DashboardContainer extends React.Component {
   componentDidMount() {
     this.props.getProducts();
   }
+  onDeleteProduct = (id) => {
+    this.props.deleteProduct(id);
+  }
 
   render() {
     return (
       <>
         {this.props.isFetching ? <Preloader /> : null}
-        <Dashboard products={this.props.products} total={this.props.total} />
+        <Dashboard products={this.props.products} total={this.props.total} onDeleteProduct={this.onDeleteProduct} />
       </>
     );
   }
@@ -39,5 +43,6 @@ export default compose(
     getProducts,
     setProducts,
     setToggleIsFetching,
+    deleteProduct
   })
 )(DashboardContainer);
