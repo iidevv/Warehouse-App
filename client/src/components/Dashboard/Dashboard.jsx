@@ -89,10 +89,10 @@ const Dashboard = (props) => {
                     </p>
                   </td>
                   <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    <button onClick={handleUpdateClick} id={m.bigcommerce_id} className="text-blue-600 hover:text-indigo-900 mr-6 pr-6 border-r-2">
+                    <button onClick={handleUpdateClick} id={m.vendor_id} className="text-blue-600 hover:text-indigo-900 mr-6 pr-6 border-r-2">
                       Update
                     </button>
-                    <button onClick={handleDeleteClick} id={m.bigcommerce_id} className="text-red-600 hover:text-indigo-900">
+                    <button onClick={handleDeleteClick} id={m.vendor_id} className="text-red-600 hover:text-indigo-900">
                       Remove
                     </button>
                   </td>

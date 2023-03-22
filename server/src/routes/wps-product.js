@@ -1,19 +1,7 @@
 import express from "express";
-import { config } from "dotenv";
-import axios from "axios";
-
-config();
+import { wpsInstance } from '../instances/index.js';
 
 const router = express.Router();
-
-const WPSToken = process.env.WPS_TOKEN;
-
-export const wpsInstance = axios.create({
-  baseURL: "https://api.wps-inc.com/",
-  headers: {
-    Authorization: `Bearer ${WPSToken}`,
-  },
-});
 
 const createProduct = (obj) => {
   const data = obj.data;

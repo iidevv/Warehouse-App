@@ -4,9 +4,9 @@ const router = express.Router();
 
 // get
 router.get("/products", async (req, res) => {
-  const bigcommerce_id = req.query.id;
-  if (bigcommerce_id) {
-    const product = await InventoryModel.findOne({bigcommerce_id});
+  const vendor_id = req.query.id;
+  if (vendor_id) {
+    const product = await InventoryModel.findOne({vendor_id});
     res.json(product);
   } else {
     const Inventory = await InventoryModel.find().sort({ last_updated: -1 });
@@ -70,8 +70,8 @@ router.put("/products", async (req, res) => {
 
 // delete
 router.delete("/products", async (req, res) => {
-  const bigcommerce_id = req.query.id;
-  const Inventory = await InventoryModel.findOneAndDelete({ bigcommerce_id });
+  const vendor_id = req.query.id;
+  const Inventory = await InventoryModel.findOneAndDelete({ vendor_id });
   if (!Inventory) return res.json({ message: "Product doesn't exists!" });
 
   res.json({ message: "Deleted Successfully" });

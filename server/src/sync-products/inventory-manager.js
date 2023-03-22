@@ -1,8 +1,4 @@
-import axios from "axios";
-
-export const serverInstance = axios.create({
-  baseURL: "http://localhost:3001",
-});
+import { serverInstance } from '../instances/index.js';
 
 const createNewDate = () => {
   const options = {
