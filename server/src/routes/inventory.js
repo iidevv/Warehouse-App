@@ -1,12 +1,13 @@
 import express from "express";
 import { InventoryModel } from "../models/Inventory.js";
+import { createNewDate } from './../common/index.js';
 const router = express.Router();
 
 // get
 router.get("/products", async (req, res) => {
   const vendor_id = req.query.id;
   if (vendor_id) {
-    const product = await InventoryModel.findOne({vendor_id});
+    const product = await InventoryModel.findOne({ vendor_id });
     res.json(product);
   } else {
     const Inventory = await InventoryModel.find().sort({ last_updated: -1 });
@@ -51,21 +52,17 @@ router.post("/products", async (req, res) => {
 
 // update
 router.put("/products", async (req, res) => {
-  const {
-    vendor,
-    vendor_id,
-    bigcommerce_id,
-    product_name,
-    last_updated,
-    status,
-  } = req.body;
+  const vendor_id = req.query.id;
+  const status = req.query.status;
+  let last_updated = createNewDate();
+  
   const Inventory = await InventoryModel.findOneAndUpdate(
-    { product_name, bigcommerce_id, vendor_id },
-    { vendor, vendor_id, bigcommerce_id, product_name, last_updated, status }
+    { vendor_id },
+    { last_updated, status }
   );
   if (!Inventory) return res.json({ message: "Product doesn't exists!" });
 
-  res.json({ message: `${product_name} Updated Successfully` });
+  res.json({ message: `${vendor_id} Updated Successfully` });
 });
 
 // delete

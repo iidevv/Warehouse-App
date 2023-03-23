@@ -1,13 +1,5 @@
 import { serverInstance } from '../instances/index.js';
-
-const createNewDate = () => {
-  const options = {
-    timeZone: "America/Los_Angeles",
-  };
-  const date = new Date();
-  const dateString = date.toLocaleString("en-US", options);
-  return dateString;
-};
+import { createNewDate } from './../common/index.js';
 
 export const createInventoryProduct = (vendorProduct, product, status) => {
   const inventoryProduct = {
