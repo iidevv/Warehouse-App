@@ -1,5 +1,4 @@
 const Dashboard = (props) => {
-  debugger
   const createNewDate = (current_date) => {
     const date = new Date(current_date);
     const options = {
@@ -17,16 +16,43 @@ const Dashboard = (props) => {
     const id = +event.target.id;
     props.onDeleteProduct(id);
   };
-  const handleUpdateClick = (event) => {
-    const id = +event.target.id;
-    console.log(id);
-  }
+  const handleUpdateClick = () => {
+    props.onUpdateProducts();
+  };
+  const handlePageClick = (name, page) => {
+    props.onPageChanged(name, page);
+  };
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+
+    for (let i = 1; i <= props.totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          disabled={props.currentPage === i ? true : false}
+          onClick={() => handlePageClick("", i)}
+          type="button"
+          className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black"
+        >
+          {i}
+        </button>
+      );
+    }
+
+    return pageNumbers;
+  };
   return (
     <div className="py-8">
-      <div className="flex flex-row justify-between w-full mb-1 sm:mb-0">
-        <h2 className="text-2xl leading-tight mb-4">
+      <div className="flex flex-row items-center w-full mb-6">
+        <h2 className="text-2xl leading-tight mr-6">
           Synced Products ({props.total})
         </h2>
+        <button
+          onClick={handleUpdateClick}
+          className="py-2 px-4 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
+        >
+          Update
+        </button>
       </div>
       <div className="inline-block min-w-full overflow-hidden rounded-lg shadow">
         <table className="min-w-full leading-normal">
@@ -89,10 +115,11 @@ const Dashboard = (props) => {
                     </p>
                   </td>
                   <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    <button onClick={handleUpdateClick} id={m.vendor_id} className="text-blue-600 hover:text-indigo-900 mr-6 pr-6 border-r-2">
-                      Update
-                    </button>
-                    <button onClick={handleDeleteClick} id={m.vendor_id} className="text-red-600 hover:text-indigo-900">
+                    <button
+                      onClick={handleDeleteClick}
+                      id={m.vendor_id}
+                      className="text-red-600 hover:text-indigo-900"
+                    >
                       Remove
                     </button>
                   </td>
@@ -104,29 +131,32 @@ const Dashboard = (props) => {
         <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">
           <div className="flex items-center">
             <button
+              onClick={() => handlePageClick("", props.currentPage-1)}
+              disabled={props.currentPage === 1 ? true : false}
               type="button"
-              className="w-full p-4 text-base text-gray-600 bg-white border rounded-l-xl hover:bg-gray-100"
+              className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-l border-t border-b rounded-l-xl hover:bg-gray-100"
             >
               <svg
                 width="9"
                 fill="currentColor"
                 height="8"
-                className=""
                 viewBox="0 0 1792 1792"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"></path>
               </svg>
             </button>
+            {renderPageNumbers()}
             <button
               type="button"
-              className="w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
+              disabled={props.currentPage === props.totalPages ? true : false}
+              onClick={() => handlePageClick("", props.currentPage+1)}
+              className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
             >
               <svg
                 width="9"
                 fill="currentColor"
                 height="8"
-                className=""
                 viewBox="0 0 1792 1792"
                 xmlns="http://www.w3.org/2000/svg"
               >

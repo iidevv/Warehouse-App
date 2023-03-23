@@ -58,10 +58,10 @@ const WpsProducts = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {props.products.map((m) => {
+                {props.products.map((m, i) => {
                   return (
                     <WpsProduct
-                      key={m.id}
+                      key={i}
                       id={m.id}
                       name={m.name}
                       updated_at={m.updated_at}

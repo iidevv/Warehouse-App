@@ -6,11 +6,11 @@ import {
 } from "../instances/index.js";
 
 // Define the IDs of the products to update
-const getSyncedProducts = async () => {
+const getSyncedProducts = async (page, pageSize) => {
   return await serverInstance
-    .get(`/inventory/products`)
+    .get(`/inventory/products?page=${page}&pageSize=${pageSize}`)
     .then((response) => {
-      return response.data.products;
+      return response.data;
     })
     .catch((error) => {
       return error;
@@ -225,10 +225,10 @@ const updateBigcommerceProductVariants = async (id, variants) => {
   return { message: messages.join(" ") };
 };
 
-// Define update product status, when sync completed (id = vendor id, status = Updated/Error)
-const updateSyncedProductStatus = async (id, status) => {
+// Define update product, when sync completed (id = vendor id, data)
+const updateSyncedProduct = async (data) => {
   return await serverInstance
-    .put(`/inventory/products?id=${id}&status=${status}`)
+    .put(`/inventory/products`, data)
     .then((response) => {
       return response.data;
     })
@@ -238,49 +238,88 @@ const updateSyncedProductStatus = async (id, status) => {
 };
 
 const updateProducts = async () => {
-  try {
-    // Get synced products
-    const syncedProducts = await getSyncedProducts();
+  const pageSize = 50;
+  let currentPage = 1;
+  let totalPages = 1;
+  while (currentPage <= totalPages) {
+    try {
+      // Get synced products
+      const {products: syncedProducts, totalPages: totalPagesFromResponse} = await getSyncedProducts(currentPage, pageSize);
+      totalPages = totalPagesFromResponse
+      // Loop through each synced product
+      for (const syncedProduct of syncedProducts) {
+        // Get WPS product data and compare it with the synced product data
+        const wpsProduct = await getWPSProduct(syncedProduct.vendor_id);
+        const syncedProductData = await getSyncedProduct(
+          syncedProduct.vendor_id
+        );
 
-    // Loop through each synced product
-    for (const syncedProduct of syncedProducts) {
-      // Get WPS product data and compare it with the synced product data
-      const wpsProduct = await getWPSProduct(syncedProduct.vendor_id);
-      const syncedProductData = await getSyncedProduct(syncedProduct.vendor_id);
+        // Check if an update is needed
+        const isPriceUpdated = wpsProduct.price !== syncedProductData.price;
+        const isInventoryUpdated = wpsProduct.variants.some(
+          (wpsVariant, index) => {
+            return (
+              wpsVariant.inventory_level !==
+              syncedProductData.variants[index].inventory_level
+            );
+          }
+        );
 
-      // Check if an update is needed
-      const isPriceUpdated = wpsProduct.price !== syncedProductData.price;
-      const isInventoryUpdated = wpsProduct.variants.some((wpsVariant, index) => {
-        return wpsVariant.inventory_level !== syncedProductData.variants[index].inventory_level;
-      });
+        // If an update is needed, update the product and its variants
+        if (isPriceUpdated || isInventoryUpdated) {
+          try {
+            // Update the product
+            await updateBigcommerceProduct(syncedProduct.bigcommerce_id, {
+              price: wpsProduct.price,
+            });
 
-      // If an update is needed, update the product and its variants
-      if (isPriceUpdated || isInventoryUpdated) {
-        try {
-          // Update the product
-          await updateBigcommerceProduct(syncedProduct.bigcommerce_id, { price: wpsProduct.price });
+            // Loop through each variant in the synced product
+            for (const syncedVariant of syncedProduct.variants) {
+              // Find the corresponding WPS variant using the vendor_id
+              const wpsVariant = wpsProduct.variants.find(
+                (v) => v.id === syncedVariant.vendor_id
+              );
 
-          // Update the product variants
-          const updatedVariants = wpsProduct.variants.map((variant, i) => ({
-            id: syncedProduct.variants[i].bigcommerce_id || 0,
-            price: variant.price,
-            inventory_level: variant.inventory_level
-          }));
-          await updateBigcommerceProductVariants(syncedProduct.bigcommerce_id, updatedVariants);
+              // Check if the variant price or inventory_level has changed
+              const isPriceUpdated =
+                wpsVariant.price !== syncedVariant.variant_price;
+              const isInventoryUpdated =
+                wpsVariant.inventory_level !== syncedVariant.inventory_level;
 
-          // Update the synced product status to 'Updated'
-          await updateSyncedProductStatus(syncedProduct.vendor_id, 'Updated');
-        } catch (error) {
-          // If there's an error, update the synced product status to 'Error'
-          await updateSyncedProductStatus(syncedProduct.vendor_id, 'Error');
+              if (isPriceUpdated || isInventoryUpdated) {
+                // Update the product variant
+                await updateBigcommerceProductVariants(
+                  syncedProduct.bigcommerce_id,
+                  [
+                    {
+                      id: syncedVariant.bigcommerce_id,
+                      price: wpsVariant.price,
+                      inventory_level: wpsVariant.inventory_level,
+                    },
+                  ]
+                );
+              }
+            }
+
+            // Update the synced product status to 'Updated'
+            wpsProduct.status = "Updated";
+            await updateSyncedProduct(wpsProduct);
+          } catch (error) {
+            // If there's an error, update the synced product status to 'Error'
+            wpsProduct.status = "Error";
+            await updateSyncedProduct(wpsProduct);
+          }
+        } else {
+          // If there's no change, update the synced product status to 'No changes'
+          wpsProduct.status = "No changes";
+          await updateSyncedProduct(wpsProduct);
         }
-      } else {
-        // If there's no change, update the synced product status to 'No changes'
-        await updateSyncedProductStatus(syncedProduct.vendor_id, 'No changes');
       }
+    currentPage++;
+    } catch (error) {
+      console.error("Error updating products:", error);
+      break;
     }
-  } catch (error) {
-    console.error('Error updating products:', error);
   }
 };
 
@@ -289,8 +328,8 @@ const router = express.Router();
 router.get("/sync", async (req, res) => {
   try {
     const syncedProducts = await updateProducts();
-    res.json({ message: 'All Products Updated!' });
-    console.log('All Products Updated!');
+    res.json({ message: "All Products Updated!" });
+    console.log("All Products Updated!");
   } catch (error) {
     res.status(500).json({ error: error });
   }

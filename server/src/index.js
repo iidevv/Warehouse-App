@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import { userRouter } from "./routes/users.js";
+import userRoutes from './routes/userRoutes.js';
 import { bigcommerceRouter } from "./routes/bigcommerce.js";
 import { WPSProductsRouter } from "./routes/wps-products.js";
 import { WPSProductRouter } from "./routes/wps-product.js";
@@ -18,7 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use("/auth", userRouter);
+app.use('/api/users', userRoutes);
 app.use("/inventory", inventoryRouter);
 app.use("/inventory", SyncProductsRouter);
 app.use("/products", bigcommerceRouter);

@@ -18,10 +18,12 @@ export const dmgProductAPI = {
     });
   },
   getCategories(query) {
-    return instance.get(`products/categories?name:like=${query}`).then((response) => {
-      return response;
-    });
-  }
+    return instance
+      .get(`products/categories?name:like=${query}`)
+      .then((response) => {
+        return response;
+      });
+  },
 };
 
 export const wpsProductsAPI = {
@@ -59,7 +61,7 @@ export const inventoryAPI = {
       .get(`/inventory/products/`, {
         params: {
           name,
-          page
+          page,
         },
       })
       .then((response) => {
@@ -69,8 +71,15 @@ export const inventoryAPI = {
   deleteProduct(id) {
     return instance
       .delete(`/inventory/products/`, {
-        params: {id},
+        params: { id },
       })
+      .then((response) => {
+        return response.data;
+      });
+  },
+  updateProducts() {
+    return instance
+      .get(`/inventory/sync/`)
       .then((response) => {
         return response.data;
       });

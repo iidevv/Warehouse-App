@@ -2,12 +2,15 @@ import { inventoryAPI } from "../../api/api";
 
 const SET_PRODUCTS = "SET_PRODUCTS";
 const SET_PRODUCTS_TOTAL = "SET_PRODUCTS_TOTAL";
+const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
+const SET_TOTAL_PAGES = "SET_TOTAL_PAGES";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 
 let initialState = {
   products: [],
   total: 0,
-  page: 1,
+  currentPage: 1,
+  totalPages: 0,
   isFetching: true,
 };
 
@@ -22,6 +25,16 @@ const inventoryReducer = (state = initialState, action) => {
       return {
         ...state,
         total: action.total,
+      };
+    case SET_CURRENT_PAGE:
+      return {
+        ...state,
+        currentPage: action.currentPage,
+      };
+    case SET_TOTAL_PAGES:
+      return {
+        ...state,
+        totalPages: action.totalPages,
       };
     case TOGGLE_IS_FETCHING:
       return {
@@ -48,6 +61,20 @@ export const setProductsTotal = (total) => {
   };
 };
 
+export const setCurrentPage = (currentPage) => {
+  return {
+    type: SET_CURRENT_PAGE,
+    currentPage,
+  };
+};
+
+export const setTotalPages = (totalPages) => {
+  return {
+    type: SET_TOTAL_PAGES,
+    totalPages,
+  };
+};
+
 export const setToggleIsFetching = (isFetching) => {
   return {
     type: TOGGLE_IS_FETCHING,
@@ -71,7 +98,19 @@ export const getProducts = (name, page) => {
     inventoryAPI.getProducts(name, page).then((data) => {
       dispatch(setProducts(data.products));
       dispatch(setProductsTotal(data.total));
+      dispatch(setTotalPages(data.totalPages));
+      dispatch(setCurrentPage(data.currentPage));
       dispatch(setToggleIsFetching(false));
+    });
+  };
+};
+
+export const updateProducts = () => {
+  return (dispatch) => {
+    dispatch(setToggleIsFetching(true));
+    inventoryAPI.updateProducts().then((data) => {
+      dispatch(setToggleIsFetching(false));
+      dispatch(getProducts());
     });
   };
 };
