@@ -9,13 +9,33 @@ import Settings from "./routes/Settings";
 import Index from "./routes/Index";
 import store from "./redux/store";
 import { Provider } from "react-redux";
-import WPSInventory from './routes/WPSInventory';
+import WPSInventory from "./routes/WPSInventory";
 import WpsProductPageContainer from "./components/WpsInventory/WpsProductPageContainer";
-import {Auth} from './routes/Auth';
+import { Auth } from "./routes/Auth";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+function AuthRoute({ component: Component, ...rest }) {
+  const isAuthenticated = localStorage.getItem("userID") ? true : false;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/auth");
+    }
+  }, [isAuthenticated, navigate]);
+
+  if (!isAuthenticated) {
+    return <Auth />;
+  }
+
+  return <Component {...rest} />;
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <AuthRoute component={App} />,
     errorElement: <ErrorPage />,
     children: [
       {
