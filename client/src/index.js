@@ -11,12 +11,17 @@ import store from "./redux/store";
 import { Provider } from "react-redux";
 import WPSInventory from './routes/WPSInventory';
 import WpsProductPageContainer from "./components/WpsInventory/WpsProductPageContainer";
+import {Auth} from './routes/Auth';
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: "/auth",
+        element: <Auth />,
+      },
       {
         index: true,
         element: <Index />,
