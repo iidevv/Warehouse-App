@@ -9,7 +9,7 @@ const storeHash = process.env.BIGCOMMERCE_STORE_HASH;
 const WPSToken = process.env.WPS_TOKEN;
 
 export const serverInstance = axios.create({
-  baseURL: "https://warehouse.discountmotogear.com/",
+  baseURL: "http://localhost:3001",
 });
 
 export const bigCommerceInstance = new BigCommerce({
@@ -17,7 +17,7 @@ export const bigCommerceInstance = new BigCommerce({
   accessToken: accessToken,
   storeHash: storeHash,
   responseType: "json",
-  callback: "https://warehouse.discountmotogear.com/auth",
+  callback: "http://localhost:3001/auth",
   headers: { "Accept-Encoding": "*", "Content-Type": "application/json" },
   apiVersion: "v3",
 });
