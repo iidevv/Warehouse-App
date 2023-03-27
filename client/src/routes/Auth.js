@@ -3,6 +3,7 @@ import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
+import { instance } from '../api/api';
 
 export const Auth = () => {
   return (
@@ -24,7 +25,7 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      const result = await axios.post("http://localhost:3001/auth/login", {
+      const result = await instance.post("/api/auth/login", {
         username,
         password,
       });
