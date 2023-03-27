@@ -95,13 +95,23 @@ export const deleteProduct = (id) => {
 export const getProducts = (name, page) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    inventoryAPI.getProducts(name, page).then((data) => {
-      dispatch(setProducts(data.products));
-      dispatch(setProductsTotal(data.total));
-      dispatch(setTotalPages(data.totalPages));
-      dispatch(setCurrentPage(data.currentPage));
-      dispatch(setToggleIsFetching(false));
-    });
+    inventoryAPI
+      .getProducts(name, page)
+      .then((data) => {
+        if (data && Array.isArray(data.products)) {
+          dispatch(setProducts(data.products));
+          dispatch(setProductsTotal(data.total));
+          dispatch(setTotalPages(data.totalPages));
+          dispatch(setCurrentPage(data.currentPage));
+        } else {
+          console.error("Ошибка: получены неверные данные:", data);
+        }
+        dispatch(setToggleIsFetching(false));
+      })
+      .catch((error) => {
+        console.error("Ошибка при запросе продуктов:", error);
+        dispatch(setToggleIsFetching(false));
+      });
   };
 };
 
