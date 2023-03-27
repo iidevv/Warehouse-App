@@ -10,7 +10,7 @@ const instance = axios.create({
 export const dmgProductAPI = {
   getProducts(currentPage, pageSize) {
     return instance
-      .get(`/products/list?page=${currentPage}&limit=${pageSize}`)
+      .get(`/api/products/list?page=${currentPage}&limit=${pageSize}`)
       .then((response) => {
         return response.data;
       });
@@ -32,7 +32,7 @@ export const dmgProductAPI = {
 export const wpsProductsAPI = {
   getProducts(name, cursor) {
     return instance
-      .get(`/wps/products/`, {
+      .get(`/api/wps/products/`, {
         params: {
           name,
           cursor,
@@ -47,7 +47,7 @@ export const wpsProductsAPI = {
 export const wpsProductAPI = {
   getProduct(id) {
     return instance
-      .get(`/wps/product/`, {
+      .get(`/api/wps/product/`, {
         params: {
           id,
         },
@@ -61,7 +61,7 @@ export const wpsProductAPI = {
 export const inventoryAPI = {
   getProducts(name, page) {
     return instance
-      .get(`/inventory/products/`, {
+      .get(`/api/inventory/products/`, {
         params: {
           name,
           page,
@@ -73,7 +73,7 @@ export const inventoryAPI = {
   },
   deleteProduct(id) {
     return instance
-      .delete(`/inventory/products/`, {
+      .delete(`/api/inventory/products/`, {
         params: { id },
       })
       .then((response) => {
@@ -82,7 +82,7 @@ export const inventoryAPI = {
   },
   updateProducts() {
     return instance
-      .get(`/inventory/sync/`)
+      .get(`/api/inventory/sync/`)
       .then((response) => {
         return response.data;
       });

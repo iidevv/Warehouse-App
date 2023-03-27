@@ -20,12 +20,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use('/auth', userRouter);
-app.use("/inventory", inventoryRouter);
-app.use("/inventory", SyncProductsRouter);
-app.use("/products", bigcommerceRouter);
-app.use("/wps", WPSProductsRouter);
-app.use("/wps", WPSProductRouter);
+app.use('/api/auth', userRouter);
+app.use("/api/inventory", inventoryRouter);
+app.use("/api/inventory", SyncProductsRouter);
+app.use("/api/products", bigcommerceRouter);
+app.use("/api/wps", WPSProductsRouter);
+app.use("/api/wps", WPSProductRouter);
 
 mongoose.connect(
   `mongodb+srv://${dbUsername}:${dbPassword}@dmg.eqxtdze.mongodb.net/${dbname}?retryWrites=true&w=majority`
