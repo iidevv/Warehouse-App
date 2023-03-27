@@ -3,15 +3,22 @@ import { wpsProductAPI, dmgProductAPI } from "./../../api/api";
 const SET_PRODUCT_PAGE = "SET_PRODUCT_PAGE";
 const SET_INFO_ALERT = "SET_INFO_ALERT";
 const SET_CATEGORIES = "SET_CATEGORIES";
-const SET_CURRENT_CATEGORY = "SET_CURRENT_CATEGORY"; 
+const SET_CURRENT_CATEGORY = "SET_CURRENT_CATEGORY";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
+const SET_SEO_CONTENT = "SET_SEO_CONTENT";
 
 let initialState = {
   productData: [],
   isFetching: true,
   info: {},
   categories: [],
-  current_category: {}
+  current_category: {},
+  seoContent: {
+    page_title: "",
+    description: "",
+    meta_keywords: "",
+    meta_description: "",
+  },
 };
 
 const wpsProductReducer = (state = initialState, action) => {
@@ -20,6 +27,11 @@ const wpsProductReducer = (state = initialState, action) => {
       return {
         ...state,
         productData: action.productData,
+      };
+    case SET_SEO_CONTENT:
+      return {
+        ...state,
+        seoContent: action.seoContent,
       };
     case SET_INFO_ALERT:
       return {
@@ -53,6 +65,13 @@ export const setProduct = (productData) => {
   };
 };
 
+export const setSeoContent = (seoContent) => {
+  return {
+    type: SET_SEO_CONTENT,
+    seoContent,
+  };
+};
+
 export const setAlert = (message) => {
   return {
     type: SET_INFO_ALERT,
@@ -77,16 +96,16 @@ export const setCategories = (categories) => {
 export const setCategory = (name, id) => {
   return {
     type: SET_CURRENT_CATEGORY,
-    current_category: {name, id},
+    current_category: { name, id },
   };
-}
+};
 
 export const resetCategories = () => {
   return {
     type: SET_CATEGORIES,
     categories: [],
   };
-}
+};
 
 export const searchCategories = (query) => {
   return (dispatch) => {

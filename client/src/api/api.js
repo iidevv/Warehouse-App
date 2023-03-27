@@ -1,8 +1,10 @@
 import axios from "axios";
+const useHttps = process.env.REACT_APP_USE_HTTPS === "true";
 
 const instance = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: useHttps ? "https://localhost:3001" : "http://localhost:3001",
 });
+
 
 export const dmgProductAPI = {
   getProducts(currentPage, pageSize) {

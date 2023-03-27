@@ -13,7 +13,8 @@ import {
   searchCategories,
   setCategories,
   setCategory,
-  resetCategories
+  resetCategories,
+  setSeoContent
 } from "../../redux/reducers/wps-product-reducer";
 
 class WpsProductContainer extends React.Component {
@@ -36,6 +37,9 @@ class WpsProductContainer extends React.Component {
     this.props.setCategory(localStorage.getItem('category_name'), localStorage.getItem('category_id'));
     this.props.resetCategories();
   }
+  onSetSeoContent = (content) => {
+    this.props.setSeoContent(content);
+  }
   render() {
     return (
       <>
@@ -46,6 +50,7 @@ class WpsProductContainer extends React.Component {
           pushToCatalog={this.pushToCatalog}
           onSearchCategories={this.onSearchCategories}
           onSetCategory={this.onSetCategory}
+          onSetSeoContent={this.onSetSeoContent}
           categories={this.props.categories}
           current_category={this.props.current_category}
         />
@@ -73,7 +78,8 @@ export default compose(
     searchCategories,
     setCategories,
     setCategory,
-    resetCategories
+    resetCategories,
+    setSeoContent
   }),
   // withAuthRedirect,
   withRouter
