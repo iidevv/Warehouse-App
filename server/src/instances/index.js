@@ -9,7 +9,7 @@ const storeHash = process.env.BIGCOMMERCE_STORE_HASH;
 const WPSToken = process.env.WPS_TOKEN;
 
 export const serverInstance = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: "https://localhost:3001",
 });
 
 export const bigCommerceInstance = new BigCommerce({

@@ -6,6 +6,7 @@ const instance = axios.create({
 });
 
 
+
 export const dmgProductAPI = {
   getProducts(currentPage, pageSize) {
     return instance
