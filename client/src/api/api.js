@@ -2,7 +2,7 @@ import axios from "axios";
 const useHttps = process.env.REACT_APP_USE_HTTPS === "true";
 
 export const instance = axios.create({
-  baseURL: useHttps ? "https://warehouse.discountmotogear.com/" : "http://localhost:3001",
+  baseURL: useHttps ? "https://warehouse.discountmotogear.com/api/" : "http://localhost:3001",
 });
 
 
@@ -10,7 +10,7 @@ export const instance = axios.create({
 export const dmgProductAPI = {
   getProducts(currentPage, pageSize) {
     return instance
-      .get(`/api/products/list?page=${currentPage}&limit=${pageSize}`)
+      .get(`/products/list?page=${currentPage}&limit=${pageSize}`)
       .then((response) => {
         return response.data;
       });
@@ -32,7 +32,7 @@ export const dmgProductAPI = {
 export const wpsProductsAPI = {
   getProducts(name, cursor) {
     return instance
-      .get(`/api/wps/products/`, {
+      .get(`/wps/products/`, {
         params: {
           name,
           cursor,
@@ -47,7 +47,7 @@ export const wpsProductsAPI = {
 export const wpsProductAPI = {
   getProduct(id) {
     return instance
-      .get(`/api/wps/product/`, {
+      .get(`/wps/product/`, {
         params: {
           id,
         },
@@ -61,7 +61,7 @@ export const wpsProductAPI = {
 export const inventoryAPI = {
   getProducts(name, page) {
     return instance
-      .get(`/api/inventory/products/`, {
+      .get(`/inventory/products/`, {
         params: {
           name,
           page,
@@ -73,7 +73,7 @@ export const inventoryAPI = {
   },
   deleteProduct(id) {
     return instance
-      .delete(`/api/inventory/products/`, {
+      .delete(`/inventory/products/`, {
         params: { id },
       })
       .then((response) => {
@@ -82,7 +82,7 @@ export const inventoryAPI = {
   },
   updateProducts() {
     return instance
-      .get(`/api/inventory/sync/`)
+      .get(`/inventory/sync/`)
       .then((response) => {
         return response.data;
       });

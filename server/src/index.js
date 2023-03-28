@@ -20,25 +20,25 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use('/api/auth', userRouter);
-app.use("/api/inventory", inventoryRouter);
-app.use("/api/inventory", SyncProductsRouter);
-app.use("/api/products", bigcommerceRouter);
-app.use("/api/wps", WPSProductsRouter);
-app.use("/api/wps", WPSProductRouter);
+app.use('/auth', userRouter);
+app.use("/inventory", inventoryRouter);
+app.use("/inventory", SyncProductsRouter);
+app.use("/products", bigcommerceRouter);
+app.use("/wps", WPSProductsRouter);
+app.use("/wps", WPSProductRouter);
 
 mongoose.connect(
   `mongodb+srv://${dbUsername}:${dbPassword}@dmg.eqxtdze.mongodb.net/${dbname}?retryWrites=true&w=majority`
 );
 
-// if (useHttps) {
-//   const privateKey = fs.readFileSync(process.env.SSL_KEY_PATH, "utf8");
-//   const certificate = fs.readFileSync(process.env.SSL_CERT_PATH, "utf8");
-//   const credentials = { key: privateKey, cert: certificate };
+if (useHttps) {
+  const privateKey = fs.readFileSync(process.env.SSL_KEY_PATH, "utf8");
+  const certificate = fs.readFileSync(process.env.SSL_CERT_PATH, "utf8");
+  const credentials = { key: privateKey, cert: certificate };
 
-//   const httpsServer = https.createServer(credentials, app);
+  const httpsServer = https.createServer(credentials, app);
 
-//   httpsServer.listen(port, () => console.log(`Server started on https://localhost:${port}`));
-// } else {
-// }
-app.listen(port, () => console.log(`Server started on http://localhost:${port}`));
+  httpsServer.listen(port, () => console.log(`Server started on https://localhost:${port}`));
+} else {
+  app.listen(port, () => console.log(`Server started on http://localhost:${port}`));
+}
