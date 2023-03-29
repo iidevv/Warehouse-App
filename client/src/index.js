@@ -32,35 +32,40 @@ function AuthRoute({ component: Component, ...rest }) {
   return <Component {...rest} />;
 }
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <AuthRoute component={App} />,
+      errorElement: <ErrorPage />,
+      children: [
+        {
+          path: "/auth",
+          element: <Auth />,
+        },
+        {
+          index: true,
+          element: <Index />,
+        },
+        {
+          path: "/wps-inventory",
+          element: <WPSInventory />,
+        },
+        {
+          path: "/settings",
+          element: <Settings />,
+        },
+        {
+          path: "/wps-product/:id",
+          element: <WpsProductPageContainer />,
+        },
+      ],
+    },
+  ],
   {
-    path: "/",
-    element: <AuthRoute component={App} />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        path: "/auth",
-        element: <Auth />,
-      },
-      {
-        index: true,
-        element: <Index />,
-      },
-      {
-        path: "/wps-inventory",
-        element: <WPSInventory />,
-      },
-      {
-        path: "/settings",
-        element: <Settings />,
-      },
-      {
-        path: "/wps-product/:id",
-        element: <WpsProductPageContainer />,
-      },
-    ],
-  },
-]);
+    basename: "/app",
+  }
+);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
