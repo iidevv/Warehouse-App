@@ -2,7 +2,7 @@ import axios from "axios";
 const useHttps = process.env.REACT_APP_USE_HTTPS === "true";
 
 export const instance = axios.create({
-  baseURL: useHttps ? "https://localhost:3001" : "http://localhost:3001",
+  baseURL: useHttps ? "https://warehouse.discountmotogear.com/api" : "http://localhost:3001/api",
 });
 
 
