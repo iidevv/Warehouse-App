@@ -10,7 +10,9 @@ const WPSToken = process.env.WPS_TOKEN;
 
 const useHttps = process.env.USE_HTTPS === "true";
 export const serverInstance = axios.create({
-  baseURL: useHttps ? "https://localhost:3001" : "http://localhost:3001",
+  baseURL: useHttps
+    ? "https://warehouse.discountmotogear.com/api"
+    : "http://localhost:3001/api",
 });
 
 export const bigCommerceInstance = new BigCommerce({
@@ -18,7 +20,9 @@ export const bigCommerceInstance = new BigCommerce({
   accessToken: accessToken,
   storeHash: storeHash,
   responseType: "json",
-  callback: useHttps ? "https://localhost:3001/auth" : "http://localhost:3001/auth",
+  callback: useHttps
+    ? "https://localhost:3001/auth"
+    : "http://localhost:3001/auth",
   headers: { "Accept-Encoding": "*", "Content-Type": "application/json" },
   apiVersion: "v3",
 });
