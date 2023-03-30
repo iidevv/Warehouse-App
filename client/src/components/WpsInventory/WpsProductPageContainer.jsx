@@ -14,7 +14,7 @@ import {
   setCategories,
   setCategory,
   resetCategories,
-  setSeoContent
+  setHandleContentChange,
 } from "../../redux/reducers/wps-product-reducer";
 
 class WpsProductContainer extends React.Component {
@@ -22,24 +22,35 @@ class WpsProductContainer extends React.Component {
     let id = this.props.params.id;
     if (!id) id = 1;
     this.props.getProduct(id);
-    this.props.setCategory(localStorage.getItem('category_name'), localStorage.getItem('category_id'));
+    this.props.setCategory(
+      localStorage.getItem("category_name"),
+      localStorage.getItem("category_id")
+    );
   }
   pushToCatalog = (data) => {
+    data.page_title = this.props.content.page_title;
+    data.search_keywords = this.props.content.search_keywords;
+    data.meta_keywords = this.props.content.meta_keywords.split(', ');
+    data.meta_description = this.props.content.meta_description;
+    data.description = this.props.content.description;
     data.categories = {
-      id: +localStorage.getItem('category_id')
-    }
+      id: +localStorage.getItem("category_id"),
+    };
     this.props.createBigcommerceProduct(data);
-  }
+  };
   onSearchCategories = (query) => {
     this.props.searchCategories(query);
-  }
+  };
   onSetCategory = () => {
-    this.props.setCategory(localStorage.getItem('category_name'), localStorage.getItem('category_id'));
+    this.props.setCategory(
+      localStorage.getItem("category_name"),
+      localStorage.getItem("category_id")
+    );
     this.props.resetCategories();
-  }
-  onSetSeoContent = (content) => {
-    this.props.setSeoContent(content);
-  }
+  };
+  onHandleContentChange = (id, value) => {
+    this.props.setHandleContentChange(id, value);
+  };
   render() {
     return (
       <>
@@ -47,10 +58,11 @@ class WpsProductContainer extends React.Component {
         <Notifications info={this.props.info} />
         <WpsProductPage
           product={this.props.productData}
+          content={this.props.content}
           pushToCatalog={this.pushToCatalog}
           onSearchCategories={this.onSearchCategories}
           onSetCategory={this.onSetCategory}
-          onSetSeoContent={this.onSetSeoContent}
+          onHandleContentChange={this.onHandleContentChange}
           categories={this.props.categories}
           current_category={this.props.current_category}
         />
@@ -62,10 +74,11 @@ class WpsProductContainer extends React.Component {
 let mapStateToProps = (state) => {
   return {
     productData: state.wpsProduct.productData,
+    content: state.wpsProduct.content,
     info: state.wpsProduct.info,
     isFetching: state.wpsProduct.isFetching,
     categories: state.wpsProduct.categories,
-    current_category: state.wpsProduct.current_category
+    current_category: state.wpsProduct.current_category,
   };
 };
 
@@ -79,7 +92,7 @@ export default compose(
     setCategories,
     setCategory,
     resetCategories,
-    setSeoContent
+    setHandleContentChange,
   }),
   // withAuthRedirect,
   withRouter

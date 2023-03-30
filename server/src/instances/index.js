@@ -1,4 +1,5 @@
 import BigCommerce from "node-bigcommerce";
+import { Configuration } from "openai";
 import axios from "axios";
 import { config } from "dotenv";
 config();
@@ -25,6 +26,10 @@ export const bigCommerceInstance = new BigCommerce({
     : "http://localhost:3001/auth",
   headers: { "Accept-Encoding": "*", "Content-Type": "application/json" },
   apiVersion: "v3",
+});
+
+export const gptInstance = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 export const wpsInstance = axios.create({

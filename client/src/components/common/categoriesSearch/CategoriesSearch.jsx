@@ -10,15 +10,20 @@ const categoriesSearch = (props) => {
   };
   return (
     <>
-      <span className="text-sm text-gray-600">Current category:</span>
+      <span className="block text-sm font-medium text-gray-700 mb-2">
+        Current category:
+      </span>
       <div className="flex mb-3 relative">
-        <div className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-2 text-sm font-medium text-center text-gray-500 bg-gray-100 border border-gray-300 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100">
-          {props.current_category.name
-            ? props.current_category.name
-            : "None"}
-        </div>
+        <label
+          htmlFor="category-search"
+          className="flex-shrink-0 md:w-1/2 text-center cursor-pointer inline-flex items-center py-2.5 px-2 text-sm font-medium text-gray-500 bg-gray-100 border border-gray-300 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100"
+        >
+          <span className="mx-auto">
+            {props.current_category.name ? props.current_category.name : "None"}
+          </span>
+        </label>
         <div
-          id="dropdown-search-city"
+          id="dropdown-search"
           className="z-10 absolute top-full bg-white divide-y divide-gray-100 shadow w-96"
         >
           <ul
@@ -45,7 +50,8 @@ const categoriesSearch = (props) => {
         <div className="relative w-full">
           <input
             type="search"
-            className="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 border-l-gray-50 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+            id="category-search"
+            className="block p-2.5 w-full z-20 text-sm text-black text-center border-l-gray-50 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Category search"
             onChange={handleInputChange}
           />

@@ -6,21 +6,21 @@ const WpsProductPage = (props) => {
     props.product.images && props.product.images.length
       ? props.product.images[0].image_url
       : defaultImg;
-  const handleSeoContentChange = (event) => {
-    // onSetSeoContent
-    console.log(event.target.value);
+
+  const handleContentChange = (event) => {
+    props.onHandleContentChange(event.target.id, event.target.value);
   };
   return (
     <div className="container">
-      <div className="md:flex items-start justify-center py-12 2xl:px-20 md:px-6 px-4">
-        <div className="xl:w-2/6 lg:w-2/5 w-80 bg-white shadow-lg">
+      <div className="md:flex items-start mb-10">
+        <div className="bg-white shadow-lg md:w-1/2">
           <img
-            className="p-4 w-full h-96 object-contain"
+            className="p-4 w-full object-contain"
             alt="main img"
             src={productImg || defaultImg}
           />
         </div>
-        <div className="xl:w-2/5 md:w-1/2 lg:ml-8 md:ml-6 md:mt-0 mt-6 bg-white shadow-lg px-8 py-10">
+        <div className="md:w-1/2 lg:ml-8 md:ml-6 md:mt-0 mt-6 bg-white shadow-lg px-8 py-10">
           <div>
             <p>{props.product.brand_name}</p>
             <h1
@@ -38,7 +38,7 @@ const WpsProductPage = (props) => {
               {props.product.name}
             </h1>
           </div>
-          <div className="mb-2 pb-2 border-b border-gray-200">
+          <div className="mb-6 pb-2 border-b border-gray-200">
             <p className="font-bold text-lg">
               {props.product.price ? `$${props.product.price}` : ""}
             </p>
@@ -46,16 +46,15 @@ const WpsProductPage = (props) => {
               {props.product.weight ? `Weight: ${props.product.weight}` : ""}
             </p>
           </div>
-          <div className="mb-8 pb-8 border-b border-gray-200">
-            <p className="block text-sm font-medium text-gray-700">
-              Description:
+          <div className="mb-6">
+            <p className="block text-sm font-medium text-gray-700 mb-2">
+              Vendor description:
             </p>
-            <textarea
-              onChange={handleSeoContentChange}
-              value={props.product.description}
-              placeholder="No Description"
-              className="flex-1 w-full h-56 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-            ></textarea>
+            <p>
+              {props.product.description
+                ? props.product.description
+                : "No Description"}
+            </p>
           </div>
           <CategoriesSearch
             categories={props.categories}
@@ -77,37 +76,103 @@ const WpsProductPage = (props) => {
 						justify-center
 						leading-none
 						text-white
+            font-semibold
 						bg-blue-800
 						w-full
 						py-4
 						hover:bg-gray-700
 					"
           >
-            Add to catalog
+            Add To {props.current_category.name}
           </button>
         </div>
       </div>
-      <div className="bg-white shadow-lg px-8 py-10"></div>
-      <div>
-        <h3 className=" lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mt-2 ">
+      <div className="bg-white shadow-lg px-8 py-10 mb-10">
+        <h3 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mb-6">
+          SEO & Description
+        </h3>
+        <label className="block mb-4 cursor-pointer">
+          <p className="block text-sm font-medium text-gray-700 mb-2">
+            Page title (Custom title for the product page. If not defined, the
+            product name will be used as the meta title.)
+          </p>
+          <input
+            type="text"
+            id="page_title"
+            value={props.content.page_title}
+            onChange={handleContentChange}
+            className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          />
+        </label>
+        <label className="block mb-4 cursor-pointer">
+          <p className="block text-sm font-medium text-gray-700 mb-2">
+            Search keywords (A comma-separated list of keywords that can be used
+            to locate the product when searching the store.)
+          </p>
+          <input
+            type="text"
+            id="search_keywords"
+            value={props.content.search_keywords}
+            onChange={handleContentChange}
+            className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          />
+        </label>
+        <label className="block mb-4 cursor-pointer">
+          <p className="block text-sm font-medium text-gray-700 mb-2">
+            Meta keywords
+          </p>
+          <input
+            type="text"
+            id="meta_keywords"
+            value={props.content.meta_keywords}
+            onChange={handleContentChange}
+            className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          />
+        </label>
+        <label className="block mb-4 cursor-pointer">
+          <p className="block text-sm font-medium text-gray-700 mb-2">
+            Meta description
+          </p>
+          <input
+            type="text"
+            id="meta_description"
+            value={props.content.meta_description}
+            onChange={handleContentChange}
+            className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          />
+        </label>
+        <label className="block mb-4 cursor-pointer">
+          <p className="block text-sm font-medium text-gray-700 mb-2">
+            Description
+          </p>
+          <textarea
+            id="description"
+            onChange={handleContentChange}
+            value={props.content.description}
+            placeholder="No Description"
+            className="flex-1 w-full h-56 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          ></textarea>
+        </label>
+      </div>
+      <div className="bg-white shadow-lg px-8 py-10">
+        <h3 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mb-6">
           Variants
         </h3>
-        <div className="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8">
-          <div className="inline-block min-w-full overflow-hidden rounded-lg shadow">
+        <div className="overflow-x-auto">
+          <div className="inline-block min-w-full overflow-hidden">
             <table className="min-w-full w-full leading-normal">
               <thead>
                 <tr>
                   <th
                     scope="col"
                     className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                  ></th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                   >
                     #
                   </th>
-
+                  <th
+                    scope="col"
+                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                  ></th>
                   <th
                     scope="col"
                     className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
@@ -138,34 +203,34 @@ const WpsProductPage = (props) => {
                 {props.product.variants &&
                   props.product.variants.map((item, i) => (
                     <tr key={i}>
-                      <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
+                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
+                        <p className="text-gray-900 whitespace-no-wrap font-bold">
+                          {i + 1}.
+                        </p>
+                      </td>
+                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
                         <img
                           className="w-28 h-28 object-contain"
                           src={props.product.images[i].image_url || defaultImg}
                           alt="variant"
                         />
                       </td>
-                      <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {i + 1}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
+                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">
                           {item.sku}
                         </p>
                       </td>
-                      <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
+                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">
                           {item.option_values[0].label}
                         </p>
                       </td>
-                      <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
+                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">
                           {item.inventory_level}
                         </p>
                       </td>
-                      <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
+                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">
                           ${item.price}
                         </p>

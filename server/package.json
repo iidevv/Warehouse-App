@@ -17,7 +17,8 @@
     "https": "^1.0.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.1",
-    "node-bigcommerce": "^4.1.0"
+    "node-bigcommerce": "^4.1.0",
+    "openai": "^3.2.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.21"

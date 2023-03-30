@@ -6,7 +6,7 @@ const Notifications = (props) => {
     <>
       {(is_product || props.info.code) && (
         <div
-          className="fixed right-10 top-10 flex ml-auto border border-blue-500 items-center p-4 mb-4 text-gray-500 bg-white rounded-lg shadow"
+          className="fixed right-10 top-10 flex ml-auto border border-blue-500 items-center p-4 mb-4 text-gray-500 bg-white rounded-lg shadow z-10"
           role="alert"
         >
           {is_product ? (

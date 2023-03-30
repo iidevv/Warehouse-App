@@ -11,6 +11,7 @@ import { WPSProductRouter } from "./routes/wps-product.js";
 import { inventoryRouter } from "./routes/inventory.js";
 import { SyncProductsRouter } from "./sync-products/index.js";
 import { userRouter } from "./routes/user.js";
+import { chatgptRouter } from "./routes/chatgpt.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +31,7 @@ app.use(cors());
 app.use("/api/auth", userRouter);
 app.use("/api/inventory", inventoryRouter);
 app.use("/api/inventory", SyncProductsRouter);
+app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);
 app.use("/api/wps", WPSProductsRouter);
 app.use("/api/wps", WPSProductRouter);

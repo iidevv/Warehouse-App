@@ -2,10 +2,10 @@ import axios from "axios";
 const useHttps = process.env.REACT_APP_USE_HTTPS === "true";
 
 export const instance = axios.create({
-  baseURL: useHttps ? "https://warehouse.discountmotogear.com/api" : "http://localhost:3001/api",
+  baseURL: useHttps
+    ? "https://warehouse.discountmotogear.com/api"
+    : "http://localhost:3001/api",
 });
-
-
 
 export const dmgProductAPI = {
   getProducts(currentPage, pageSize) {
@@ -81,10 +81,8 @@ export const inventoryAPI = {
       });
   },
   updateProducts() {
-    return instance
-      .get(`/inventory/sync/`)
-      .then((response) => {
-        return response.data;
-      });
+    return instance.get(`/inventory/sync/`).then((response) => {
+      return response.data;
+    });
   },
 };

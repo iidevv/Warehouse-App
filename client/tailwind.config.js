@@ -9,8 +9,8 @@ module.exports = {
         DEFAULT: "1rem",
       },
       screens: {
-        sm: "1000px",
-        "2xl": "1600px",
+        sm: "1200px",
+        "2xl": "1400px",
       },
     },
   },

@@ -5,7 +5,7 @@ const SET_INFO_ALERT = "SET_INFO_ALERT";
 const SET_CATEGORIES = "SET_CATEGORIES";
 const SET_CURRENT_CATEGORY = "SET_CURRENT_CATEGORY";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
-const SET_SEO_CONTENT = "SET_SEO_CONTENT";
+const SET_CONTENT = "SET_CONTENT";
 
 let initialState = {
   productData: [],
@@ -13,11 +13,12 @@ let initialState = {
   info: {},
   categories: [],
   current_category: {},
-  seoContent: {
+  content: {
     page_title: "",
-    description: "",
+    search_keywords: "",
     meta_keywords: "",
     meta_description: "",
+    description: "",
   },
 };
 
@@ -28,10 +29,13 @@ const wpsProductReducer = (state = initialState, action) => {
         ...state,
         productData: action.productData,
       };
-    case SET_SEO_CONTENT:
+    case SET_CONTENT:
       return {
         ...state,
-        seoContent: action.seoContent,
+        content: {
+          ...state.content,
+          [action.payload.id]: action.payload.value,
+        },
       };
     case SET_INFO_ALERT:
       return {
@@ -65,10 +69,13 @@ export const setProduct = (productData) => {
   };
 };
 
-export const setSeoContent = (seoContent) => {
+export const setHandleContentChange = (id, value) => {
   return {
-    type: SET_SEO_CONTENT,
-    seoContent,
+    type: SET_CONTENT,
+    payload: {
+      id,
+      value,
+    },
   };
 };
 
@@ -132,6 +139,7 @@ export const getProduct = (id) => {
     dispatch(setToggleIsFetching(true));
     wpsProductAPI.getProduct(id).then((data) => {
       dispatch(setProduct(data));
+      dispatch(setHandleContentChange('description', data.description));
       dispatch(setToggleIsFetching(false));
     });
   };
