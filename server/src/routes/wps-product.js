@@ -6,7 +6,14 @@ const router = express.Router();
 const createProduct = (obj) => {
   const data = obj.data;
   const variants = obj.data.items.data;
-
+  let description = data.description || "";
+  if(obj.data.features.data[0]) {
+    description += '<ul>';
+    description += obj.data.features.data.map((item) =>{
+      return `<li>${item.name}</li>`;
+    }).join('');
+    description += '</ul>';
+  }
   const product = {
     vendor: "WPS",
     vendor_id: data.id,
@@ -14,7 +21,7 @@ const createProduct = (obj) => {
     type: "physical",
     weight: variants[0].weight,
     price: variants[0].list_price,
-    description: data.description || "",
+    description: description || "",
     brand_name: variants[0].brand.data.name || "",
     inventory_tracking: "variant",
     variants: variants.map((item, i) => {
@@ -58,7 +65,7 @@ const createProduct = (obj) => {
 const fetchData = async (id) => {
   try {
     const wpsProduct = await wpsInstance.get(
-      `/products/${id}/?include=items.images,items.inventory,items.brand`
+      `/products/${id}/?include=features,items.images,items.inventory,items.brand`
     );
     return createProduct(wpsProduct.data);
   } catch (error) {

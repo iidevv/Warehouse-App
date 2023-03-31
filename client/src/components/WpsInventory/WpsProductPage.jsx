@@ -1,4 +1,5 @@
 import defaultImg from "../../assets/default-image.png";
+import chatgpt from "../../assets/chatgpt.svg";
 import CategoriesSearch from "./../common/categoriesSearch/CategoriesSearch";
 
 const WpsProductPage = (props) => {
@@ -50,11 +51,12 @@ const WpsProductPage = (props) => {
             <p className="block text-sm font-medium text-gray-700 mb-2">
               Vendor description:
             </p>
-            <p>
-              {props.product.description
-                ? props.product.description
-                : "No Description"}
-            </p>
+            <div
+              className="product-description"
+              dangerouslySetInnerHTML={{
+                __html: props.product.description,
+              }}
+            />
           </div>
           <CategoriesSearch
             categories={props.categories}
@@ -153,6 +155,9 @@ const WpsProductPage = (props) => {
             className="flex-1 w-full h-56 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           ></textarea>
         </label>
+        <button disabled className="disabled:opacity-50 flex items-center py-2 px-4 gpt-btn focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg">
+          <img className="w-6 h-6 mr-2" src={chatgpt}/><span>Chat GPT</span>
+        </button>
       </div>
       <div className="bg-white shadow-lg px-8 py-10">
         <h3 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mb-6">
@@ -208,12 +213,13 @@ const WpsProductPage = (props) => {
                           {i + 1}.
                         </p>
                       </td>
-                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
+                      <td className="w-28 px-5 py-5 text-sm bg-white border-t border-gray-200 relative">
                         <img
-                          className="w-28 h-28 object-contain"
+                          className="w-28 h-28 object-contain mb-1"
                           src={props.product.images[i].image_url || defaultImg}
                           alt="variant"
                         />
+                        <button className="text-red-600 w-full text-center">Remove</button>
                       </td>
                       <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">

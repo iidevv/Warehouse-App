@@ -1,7 +1,7 @@
 import React from "react";
 
 const Notifications = (props) => {
-  const is_product = props.info.data ? true : false;
+  const is_product = props.info.message ? true : false;
   return (
     <>
       {(is_product || props.info.code) && (
@@ -37,7 +37,7 @@ const Notifications = (props) => {
             </div>
           )}
           <div className="ml-3 text-sm font-normal">
-            {is_product ? `Product ${props.info.data.name} Added Successfully` : props.info.responseBody}
+            {is_product ? `Product ${props.info.message.data.name} Added Successfully [${props.info.result}]` : props.info.responseBody}
           </div>
         </div>
       )}
