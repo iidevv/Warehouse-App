@@ -58,6 +58,20 @@ export const wpsProductAPI = {
   },
 };
 
+export const chatgptAPI = {
+  getText(s) {
+    return instance
+      .get(`/gpt/create-text/`, {
+        params: {
+          s,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+};
+
 export const inventoryAPI = {
   getProducts(name, page) {
     return instance

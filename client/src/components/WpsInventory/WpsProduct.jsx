@@ -18,7 +18,17 @@ const WpsProduct = (props) => {
         </NavLink>
       </td>
       <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-        <p className="text-gray-900 whitespace-no-wrap">{props.updated_at}</p>
+        {props.items && props.items.map((item, i) => {
+          const in_stock = item.inventory.data.total > 0 ? "flex items-start justify-center w-10 px-2 text-base  rounded-lg text-white bg-green-500" : "flex items-start justify-center w-10 px-2 text-base  rounded-lg text-white bg-red-500";
+          return (
+            <div key={i} className="flex items-center justify-between mb-1">
+              <span className="block">{item.name}</span>
+              <span className={in_stock}>
+                {item.inventory.data.total}
+              </span>
+            </div>
+          );
+        })}
       </td>
     </tr>
   );

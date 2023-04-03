@@ -4,12 +4,37 @@ import CategoriesSearch from "./../common/categoriesSearch/CategoriesSearch";
 
 const WpsProductPage = (props) => {
   const productImg =
-    props.product.images && props.product.images.length
+    props.product.images &&
+    props.product.images.length &&
+    props.product.images[0]
       ? props.product.images[0].image_url
       : defaultImg;
 
   const handleContentChange = (event) => {
     props.onHandleContentChange(event.target.id, event.target.value);
+  };
+  const handleChatgptContent = () => {
+    const productTitle = `Product ${props.product.brand_name} ${props.product.name} create`;
+    const search_keywords = `${productTitle}  comma-separated list of 4 search keywords`;
+    const meta_keywords = `${productTitle}  comma-separated list of 4 meta keywords use DMG`;
+    const meta_description = `${productTitle} meta description use Discount Moto Gear`;
+    const description = `${productTitle} description use Discount Moto Gear`;
+    props.onGetChatgptContent("search_keywords", search_keywords);
+    props.onGetChatgptContent("meta_keywords", meta_keywords);
+    props.onGetChatgptContent("meta_description", meta_description);
+    props.onGetChatgptContent("description", description);
+  };
+  const handleRemoveVariantImage = (event) => {
+    props.onHandleRemoveVariantImage(
+      +event.target.id,
+      event.target.dataset.image_url
+    );
+  };
+  const handleChangeVariantName = (event) => {
+    props.onHandleChangeVariantName(
+      +event.target.dataset.id,
+      event.target.value
+    );
   };
   return (
     <div className="container">
@@ -135,13 +160,13 @@ const WpsProductPage = (props) => {
           <p className="block text-sm font-medium text-gray-700 mb-2">
             Meta description
           </p>
-          <input
+          <textarea
             type="text"
             id="meta_description"
             value={props.content.meta_description}
             onChange={handleContentChange}
             className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          />
+          ></textarea>
         </label>
         <label className="block mb-4 cursor-pointer">
           <p className="block text-sm font-medium text-gray-700 mb-2">
@@ -155,8 +180,12 @@ const WpsProductPage = (props) => {
             className="flex-1 w-full h-56 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           ></textarea>
         </label>
-        <button disabled className="disabled:opacity-50 flex items-center py-2 px-4 gpt-btn focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg">
-          <img className="w-6 h-6 mr-2" src={chatgpt}/><span>Chat GPT</span>
+        <button
+          onClick={handleChatgptContent}
+          className="flex items-center py-2 px-4 gpt-btn focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
+        >
+          <img className="w-6 h-6 mr-2" src={chatgpt} />
+          <span>Chat GPT</span>
         </button>
       </div>
       <div className="bg-white shadow-lg px-8 py-10">
@@ -216,10 +245,19 @@ const WpsProductPage = (props) => {
                       <td className="w-28 px-5 py-5 text-sm bg-white border-t border-gray-200 relative">
                         <img
                           className="w-28 h-28 object-contain mb-1"
-                          src={props.product.images[i].image_url || defaultImg}
+                          src={item.image_url || defaultImg}
                           alt="variant"
                         />
-                        <button className="text-red-600 w-full text-center">Remove</button>
+                        {item.image_url && (
+                          <button
+                            onClick={handleRemoveVariantImage}
+                            id={i}
+                            data-image_url={item.image_url}
+                            className="text-red-600 w-full text-center border-t"
+                          >
+                            Remove
+                          </button>
+                        )}
                       </td>
                       <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">
@@ -227,9 +265,13 @@ const WpsProductPage = (props) => {
                         </p>
                       </td>
                       <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {item.option_values[0].label}
-                        </p>
+                        <input
+                          className="flex-1 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                          type="text"
+                          data-id={i}
+                          value={item.option_values[0].label}
+                          onChange={handleChangeVariantName}
+                        />
                       </td>
                       <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">

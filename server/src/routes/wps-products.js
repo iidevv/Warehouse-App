@@ -7,7 +7,7 @@ router.get("/products/", async (req, res) => {
   let cursor = req.query.cursor ? req.query.cursor : "";
   let name = req.query.name ? req.query.name : "";
   await wpsInstance
-    .get(`products/?filter[name][pre]=${name}&page[cursor]=${cursor}`)
+    .get(`products/?include=items.inventory&filter[name][pre]=${name}&page[cursor]=${cursor}`)
     .then((response) => {
       res.json(response.data);
     })

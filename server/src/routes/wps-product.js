@@ -1,5 +1,5 @@
 import express from "express";
-import { wpsInstance } from '../instances/index.js';
+import { wpsInstance } from "../instances/index.js";
 
 const router = express.Router();
 
@@ -7,12 +7,14 @@ const createProduct = (obj) => {
   const data = obj.data;
   const variants = obj.data.items.data;
   let description = data.description || "";
-  if(obj.data.features.data[0]) {
-    description += '<ul>';
-    description += obj.data.features.data.map((item) =>{
-      return `<li>${item.name}</li>`;
-    }).join('');
-    description += '</ul>';
+  if (obj.data.features.data[0]) {
+    description += "<ul>";
+    description += obj.data.features.data
+      .map((item) => {
+        return `<li>${item.name}</li>`;
+      })
+      .join("");
+    description += "</ul>";
   }
   const product = {
     vendor: "WPS",
@@ -28,36 +30,56 @@ const createProduct = (obj) => {
       const option = item.name ? item.name.toLowerCase() : "";
       const imageUrl = item.images.data[0]
         ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
-        : 'https://cdn11.bigcommerce.com/s-4n3dh09e13/images/stencil/original/image-manager/dmg-img.jpg';
+        : false;
       i++;
-      const is_default = i === 1;
-      return {
-        id: item.id,
-        sku: item.sku,
-        option_values: [
-          {
-            option_display_name: "Options",
-            label: option,
-          },
-        ],
-        price: item.list_price,
-        inventory_level: item.inventory.data.total,
-        image_url: imageUrl,
-        is_default: is_default,
-      };
+      const is_default = i === 1 ? true : false;
+      if (imageUrl) {
+        return {
+          id: item.id,
+          sku: item.sku,
+          option_values: [
+            {
+              option_display_name: "Options",
+              label: option,
+            },
+          ],
+          price: item.list_price,
+          inventory_level: item.inventory.data.total,
+          image_url: imageUrl,
+          is_default: is_default,
+        };
+      } else {
+        return {
+          id: item.id,
+          sku: item.sku,
+          option_values: [
+            {
+              option_display_name: "Options",
+              label: option,
+            },
+          ],
+          price: item.list_price,
+          inventory_level: item.inventory.data.total,
+          is_default: is_default,
+        };
+      }
     }),
-    images: variants.map((item, i) => {
-      const imageUrl = item.images.data[0]
-        ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
-        : 'https://cdn11.bigcommerce.com/s-4n3dh09e13/images/stencil/original/image-manager/dmg-img.jpg';
-      i++;
-      const is_thumbnail = i === 1;
-      return {
-        is_thumbnail: is_thumbnail,
-        sort_order: i,
-        image_url: imageUrl,
-      };
-    }),
+    images: variants
+      .map((item, i) => {
+        const imageUrl = item.images.data[0]
+          ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
+          : false;
+        i++;
+        const is_thumbnail = i === 1;
+        if (imageUrl) {
+          return {
+            is_thumbnail: is_thumbnail,
+            sort_order: i,
+            image_url: imageUrl,
+          };
+        }
+      })
+      .filter((image) => image),
   };
   return product;
 };

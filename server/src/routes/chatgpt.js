@@ -9,9 +9,9 @@ router.get("/create-text", async (req, res) => {
   try {
     const openai = new OpenAIApi(gptInstance);
     const response = await openai.createCompletion({
-      model: "text-davinci-002",
+      model: "text-davinci-003",
       prompt: input,
-      max_tokens: 100,
+      max_tokens: 200,
       temperature: 0,
     });
     console.log(response);

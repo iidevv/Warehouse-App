@@ -8,28 +8,47 @@ const WpsProducts = (props) => {
 
   return (
     <div className="container">
-      <div className="flex flex-row justify-between w-full mb-1 sm:mb-0">
-        <h2 className="text-2xl leading-tight">Catalog</h2>
-        <div className="text-end">
-          <div className="flex flex-col justify-center w-3/4 max-w-sm space-y-3 md:flex-row md:w-full md:space-x-3 md:space-y-0">
-            <div className=" relative ">
-              <input
-                type="text"
-                id='"form-subscribe-Filter'
-                className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                placeholder="Product Name"
-                value={props.searchKeyword}
-                onChange={handleInputChange}
-              />
-            </div>
-            {/* <button
-                  className="flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200"
-                  type="submit"
-                >
-                  Filter
-                </button> */}
-          </div>
-        </div>
+      <div>
+        <h2 className="text-2xl leading-tight mb-4">Catalog</h2>
+        {/* <form className="relative flex">
+          <select
+            className="rounded-lg cursor-pointer py-2 px-4 bg-white text-gray-70 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+            name="search_by"
+            id="search_by"
+          >
+            <option value="">Name</option>
+            <option value="">SKU</option>
+          </select>
+          
+          <button
+            type="submit"
+            className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
+            </svg>
+            <span class="sr-only">Search</span>
+          </button>
+        </form> */}
+        <input
+            type="text"
+            id='"form-subscribe-Filter'
+            className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+            placeholder="Search..."
+            value={props.searchKeyword}
+            onChange={handleInputChange}
+          />
       </div>
       <div className="py-4 overflow-x-auto">
         <div className="inline-block min-w-full overflow-hidden rounded-lg shadow">
@@ -52,7 +71,7 @@ const WpsProducts = (props) => {
                   scope="col"
                   className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
-                  Updated at
+                  Variants
                 </th>
               </tr>
             </thead>
@@ -64,6 +83,7 @@ const WpsProducts = (props) => {
                     id={m.id}
                     name={m.name}
                     updated_at={m.updated_at}
+                    items={m.items ? m.items.data : null}
                   />
                 );
               })}

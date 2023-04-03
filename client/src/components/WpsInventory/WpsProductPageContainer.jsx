@@ -15,6 +15,9 @@ import {
   setCategory,
   resetCategories,
   setHandleContentChange,
+  removeVariantImage,
+  changeVariantName,
+  getChatgptContent
 } from "../../redux/reducers/wps-product-reducer";
 
 class WpsProductContainer extends React.Component {
@@ -30,12 +33,14 @@ class WpsProductContainer extends React.Component {
   pushToCatalog = (data) => {
     data.page_title = this.props.content.page_title;
     data.search_keywords = this.props.content.search_keywords;
-    data.meta_keywords = this.props.content.meta_keywords.split(', ');
+    data.meta_keywords = this.props.content.meta_keywords.split(", ");
     data.meta_description = this.props.content.meta_description;
     data.description = this.props.content.description;
     data.categories = {
       id: +localStorage.getItem("category_id"),
     };
+    // data.images = data.images.filter((image) => image);
+    debugger
     this.props.createBigcommerceProduct(data);
   };
   onSearchCategories = (query) => {
@@ -51,6 +56,16 @@ class WpsProductContainer extends React.Component {
   onHandleContentChange = (id, value) => {
     this.props.setHandleContentChange(id, value);
   };
+  onHandleRemoveVariantImage = (id, image_url) => {
+    this.props.removeVariantImage(id, image_url);
+  }
+  onHandleChangeVariantName = (id, name) => {
+    this.props.changeVariantName(id, name);
+  }
+  onGetChatgptContent = (contentField, text) => {
+    this.props.getChatgptContent(contentField, text);
+  };
+
   render() {
     return (
       <>
@@ -63,6 +78,9 @@ class WpsProductContainer extends React.Component {
           onSearchCategories={this.onSearchCategories}
           onSetCategory={this.onSetCategory}
           onHandleContentChange={this.onHandleContentChange}
+          onHandleRemoveVariantImage={this.onHandleRemoveVariantImage}
+          onHandleChangeVariantName={this.onHandleChangeVariantName}
+          onGetChatgptContent={this.onGetChatgptContent}
           categories={this.props.categories}
           current_category={this.props.current_category}
         />
@@ -93,6 +111,9 @@ export default compose(
     setCategory,
     resetCategories,
     setHandleContentChange,
+    removeVariantImage,
+    changeVariantName,
+    getChatgptContent
   }),
   // withAuthRedirect,
   withRouter

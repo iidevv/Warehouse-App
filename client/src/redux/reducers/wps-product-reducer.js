@@ -1,4 +1,4 @@
-import { wpsProductAPI, dmgProductAPI } from "./../../api/api";
+import { wpsProductAPI, dmgProductAPI, chatgptAPI } from "./../../api/api";
 
 const SET_PRODUCT_PAGE = "SET_PRODUCT_PAGE";
 const SET_INFO_ALERT = "SET_INFO_ALERT";
@@ -6,6 +6,8 @@ const SET_CATEGORIES = "SET_CATEGORIES";
 const SET_CURRENT_CATEGORY = "SET_CURRENT_CATEGORY";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 const SET_CONTENT = "SET_CONTENT";
+const REMOVE_VARIANT_IMAGE = "REMOVE_VARIANT_IMAGE";
+const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
 
 let initialState = {
   productData: [],
@@ -56,6 +58,57 @@ const wpsProductReducer = (state = initialState, action) => {
       return {
         ...state,
         current_category: action.current_category,
+      };
+    case CHANGE_VARIANT_NAME:
+      const updatedVariantsName = state.productData.variants.map(
+        (variant, i) => {
+          const updatedOptionValues = variant.option_values.map(
+            (optionValue, index) => {
+              if (index === 0) {
+                return {
+                  ...optionValue,
+                  label:
+                    i === action.payload.id
+                      ? action.payload.name
+                      : optionValue.label,
+                };
+              } else {
+                return optionValue;
+              }
+            }
+          );
+
+          return {
+            ...variant,
+            option_values: updatedOptionValues,
+          };
+        }
+      );
+
+      return {
+        ...state,
+        productData: {
+          ...state.productData,
+          variants: updatedVariantsName,
+        },
+      };
+    case REMOVE_VARIANT_IMAGE:
+      const updatedVariants = state.productData.variants.map((variant, i) => {
+        return {
+          ...variant,
+          image_url: i === action.payload.id ? undefined : variant.image_url,
+        };
+      });
+      const updatedImages = state.productData.images.filter(
+        (image) => image.image_url !== action.payload.image_url
+      );
+      return {
+        ...state,
+        productData: {
+          ...state.productData,
+          variants: updatedVariants,
+          images: updatedImages,
+        },
       };
     default:
       return state;
@@ -114,6 +167,26 @@ export const resetCategories = () => {
   };
 };
 
+export const removeVariantImage = (id, image_url) => {
+  return {
+    type: REMOVE_VARIANT_IMAGE,
+    payload: {
+      id,
+      image_url,
+    },
+  };
+};
+
+export const changeVariantName = (id, name) => {
+  return {
+    type: CHANGE_VARIANT_NAME,
+    payload: {
+      id,
+      name,
+    },
+  };
+};
+
 export const searchCategories = (query) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
@@ -126,6 +199,7 @@ export const searchCategories = (query) => {
 
 export const createBigcommerceProduct = (data) => {
   return (dispatch) => {
+    debugger;
     dispatch(setToggleIsFetching(true));
     dmgProductAPI.createProduct(data).then((message) => {
       dispatch(setAlert(message.data));
@@ -139,7 +213,17 @@ export const getProduct = (id) => {
     dispatch(setToggleIsFetching(true));
     wpsProductAPI.getProduct(id).then((data) => {
       dispatch(setProduct(data));
-      dispatch(setHandleContentChange('description', data.description));
+      dispatch(setHandleContentChange("description", data.description));
+      dispatch(setToggleIsFetching(false));
+    });
+  };
+};
+
+export const getChatgptContent = (contentField, text) => {
+  return (dispatch) => {
+    dispatch(setToggleIsFetching(true));
+    chatgptAPI.getText(text).then((data) => {
+      dispatch(setHandleContentChange(contentField, data.trim()));
       dispatch(setToggleIsFetching(false));
     });
   };
