@@ -16,4 +16,18 @@ router.get("/products/", async (req, res) => {
     });
 });
 
+router.get("/items/", async (req, res) => {
+  let cursor = req.query.cursor ? req.query.cursor : "";
+  let keyword = req.query.keyword ? req.query.keyword : "";
+  let searchby = req.query.searchby ? req.query.searchby : "name";
+  await wpsInstance
+    .get(`/items?include=inventory&filter[${searchby}][pre]=${keyword}&page[cursor]=${cursor}`)
+    .then((response) => {
+      res.json(response.data);
+    })
+    .catch((error) => {
+      res.status(500).json({error: error.message});
+    });
+});
+
 export { router as WPSProductsRouter };

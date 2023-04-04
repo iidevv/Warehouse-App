@@ -42,6 +42,19 @@ export const wpsProductsAPI = {
         return response.data;
       });
   },
+  getItems(searchby, keyword, cursor) {
+    return instance
+      .get(`/wps/items/`, {
+        params: {
+          searchby,
+          keyword,
+          cursor,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
 };
 
 export const wpsProductAPI = {

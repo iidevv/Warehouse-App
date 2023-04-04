@@ -3,11 +3,19 @@ import { wpsProductsAPI } from "../../api/api";
 const SET_PRODUCTS = "SET_PRODUCTS";
 const SET_SEARCH_KEYWORD = "SET_SEARCH_KEYWORD";
 const SET_CURSOR = "SET_CURSOR";
+const SET_ITEMS = "SET_ITEMS";
+const SET_ITEMS_CURSOR = "SET_ITEMS_CURSOR";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 let initialState = {
   products: [],
   totalCount: 0,
   cursor: {
+    current: "",
+    next: "",
+    prev: "",
+  },
+  items: [],
+  itemsCursor: {
     current: "",
     next: "",
     prev: "",
@@ -33,6 +41,17 @@ const wpsProductsReducer = (state = initialState, action) => {
       return {
         ...state,
         searchKeyword: action.searchKeyword,
+      };
+
+    case SET_ITEMS:
+      return {
+        ...state,
+        items: [...action.items],
+      };
+    case SET_ITEMS_CURSOR:
+      return {
+        ...state,
+        itemsCursor: action.cursor,
       };
 
     case TOGGLE_IS_FETCHING:
@@ -67,6 +86,20 @@ export const setSearchKeyword = (searchKeyword) => {
   };
 };
 
+export const setItems = (items) => {
+  return {
+    type: SET_ITEMS,
+    items,
+  };
+};
+
+export const setItemsCursor = (cursor) => {
+  return {
+    type: SET_ITEMS_CURSOR,
+    cursor,
+  };
+};
+
 export const setToggleIsFetching = (isFetching) => {
   return {
     type: TOGGLE_IS_FETCHING,
@@ -80,6 +113,17 @@ export const getProducts = (name, cursor) => {
     wpsProductsAPI.getProducts(name, cursor).then((data) => {
       dispatch(setProducts(data.data));
       dispatch(setCursor(data.meta.cursor));
+      dispatch(setToggleIsFetching(false));
+    });
+  };
+};
+
+export const getItems = (searchby, keyword, cursor) => {
+  return (dispatch) => {
+    dispatch(setToggleIsFetching(true));
+    wpsProductsAPI.getItems(searchby, keyword, cursor).then((data) => {
+      dispatch(setItems(data.data));
+      dispatch(setItemsCursor(data.meta.cursor));
       dispatch(setToggleIsFetching(false));
     });
   };

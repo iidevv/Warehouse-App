@@ -1,21 +1,30 @@
-import React from "react";
+import React, { useState } from 'react';
+import WpsItem from "./WpsItem";
 import WpsProduct from "./WpsProduct";
 
 const WpsProducts = (props) => {
   const handleInputChange = (event) => {
     props.onSearch(event.target.value);
   };
+
+  const [searchBy, setSearchBy] = useState('');
+  const [searchValue, setSearchValue] = useState('');
+
   const handleFormSubmit = (event) => {
     event.preventDefault();
 
     const formElements = event.target.elements;
+    const searchByValue = formElements.search_by.value;
+    const searchValueValue = formElements.search_value.value;
+    setSearchBy(formElements.search_by.value);
+    setSearchValue(formElements.search_value.value);
 
-    const search_by = formElements.search_by.value;
-    const search_value = formElements.search_value.value;
+    props.onItemsSearch(searchByValue, searchValueValue, "");
+  };
 
-    console.log(search_by);
-    console.log(search_value);
-
+  const handleOnShowMoreItems = () => {
+    const cursor = props.itemsCursor.next || "";
+    props.onItemsSearch(searchBy, searchValue, cursor);
   }
 
   return (
@@ -33,7 +42,10 @@ const WpsProducts = (props) => {
             />
           </div>
           <form onSubmit={handleFormSubmit} className="w-1/2 flex relative">
-            <select name="search_by" className="rounded-lg border-transparent mr-2 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+            <select
+              name="search_by"
+              className="rounded-lg border-transparent mr-2 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+            >
               <option value="name">Name</option>
               <option value="sku">SKU</option>
             </select>
@@ -43,16 +55,33 @@ const WpsProducts = (props) => {
               className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               placeholder="Search by variants"
             />
-            <button type="submit" className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <span className="sr-only">Search</span>
+            <button
+              type="submit"
+              className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <span className="sr-only">Search</span>
             </button>
-            <div className="absolute overflow-hidden top-full left-0 w-full rounded-lg mt-2 bg-white shadow-lg">
-              <a href="/wps-product/" className="block px-4 py-2 border-t transition hover:bg-gray-100">
-                <span className="inline-block w-1/3 pl-2">SKU</span>
-                <span className="inline-block w-1/3 pl-2">Name</span>
-                <span className="inline-block w-1/3">Stock</span>
-              </a>
+            <div className="flex flex-col absolute overflow-hidden top-full left-0 w-full rounded-lg mt-2 bg-white shadow-lg">
+              {props.items &&
+                props.items.map((item, i) => <WpsItem key={i} item={item} />)}
+              {(props.itemsCursor && props.itemsCursor.next) && (
+                <button
+                  type="button"
+                  onClick={handleOnShowMoreItems}
+                  className="py-2 px-4 mx-auto text-blue-800 underline hover:no-underline"
+                >
+                  Show More
+                </button>
+              )}
             </div>
           </form>
         </div>

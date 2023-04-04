@@ -8,7 +8,8 @@ import {
   getProducts,
   setProducts,
   setSearchKeyword,
-  setToggleIsFetching,
+  getItems,
+  setToggleIsFetching
 } from "../../redux/reducers/wps-products-reducer";
 
 class WpsProductsContainer extends React.Component {
@@ -33,6 +34,9 @@ class WpsProductsContainer extends React.Component {
     this.props.setSearchKeyword(name);
     this.props.getProducts(name, "");
   };
+  onItemsSearch = (searchby, keyword, p) => {
+    this.props.getItems(searchby, keyword, p);
+  }
 
   render() {
     return (
@@ -43,6 +47,9 @@ class WpsProductsContainer extends React.Component {
           cursor={this.props.cursor}
           onCursorChanged={this.onCursorChanged}
           onSearch={this.onSearch}
+          items={this.props.items}
+          itemsCursor={this.props.itemsCursor}
+          onItemsSearch={this.onItemsSearch}
           searchKeyword={this.props.searchKeyword}
         />
       </>
@@ -55,16 +62,18 @@ let mapStateToProps = (state) => {
     products: state.wpsInventory.products,
     cursor: state.wpsInventory.cursor,
     searchKeyword: state.wpsInventory.searchKeyword,
+    items: state.wpsInventory.items,
+    itemsCursor: state.wpsInventory.itemsCursor,
     isFetching: state.wpsInventory.isFetching,
   };
 };
 
 export default compose(
-  // withAuthRedirect,
   connect(mapStateToProps, {
     getProducts,
     setProducts,
     setSearchKeyword,
-    setToggleIsFetching,
+    getItems,
+    setToggleIsFetching
   })
 )(WpsProductsContainer);
