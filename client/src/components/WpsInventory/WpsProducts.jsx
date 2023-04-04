@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import WpsItem from "./WpsItem";
 import WpsProduct from "./WpsProduct";
 
@@ -7,8 +7,8 @@ const WpsProducts = (props) => {
     props.onSearch(event.target.value);
   };
 
-  const [searchBy, setSearchBy] = useState('');
-  const [searchValue, setSearchValue] = useState('');
+  const [searchBy, setSearchBy] = useState("");
+  const [searchValue, setSearchValue] = useState("");
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
@@ -22,10 +22,10 @@ const WpsProducts = (props) => {
     props.onItemsSearch(searchByValue, searchValueValue, "");
   };
 
-  const handleOnShowMoreItems = () => {
-    const cursor = props.itemsCursor.next || "";
+  const handleOnPageChanged = (event) => {
+    const cursor = event.target.value;
     props.onItemsSearch(searchBy, searchValue, cursor);
-  }
+  };
 
   return (
     <div className="container">
@@ -73,15 +73,28 @@ const WpsProducts = (props) => {
             <div className="flex flex-col absolute overflow-hidden top-full left-0 w-full rounded-lg mt-2 bg-white shadow-lg">
               {props.items &&
                 props.items.map((item, i) => <WpsItem key={i} item={item} />)}
-              {(props.itemsCursor && props.itemsCursor.next) && (
-                <button
-                  type="button"
-                  onClick={handleOnShowMoreItems}
-                  className="py-2 px-4 mx-auto text-blue-800 underline hover:no-underline"
-                >
-                  Show More
-                </button>
-              )}
+              <div className="flex justify-center">
+                {props.itemsCursor && props.itemsCursor.prev && (
+                  <button
+                    type="button"
+                    onClick={handleOnPageChanged}
+                    value={props.itemsCursor.prev}
+                    className="py-2 px-4 text-blue-800 underline hover:no-underline"
+                  >
+                    Prev
+                  </button>
+                )}
+                {props.itemsCursor && props.itemsCursor.next && (
+                  <button
+                    type="button"
+                    onClick={handleOnPageChanged}
+                    value={props.itemsCursor.next}
+                    className="py-2 px-4 text-blue-800 underline hover:no-underline"
+                  >
+                    Next
+                  </button>
+                )}
+              </div>
             </div>
           </form>
         </div>

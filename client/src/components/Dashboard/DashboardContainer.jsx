@@ -9,12 +9,14 @@ import {
   setProducts,
   setToggleIsFetching,
   deleteProduct,
-  updateProducts
+  updateProducts,
+  getStatus
 } from "./../../redux/reducers/inventory-reducer";
 
 class DashboardContainer extends React.Component {
   componentDidMount() {
     this.props.getProducts();
+    this.props.getStatus();
   }
   onPageChanged = (name, page) => {
     this.props.getProducts(name, page);
@@ -30,7 +32,7 @@ class DashboardContainer extends React.Component {
     return (
       <>
         {this.props.isFetching ? <Preloader /> : null}
-        <Dashboard products={this.props.products} total={this.props.total} onDeleteProduct={this.onDeleteProduct} onUpdateProducts={this.onUpdateProducts} onPageChanged={this.onPageChanged} currentPage={this.props.currentPage} totalPages={this.props.totalPages} />
+        <Dashboard products={this.props.products} total={this.props.total} onDeleteProduct={this.onDeleteProduct} onUpdateProducts={this.onUpdateProducts} onPageChanged={this.onPageChanged} currentPage={this.props.currentPage} totalPages={this.props.totalPages} status={this.props.status} />
       </>
     );
   }
@@ -42,17 +44,18 @@ let mapStateToProps = (state) => {
     isFetching: state.inventory.isFetching,
     total: state.inventory.total,
     currentPage: state.inventory.currentPage,
-    totalPages: state.inventory.totalPages
+    totalPages: state.inventory.totalPages,
+    status: state.inventory.status
   };
 };
 
 export default compose(
-  // withAuthRedirect,
   connect(mapStateToProps, {
     getProducts,
     setProducts,
     setToggleIsFetching,
     deleteProduct,
-    updateProducts
+    updateProducts,
+    getStatus
   })
 )(DashboardContainer);

@@ -5,6 +5,7 @@ const SET_PRODUCTS_TOTAL = "SET_PRODUCTS_TOTAL";
 const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
 const SET_TOTAL_PAGES = "SET_TOTAL_PAGES";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
+const SET_STATUS = "SET_STATUS";
 
 let initialState = {
   products: [],
@@ -12,6 +13,7 @@ let initialState = {
   currentPage: 1,
   totalPages: 0,
   isFetching: true,
+  status: true,
 };
 
 const inventoryReducer = (state = initialState, action) => {
@@ -35,6 +37,11 @@ const inventoryReducer = (state = initialState, action) => {
       return {
         ...state,
         totalPages: action.totalPages,
+      };
+    case SET_STATUS:
+      return {
+        ...state,
+        status: action.status,
       };
     case TOGGLE_IS_FETCHING:
       return {
@@ -75,6 +82,13 @@ export const setTotalPages = (totalPages) => {
   };
 };
 
+export const setStatus = (status) => {
+  return {
+    type: SET_STATUS,
+    status,
+  };
+};
+
 export const setToggleIsFetching = (isFetching) => {
   return {
     type: TOGGLE_IS_FETCHING,
@@ -95,32 +109,30 @@ export const deleteProduct = (id) => {
 export const getProducts = (name, page) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    inventoryAPI
-      .getProducts(name, page)
-      .then((data) => {
-        if (data && Array.isArray(data.products)) {
-          dispatch(setProducts(data.products));
-          dispatch(setProductsTotal(data.total));
-          dispatch(setTotalPages(data.totalPages));
-          dispatch(setCurrentPage(data.currentPage));
-        } else {
-          console.error("Ошибка: получены неверные данные:", data);
-        }
-        dispatch(setToggleIsFetching(false));
-      })
-      .catch((error) => {
-        console.error("Ошибка при запросе продуктов:", error);
-        dispatch(setToggleIsFetching(false));
-      });
+    inventoryAPI.getProducts(name, page).then((data) => {
+      dispatch(setProducts(data.products));
+      dispatch(setProductsTotal(data.total));
+      dispatch(setTotalPages(data.totalPages));
+      dispatch(setCurrentPage(data.currentPage));
+      dispatch(setToggleIsFetching(false));
+    });
+  };
+};
+
+export const getStatus = () => {
+  return (dispatch) => {
+    inventoryAPI.updateProductsStatus().then((data) => {
+      dispatch(setStatus(data.status));
+    });
   };
 };
 
 export const updateProducts = () => {
   return (dispatch) => {
-    dispatch(setToggleIsFetching(true));
+    dispatch(setStatus(true));
     inventoryAPI.updateProducts().then((data) => {
-      dispatch(setToggleIsFetching(false));
       dispatch(getProducts());
+      dispatch(setStatus(false));
     });
   };
 };

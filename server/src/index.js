@@ -12,6 +12,9 @@ import { inventoryRouter } from "./routes/inventory.js";
 import { SyncProductsRouter } from "./sync-products/index.js";
 import { userRouter } from "./routes/user.js";
 import { chatgptRouter } from "./routes/chatgpt.js";
+import { CronJob } from "cron";
+import { updateWpsProducts } from "./sync-products/index.js";
+import { log } from "console";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,6 +42,18 @@ app.use("/api/wps", WPSProductRouter);
 mongoose.connect(
   `mongodb+srv://${dbUsername}:${dbPassword}@dmg.eqxtdze.mongodb.net/${dbname}?retryWrites=true&w=majority`
 );
+
+const job = new CronJob({
+  cronTime: '0 7 * * *',
+  onTick: () => {
+    updateWpsProducts();
+    console.log("Updating wps products...");
+  },
+  timeZone: "America/Los_Angeles",
+  start: false,
+});
+
+if (useHttps) job.start();
 
 app.listen(port, () =>
   console.log(`Server started on http://localhost:${port}`)

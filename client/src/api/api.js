@@ -112,4 +112,9 @@ export const inventoryAPI = {
       return response.data;
     });
   },
+  updateProductsStatus() {
+    return instance.get(`/inventory/sync-status/`).then((response) => {
+      return response.data;
+    });
+  },
 };
