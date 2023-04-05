@@ -3,7 +3,7 @@ import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
-import { instance } from '../api/api';
+import { instance } from "../api/api";
 
 export const Auth = () => {
   return (
@@ -14,7 +14,6 @@ export const Auth = () => {
 };
 
 const Login = () => {
-  const [_, setCookies] = useCookies(["access_token"]);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -30,7 +29,6 @@ const Login = () => {
         password,
       });
 
-      setCookies("access_token", result.data.token);
       window.localStorage.setItem("userID", result.data.userID);
       navigate("/");
     } catch (error) {

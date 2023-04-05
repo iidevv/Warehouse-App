@@ -1,10 +1,11 @@
 import express from "express";
 import { OpenAIApi } from "openai";
 import { gptInstance } from "../instances/index.js";
+import { authenticate } from './user.js';
 
 const router = express.Router();
 
-router.get("/create-text", async (req, res) => {
+router.get("/create-text", authenticate, async (req, res) => {
   let input = req.query.s;
   try {
     const openai = new OpenAIApi(gptInstance);

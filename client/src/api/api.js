@@ -5,6 +5,10 @@ export const instance = axios.create({
   baseURL: useHttps
     ? "https://warehouse.discountmotogear.com/api"
     : "http://localhost:3001/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
 });
 
 export const dmgProductAPI = {

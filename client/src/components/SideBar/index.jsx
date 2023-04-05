@@ -1,10 +1,11 @@
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/logo.svg";
+import LogoutButton from '../common/logoutButton/index';
 const SideBar = (props) => {
   const useHttps = process.env.REACT_APP_USE_HTTPS === "true";
   return (
     <div className="relative hidden h-screen my-4 ml-4 shadow-lg lg:block w-80">
-      <div className="h-full bg-white rounded-2xl">
+      <div className="flex flex-col h-full bg-white rounded-2xl">
         <div className="flex items-center justify-center pt-6">
           {useHttps ? <img src={logo} alt="DMG" /> : ""}
         </div>
@@ -42,7 +43,11 @@ const SideBar = (props) => {
             </li>
           </ul>
         </nav>
+        <div className="mt-auto mb-12 py-2 px-6">
+        <LogoutButton/>
+        </div>
       </div>
+      
     </div>
   );
 };

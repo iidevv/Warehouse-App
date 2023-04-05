@@ -14,8 +14,7 @@ import { userRouter } from "./routes/user.js";
 import { chatgptRouter } from "./routes/chatgpt.js";
 import { CronJob } from "cron";
 import { updateWpsProducts } from "./sync-products/index.js";
-import { log } from "console";
-
+import cookieParser from "cookie-parser";
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -25,11 +24,15 @@ const dbUsername = process.env.DB_USERNAME;
 const dbPassword = process.env.DB_PASSWORD;
 const useHttps = process.env.USE_HTTPS === "true";
 const app = express();
-
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../client/build")));
-
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: useHttps ? "https://warehouse.discountmotogear.com" : "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 app.use("/api/auth", userRouter);
 app.use("/api/inventory", inventoryRouter);
@@ -44,7 +47,7 @@ mongoose.connect(
 );
 
 const job = new CronJob({
-  cronTime: '0 7 * * *',
+  cronTime: "0 7 * * *",
   onTick: () => {
     updateWpsProducts();
     console.log("Updating wps products...");
