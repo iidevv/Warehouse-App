@@ -14,10 +14,8 @@ router.get("/create-text", async (req, res) => {
       max_tokens: 200,
       temperature: 0,
     });
-    console.log(response);
     res.json(response.data.choices[0].text);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: error.message });
   }
 });

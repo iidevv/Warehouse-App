@@ -6,12 +6,21 @@ const router = express.Router();
 // get
 router.get("/products", async (req, res) => {
   const vendor_id = req.query.id;
-  const page = parseInt(req.query.page) || 1; // default to page 1
-  const pageSize = parseInt(req.query.pageSize) || 20; // default to 20 products per page
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 20;
 
+  try {
+    const products = await getInventoryProducts(vendor_id, page, pageSize);
+    res.json(products);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+export const getInventoryProducts = async (vendor_id, page, pageSize) => {
   if (vendor_id) {
     const product = await InventoryModel.findOne({ vendor_id });
-    res.json(product);
+    return product;
   } else {
     const total = await InventoryModel.count();
     const totalPages = Math.ceil(total / pageSize);
@@ -21,17 +30,26 @@ router.get("/products", async (req, res) => {
       .sort({ last_updated: -1 })
       .skip(skip)
       .limit(pageSize);
-    res.json({
+    return {
       products: Inventory,
       total: total,
       totalPages: totalPages,
       currentPage: page,
-    });
+    };
   }
-});
+};
 
 // add
 router.post("/products", async (req, res) => {
+  try {
+    const addedProduct = await addInventoryProduct(req.body);
+    res.json(addedProduct);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+export const addInventoryProduct = async (productData) => {
   const {
     vendor,
     vendor_id,
@@ -41,7 +59,7 @@ router.post("/products", async (req, res) => {
     product_name,
     last_updated,
     status,
-  } = req.body;
+  } = productData;
   const Inventory = await InventoryModel.findOne({
     product_name,
     bigcommerce_id,
@@ -61,12 +79,20 @@ router.post("/products", async (req, res) => {
   });
   await newProduct.save();
 
-  res.json(newProduct);
-});
+  return newProduct;
+};
 
 // update
 router.put("/products", async (req, res) => {
-  const updatedProductData = req.body;
+  try {
+    const response = await updateInventoryProduct(req.body);
+    res.json(response);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+export const updateInventoryProduct = async (updatedProductData) => {
   const findAndUpdateProduct = async (updatedProductData) => {
     try {
       const product = await InventoryModel.findOne({
@@ -108,18 +134,18 @@ router.put("/products", async (req, res) => {
 
         product.last_updated = createNewDate();
         await product.save();
-        res.json({ Message: "updated!" });
+        return { Message: "updated!" };
       } else {
-        res.json({ Error: "Product not found" });
         console.log("Product not found");
+        return { Error: "Product not found" };
       }
     } catch (error) {
-      res.json({ Error: err });
+      return { Error: err };
     }
   };
 
   findAndUpdateProduct(updatedProductData);
-});
+};
 
 // delete
 router.delete("/products", async (req, res) => {

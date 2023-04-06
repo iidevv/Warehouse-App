@@ -1,20 +1,16 @@
 import express from "express";
 import {
+  getInventoryProducts,
+  updateInventoryProduct,
+} from "../routes/inventory.js";
+import {
   bigCommerceInstance,
-  serverInstance,
   wpsInstance,
 } from "../instances/index.js";
 
 // Define the IDs of the products to update
 const getSyncedProducts = async (page, pageSize) => {
-  return await serverInstance
-    .get(`/inventory/products?page=${page}&pageSize=${pageSize}`)
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+  return await getInventoryProducts("", page, pageSize);
 };
 // response
 // [
@@ -184,16 +180,9 @@ const getWPSProduct = async (id) => {
 // 	]
 // }
 
-// Define the data to compare before update (id = vendor id)
-const getSyncedProduct = async (id) => {
-  return await serverInstance
-    .get(`/inventory/products?id=${id}`)
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+// Define the data to compare before update
+const getSyncedProduct = async (vendor_id) => {
+  return await getInventoryProducts(vendor_id, "", "");
 };
 
 // Define update product (id = bigcommerce product id, data = updated data)
@@ -227,14 +216,7 @@ const updateBigcommerceProductVariants = async (id, variants) => {
 
 // Define update product, when sync completed (id = vendor id, data)
 const updateSyncedProduct = async (data) => {
-  return await serverInstance
-    .put(`/inventory/products`, data)
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+  return await updateInventoryProduct(data);
 };
 
 let updateStatus = false;

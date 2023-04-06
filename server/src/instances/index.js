@@ -10,11 +10,6 @@ const storeHash = process.env.BIGCOMMERCE_STORE_HASH;
 const WPSToken = process.env.WPS_TOKEN;
 
 const useHttps = process.env.USE_HTTPS === "true";
-export const serverInstance = axios.create({
-  baseURL: useHttps
-    ? "https://warehouse.discountmotogear.com/api"
-    : "http://localhost:3001/api",
-});
 
 export const bigCommerceInstance = new BigCommerce({
   clientId: clientId,

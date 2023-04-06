@@ -40,7 +40,6 @@ class WpsProductContainer extends React.Component {
       id: +localStorage.getItem("category_id"),
     };
     // data.images = data.images.filter((image) => image);
-    debugger
     this.props.createBigcommerceProduct(data);
   };
   onSearchCategories = (query) => {

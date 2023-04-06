@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/logo.svg";
-import LogoutButton from '../common/logoutButton/index';
+import LogoutButton from '../common/logoutButton/LogoutButton.jsx';
 const SideBar = (props) => {
   const useHttps = process.env.REACT_APP_USE_HTTPS === "true";
   return (

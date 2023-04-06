@@ -44,7 +44,7 @@ const createProduct = (obj) => {
             },
           ],
           price: item.list_price,
-          inventory_level: item.inventory.data.total,
+          inventory_level: item.inventory.data ? item.inventory.data.total : 0,
           image_url: imageUrl,
           is_default: is_default,
         };
@@ -59,7 +59,7 @@ const createProduct = (obj) => {
             },
           ],
           price: item.list_price,
-          inventory_level: item.inventory.data.total,
+          inventory_level: item.inventory.data ? item.inventory.data.total : 0,
           is_default: is_default,
         };
       }

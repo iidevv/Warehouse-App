@@ -199,7 +199,6 @@ export const searchCategories = (query) => {
 
 export const createBigcommerceProduct = (data) => {
   return (dispatch) => {
-    debugger;
     dispatch(setToggleIsFetching(true));
     dmgProductAPI.createProduct(data).then((message) => {
       dispatch(setAlert(message.data));

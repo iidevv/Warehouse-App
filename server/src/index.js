@@ -14,6 +14,7 @@ import { userRouter } from "./routes/user.js";
 import { chatgptRouter } from "./routes/chatgpt.js";
 import { CronJob } from "cron";
 import { updateWpsProducts } from "./sync-products/index.js";
+import { authenticate } from "./routes/user.js"
 import cookieParser from "cookie-parser";
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +34,8 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(authenticate);
 
 app.use("/api/auth", userRouter);
 app.use("/api/inventory", inventoryRouter);

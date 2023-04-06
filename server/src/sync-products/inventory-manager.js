@@ -1,5 +1,5 @@
-import { serverInstance } from "../instances/index.js";
 import { createNewDate } from "./../common/index.js";
+import { addInventoryProduct } from '../routes/inventory.js';
 
 export const createInventoryProduct = async (
   vendorProduct,
@@ -22,10 +22,7 @@ export const createInventoryProduct = async (
     status: status,
   };
   try {
-    const res = await serverInstance.post(
-      "/inventory/products/",
-      inventoryProduct
-    );
+    const res = await addInventoryProduct(inventoryProduct);
     console.log("Product synced!");
     return "Product synced!";
   } catch (error) {
