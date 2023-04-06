@@ -1,11 +1,10 @@
 import express from "express";
 import { createInventoryProduct } from "../sync-products/inventory-manager.js";
 import { bigCommerceInstance } from "../instances/index.js";
-import { authenticate } from './user.js';
 
 const router = express.Router();
 
-router.get("/list", authenticate, (req, res) => {
+router.get("/list", (req, res) => {
   bigCommerceInstance
     .get("/catalog/products")
     .then((products) => {
@@ -16,7 +15,7 @@ router.get("/list", authenticate, (req, res) => {
     });
 });
 
-router.get("/categories", authenticate, (req, res) => {
+router.get("/categories", (req, res) => {
   const queryParams = new URLSearchParams(req.query);
   bigCommerceInstance
     .get(`/catalog/categories?${queryParams}`)
@@ -28,7 +27,7 @@ router.get("/categories", authenticate, (req, res) => {
     });
 });
 
-router.post("/create", authenticate, async (req, res) => {
+router.post("/create", async (req, res) => {
   let product = req.body;
   try {
     const message = await bigCommerceInstance.post(

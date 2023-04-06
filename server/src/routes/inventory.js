@@ -1,11 +1,10 @@
 import express from "express";
 import { InventoryModel } from "../models/Inventory.js";
 import { createNewDate } from "./../common/index.js";
-import { authenticate } from './user.js';
 const router = express.Router();
 
 // get
-router.get("/products", authenticate, async (req, res) => {
+router.get("/products", async (req, res) => {
   const vendor_id = req.query.id;
   const page = parseInt(req.query.page) || 1; // default to page 1
   const pageSize = parseInt(req.query.pageSize) || 20; // default to 20 products per page
@@ -32,7 +31,7 @@ router.get("/products", authenticate, async (req, res) => {
 });
 
 // add
-router.post("/products", authenticate, async (req, res) => {
+router.post("/products", async (req, res) => {
   const {
     vendor,
     vendor_id,
@@ -66,7 +65,7 @@ router.post("/products", authenticate, async (req, res) => {
 });
 
 // update
-router.put("/products", authenticate, async (req, res) => {
+router.put("/products", async (req, res) => {
   const updatedProductData = req.body;
   const findAndUpdateProduct = async (updatedProductData) => {
     try {
@@ -123,7 +122,7 @@ router.put("/products", authenticate, async (req, res) => {
 });
 
 // delete
-router.delete("/products", authenticate, async (req, res) => {
+router.delete("/products", async (req, res) => {
   const vendor_id = req.query.id;
   const Inventory = await InventoryModel.findOneAndDelete({ vendor_id });
   if (!Inventory) return res.json({ message: "Product doesn't exists!" });

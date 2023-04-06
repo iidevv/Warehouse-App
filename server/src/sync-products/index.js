@@ -1,5 +1,4 @@
 import express from "express";
-import { authenticate } from '../routes/user.js';
 import {
   bigCommerceInstance,
   serverInstance,
@@ -336,11 +335,11 @@ export const updateWpsProducts = () => {
 
 const router = express.Router();
 
-router.get("/sync-status", authenticate, async (req, res) => {
+router.get("/sync-status", async (req, res) => {
   res.send({ status: updateStatus });
 });
 
-router.get("/sync", authenticate, async (req, res) => {
+router.get("/sync", async (req, res) => {
   try {
     await updateWpsProducts();
     res.send({ status: updateStatus });
