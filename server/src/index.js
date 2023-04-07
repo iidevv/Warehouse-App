@@ -35,9 +35,9 @@ app.use(
   })
 );
 
-app.use(authenticate);
 
 app.use("/api/auth", userRouter);
+app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
 app.use("/api/inventory", SyncProductsRouter);
 app.use("/api/gpt", chatgptRouter);
