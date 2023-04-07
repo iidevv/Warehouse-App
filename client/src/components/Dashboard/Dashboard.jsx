@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+
 const Dashboard = (props) => {
   const createNewDate = (current_date) => {
     const date = new Date(current_date);
@@ -16,6 +18,12 @@ const Dashboard = (props) => {
     const id = +event.target.id;
     props.onDeleteProduct(id);
   };
+
+  const [activeDropdownIndex, setActiveDropdownIndex] = useState(null);
+  const toggleDropdown = (index) => {
+    setActiveDropdownIndex(activeDropdownIndex === index ? null : index);
+  };
+
   const handleUpdateClick = () => {
     props.onUpdateProducts();
   };
@@ -52,7 +60,7 @@ const Dashboard = (props) => {
           disabled={props.status}
           className="py-2 px-4 disabled:opacity-50 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
         >
-          {props.status ? 'Processing' : 'Update'} 
+          {props.status ? "Processing" : "Update"}
         </button>
       </div>
       <div className="inline-block min-w-full overflow-hidden rounded-lg shadow">
@@ -115,14 +123,31 @@ const Dashboard = (props) => {
                       {m.status}
                     </p>
                   </td>
-                  <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
+                  <td className="relative px-5 py-5 text-sm bg-white border-b border-gray-200">
                     <button
-                      onClick={handleDeleteClick}
+                      onClick={() => toggleDropdown(i)}
                       id={m.vendor_id}
+                      data-bigcommerce_id={m.bigcommerce_id}
                       className="text-red-600 hover:text-indigo-900"
                     >
-                      Remove
+                      Delete
                     </button>
+                    {activeDropdownIndex === i && (
+                      <div className="absolute bg-white shadow-md rounded-sm px-1 py-1 z-10">
+                        <button
+                          onClick={handleDeleteClick}
+                          className="text-red-600 mr-2 pr-2 border-r"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          onClick={() => toggleDropdown(i)}
+                          className="text-blue-600"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               );
@@ -132,7 +157,7 @@ const Dashboard = (props) => {
         <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">
           <div className="flex items-center">
             <button
-              onClick={() => handlePageClick("", props.currentPage-1)}
+              onClick={() => handlePageClick("", props.currentPage - 1)}
               disabled={props.currentPage === 1 ? true : false}
               type="button"
               className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-l border-t border-b rounded-l-xl hover:bg-gray-100"
@@ -151,7 +176,7 @@ const Dashboard = (props) => {
             <button
               type="button"
               disabled={props.currentPage === props.totalPages ? true : false}
-              onClick={() => handlePageClick("", props.currentPage+1)}
+              onClick={() => handlePageClick("", props.currentPage + 1)}
               className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
             >
               <svg
