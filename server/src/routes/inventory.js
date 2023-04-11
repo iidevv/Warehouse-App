@@ -149,8 +149,8 @@ export const updateInventoryProduct = async (updatedProductData) => {
 
 // delete
 router.delete("/products", async (req, res) => {
-  const vendor_id = req.query.id;
-  const Inventory = await InventoryModel.findOneAndDelete({ vendor_id });
+  const bigcommerce_id = req.query.id;
+  const Inventory = await InventoryModel.findOneAndDelete({ bigcommerce_id });
   if (!Inventory) return res.json({ message: "Product doesn't exists!" });
 
   res.json({ message: "Deleted Successfully" });

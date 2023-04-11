@@ -27,7 +27,7 @@ const WpsProductPage = (props) => {
   const handleRemoveVariantImage = (event) => {
     props.onHandleRemoveVariantImage(
       +event.target.id,
-      event.target.dataset.image_url
+      +event.target.dataset.variant_id
     );
   };
   const handleChangeVariantName = (event) => {
@@ -252,7 +252,7 @@ const WpsProductPage = (props) => {
                           <button
                             onClick={handleRemoveVariantImage}
                             id={i}
-                            data-image_url={item.image_url}
+                            data-variant_id={item.id}
                             className="text-red-600 w-full text-center border-t"
                           >
                             Remove

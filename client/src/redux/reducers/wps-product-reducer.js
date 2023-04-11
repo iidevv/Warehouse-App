@@ -100,7 +100,7 @@ const wpsProductReducer = (state = initialState, action) => {
         };
       });
       const updatedImages = state.productData.images.filter(
-        (image) => image.image_url !== action.payload.image_url
+        (image) => image.variant_id !== action.payload.variant_id
       );
       return {
         ...state,
@@ -167,12 +167,12 @@ export const resetCategories = () => {
   };
 };
 
-export const removeVariantImage = (id, image_url) => {
+export const removeVariantImage = (id, variant_id) => {
   return {
     type: REMOVE_VARIANT_IMAGE,
     payload: {
       id,
-      image_url,
+      variant_id,
     },
   };
 };

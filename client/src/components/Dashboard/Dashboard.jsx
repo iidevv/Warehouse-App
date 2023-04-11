@@ -126,25 +126,24 @@ const Dashboard = (props) => {
                   <td className="relative px-5 py-5 text-sm bg-white border-b border-gray-200">
                     <button
                       onClick={() => toggleDropdown(i)}
-                      id={m.vendor_id}
-                      data-bigcommerce_id={m.bigcommerce_id}
                       className="text-red-600 hover:text-indigo-900"
                     >
                       Delete
                     </button>
                     {activeDropdownIndex === i && (
-                      <div className="absolute bg-white shadow-md rounded-sm px-1 py-1 z-10">
-                        <button
-                          onClick={handleDeleteClick}
-                          className="text-red-600 mr-2 pr-2 border-r"
-                        >
-                          Delete
-                        </button>
+                      <div className="absolute top-1/2 -translate-y-1/2 bg-white shadow-md rounded-sm px-1 py-1 border z-10">
                         <button
                           onClick={() => toggleDropdown(i)}
-                          className="text-blue-600"
+                          className="text-blue-600 mr-2 pr-2 border-r"
                         >
                           Cancel
+                        </button>
+                        <button
+                          onClick={handleDeleteClick}
+                          id={m.bigcommerce_id}
+                          className="text-red-600"
+                        >
+                          Delete
                         </button>
                       </div>
                     )}

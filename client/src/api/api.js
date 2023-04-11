@@ -24,6 +24,15 @@ export const dmgProductAPI = {
       return response;
     });
   },
+  deleteProduct(id) {
+    return instance
+      .delete("products/delete", {
+        params: { id },
+      })
+      .then((response) => {
+        return response;
+      });
+  },
   getCategories(query) {
     return instance
       .get(`products/categories?name:like=${query}`)

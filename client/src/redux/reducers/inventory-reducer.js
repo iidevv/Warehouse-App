@@ -1,4 +1,4 @@
-import { inventoryAPI } from "../../api/api";
+import { inventoryAPI, dmgProductAPI } from "../../api/api";
 
 const SET_PRODUCTS = "SET_PRODUCTS";
 const SET_PRODUCTS_TOTAL = "SET_PRODUCTS_TOTAL";
@@ -99,10 +99,19 @@ export const setToggleIsFetching = (isFetching) => {
 export const deleteProduct = (id) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    inventoryAPI.deleteProduct(id).then((data) => {
-      dispatch(setToggleIsFetching(false));
-      dispatch(getProducts());
-    });
+
+    const inventoryPromise = inventoryAPI.deleteProduct(id);
+    const dmgProductPromise = dmgProductAPI.deleteProduct(id);
+
+    Promise.all([inventoryPromise, dmgProductPromise])
+      .then(() => {
+        dispatch(setToggleIsFetching(false));
+        dispatch(getProducts());
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        dispatch(setToggleIsFetching(false));
+      });
   };
 };
 

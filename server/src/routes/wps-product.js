@@ -73,6 +73,7 @@ const createProduct = (obj) => {
         const is_thumbnail = i === 1;
         if (imageUrl) {
           return {
+            variant_id: item.id,
             is_thumbnail: is_thumbnail,
             sort_order: i,
             image_url: imageUrl,

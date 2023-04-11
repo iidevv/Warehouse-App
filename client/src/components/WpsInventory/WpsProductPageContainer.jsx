@@ -17,7 +17,7 @@ import {
   setHandleContentChange,
   removeVariantImage,
   changeVariantName,
-  getChatgptContent
+  getChatgptContent,
 } from "../../redux/reducers/wps-product-reducer";
 
 class WpsProductContainer extends React.Component {
@@ -39,7 +39,12 @@ class WpsProductContainer extends React.Component {
     data.categories = {
       id: +localStorage.getItem("category_id"),
     };
-    // data.images = data.images.filter((image) => image);
+    data.images = data.images.map((image, i) => {
+      delete image.variant_id;
+      if(i == 0) image.is_thumbnail = true;
+      image.sort_order = i;
+      return image
+    });
     this.props.createBigcommerceProduct(data);
   };
   onSearchCategories = (query) => {
@@ -55,12 +60,12 @@ class WpsProductContainer extends React.Component {
   onHandleContentChange = (id, value) => {
     this.props.setHandleContentChange(id, value);
   };
-  onHandleRemoveVariantImage = (id, image_url) => {
-    this.props.removeVariantImage(id, image_url);
-  }
+  onHandleRemoveVariantImage = (id, variant_id) => {
+    this.props.removeVariantImage(id, variant_id);
+  };
   onHandleChangeVariantName = (id, name) => {
     this.props.changeVariantName(id, name);
-  }
+  };
   onGetChatgptContent = (contentField, text) => {
     this.props.getChatgptContent(contentField, text);
   };
@@ -112,7 +117,7 @@ export default compose(
     setHandleContentChange,
     removeVariantImage,
     changeVariantName,
-    getChatgptContent
+    getChatgptContent,
   }),
   // withAuthRedirect,
   withRouter

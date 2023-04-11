@@ -41,4 +41,16 @@ router.post("/create", async (req, res) => {
   }
 });
 
+router.delete("/delete", async (req, res) => {
+  let productId = req.query.id;
+  try {
+    const result = await bigCommerceInstance.delete(
+      `/catalog/products/${productId}`
+    );
+    res.json(result);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
 export { router as bigcommerceRouter };
