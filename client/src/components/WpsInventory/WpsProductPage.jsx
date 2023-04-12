@@ -24,6 +24,17 @@ const WpsProductPage = (props) => {
     props.onGetChatgptContent("meta_description", meta_description);
     props.onGetChatgptContent("description", description);
   };
+
+  const handleChangeName = (event) => {
+    props.onHandleChangeName(event.target.value);
+  };
+  const handleRemoveVariant = (event) => {
+    props.onHandleRemoveVariant(
+      +event.target.id,
+      +event.target.dataset.variant_id
+    );
+  };
+
   const handleRemoveVariantImage = (event) => {
     props.onHandleRemoveVariantImage(
       +event.target.id,
@@ -48,21 +59,14 @@ const WpsProductPage = (props) => {
         </div>
         <div className="md:w-1/2 lg:ml-8 md:ml-6 md:mt-0 mt-6 bg-white shadow-lg px-8 py-10">
           <div>
-            <p>{props.product.brand_name}</p>
-            <h1
-              className="
-							lg:text-2xl
-							text-xl
-							font-semibold
-							lg:leading-6
-							leading-7
-							text-gray-800
-							mt-2
-              mb-3
-						"
-            >
-              {props.product.name}
-            </h1>
+            <p className="mb-2">{props.product.brand_name}</p>
+            <p className="block text-sm font-medium text-gray-700 mb-2">Title:</p>
+            <input
+              className="flex w-full mb-4 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+              type="text"
+              value={props.product.name}
+              onChange={handleChangeName}
+            />
           </div>
           <div className="mb-6 pb-2 border-b border-gray-200">
             <p className="font-bold text-lg">
@@ -231,6 +235,12 @@ const WpsProductPage = (props) => {
                   >
                     Price
                   </th>
+                  <th
+                    scope="col"
+                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                  >
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -282,6 +292,16 @@ const WpsProductPage = (props) => {
                         <p className="text-gray-900 whitespace-no-wrap">
                           ${item.price}
                         </p>
+                      </td>
+                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
+                        <button
+                          onClick={handleRemoveVariant}
+                          id={i}
+                          data-variant_id={item.id}
+                          className="text-red-600 w-full text-left"
+                        >
+                          Remove
+                        </button>
                       </td>
                     </tr>
                   ))}

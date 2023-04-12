@@ -6,11 +6,15 @@ const SET_CATEGORIES = "SET_CATEGORIES";
 const SET_CURRENT_CATEGORY = "SET_CURRENT_CATEGORY";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 const SET_CONTENT = "SET_CONTENT";
+const CHANGE_NAME = "CHANGE_NAME";
+const REMOVE_VARIANT = "REMOVE_VARIANT";
 const REMOVE_VARIANT_IMAGE = "REMOVE_VARIANT_IMAGE";
 const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
 
 let initialState = {
-  productData: [],
+  productData: {
+    name: ''
+  },
   isFetching: true,
   info: {},
   categories: [],
@@ -59,6 +63,14 @@ const wpsProductReducer = (state = initialState, action) => {
         ...state,
         current_category: action.current_category,
       };
+    case CHANGE_NAME:
+      return {
+        ...state,
+        productData: {
+          ...state.productData,
+          name: action.payload.name,
+        },
+      };
     case CHANGE_VARIANT_NAME:
       const updatedVariantsName = state.productData.variants.map(
         (variant, i) => {
@@ -92,16 +104,31 @@ const wpsProductReducer = (state = initialState, action) => {
           variants: updatedVariantsName,
         },
       };
+    case REMOVE_VARIANT:
+      const updatedImagesRemove = state.productData.images.filter(
+        (image) => image.variant_id !== action.payload.variant_id
+      );
+      const updatedVariantsRemove = state.productData.variants.filter(
+        (variant, i) => i !== action.payload.id
+      );
+      return {
+        ...state,
+        productData: {
+          ...state.productData,
+          variants: updatedVariantsRemove,
+          images: updatedImagesRemove,
+        },
+      };
     case REMOVE_VARIANT_IMAGE:
+      const updatedImages = state.productData.images.filter(
+        (image) => image.variant_id !== action.payload.variant_id
+      );
       const updatedVariants = state.productData.variants.map((variant, i) => {
         return {
           ...variant,
           image_url: i === action.payload.id ? undefined : variant.image_url,
         };
       });
-      const updatedImages = state.productData.images.filter(
-        (image) => image.variant_id !== action.payload.variant_id
-      );
       return {
         ...state,
         productData: {
@@ -167,12 +194,31 @@ export const resetCategories = () => {
   };
 };
 
+export const removeVariant = (id, variant_id) => {
+  return {
+    type: REMOVE_VARIANT,
+    payload: {
+      id,
+      variant_id,
+    },
+  };
+};
+
 export const removeVariantImage = (id, variant_id) => {
   return {
     type: REMOVE_VARIANT_IMAGE,
     payload: {
       id,
       variant_id,
+    },
+  };
+};
+
+export const changeName = (name) => {
+  return {
+    type: CHANGE_NAME,
+    payload: {
+      name,
     },
   };
 };

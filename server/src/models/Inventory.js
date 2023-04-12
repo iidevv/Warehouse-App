@@ -9,8 +9,8 @@ const variantSchema = new mongoose.Schema({
 
 const InventorySchema = new mongoose.Schema({
   vendor: { type: String, required: true },
-  vendor_id: { type: Number, required: true, unique: true },
-  bigcommerce_id: { type: Number, required: true, unique: true },
+  vendor_id: { type: Number, required: true },
+  bigcommerce_id: { type: Number, required: true },
   product_name: { type: String, required: true, unique: true },
   price: { type: Number, required: true },
   variants: [variantSchema],
@@ -18,4 +18,4 @@ const InventorySchema = new mongoose.Schema({
   status: { type: String, required: true },
 });
 
-export const InventoryModel = mongoose.model("inventory", InventorySchema);
+export const InventoryModel = mongoose.model("wps-products", InventorySchema);

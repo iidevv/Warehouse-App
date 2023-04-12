@@ -6,20 +6,21 @@ const router = express.Router();
 // get
 router.get("/products", async (req, res) => {
   const vendor_id = req.query.id;
+  const name = "";
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.pageSize) || 20;
 
   try {
-    const products = await getInventoryProducts(vendor_id, page, pageSize);
+    const products = await getInventoryProducts(vendor_id, name, page, pageSize);
     res.json(products);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-export const getInventoryProducts = async (vendor_id, page, pageSize) => {
-  if (vendor_id) {
-    const product = await InventoryModel.findOne({ vendor_id });
+export const getInventoryProducts = async (vendor_id, name, page, pageSize) => {
+  if (vendor_id, name) {
+    const product = await InventoryModel.findOne({ vendor_id, product_name: name });
     return product;
   } else {
     const total = await InventoryModel.count();
@@ -62,9 +63,8 @@ export const addInventoryProduct = async (productData) => {
   } = productData;
   const Inventory = await InventoryModel.findOne({
     product_name,
-    bigcommerce_id,
-    vendor_id,
   });
+
   if (Inventory) return res.json({ message: "Product already exists!" });
 
   const newProduct = new InventoryModel({
@@ -97,6 +97,7 @@ export const updateInventoryProduct = async (updatedProductData) => {
     try {
       const product = await InventoryModel.findOne({
         vendor_id: updatedProductData.id,
+        product_name: updatedProductData.product_name,
       });
       if (product) {
         if (product.price !== updatedProductData.price) {

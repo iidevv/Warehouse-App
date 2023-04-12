@@ -3,6 +3,15 @@ import { wpsInstance } from "../instances/index.js";
 
 const router = express.Router();
 
+const removeDuplicateWords = (title, variation) => {
+  const titleWords = new Set(title.toLowerCase().split(" "));
+  const variationWords = variation.toLowerCase().split(" ");
+
+  const filteredVariation = variationWords.filter((word) => !titleWords.has(word));
+
+  return filteredVariation.join(" ").toLowerCase();
+}
+
 const createProduct = (obj) => {
   const data = obj.data;
   const variants = obj.data.items.data;
@@ -27,7 +36,8 @@ const createProduct = (obj) => {
     brand_name: variants[0].brand.data.name || "",
     inventory_tracking: "variant",
     variants: variants.map((item, i) => {
-      const option = item.name ? item.name.toLowerCase() : "";
+      const cleanName = removeDuplicateWords(data.name, item.name);
+      const option =  cleanName ? cleanName : item.name.toLowerCase();
       const imageUrl = item.images.data[0]
         ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
         : false;

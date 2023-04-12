@@ -15,7 +15,9 @@ import {
   setCategory,
   resetCategories,
   setHandleContentChange,
+  changeName,
   removeVariantImage,
+  removeVariant,
   changeVariantName,
   getChatgptContent,
 } from "../../redux/reducers/wps-product-reducer";
@@ -39,6 +41,13 @@ class WpsProductContainer extends React.Component {
     data.categories = {
       id: +localStorage.getItem("category_id"),
     };
+
+    // remove duplicates
+    data.images = data.images.filter((image, index, array) => {
+      const firstIndex = array.findIndex((item) => item.image_url === image.image_url);
+      return firstIndex === index;
+    });
+    // remove variant_id
     data.images = data.images.map((image, i) => {
       delete image.variant_id;
       if(i == 0) image.is_thumbnail = true;
@@ -59,6 +68,12 @@ class WpsProductContainer extends React.Component {
   };
   onHandleContentChange = (id, value) => {
     this.props.setHandleContentChange(id, value);
+  };
+  onHandleChangeName = (name) => {
+    this.props.changeName(name);
+  }
+  onHandleRemoveVariant = (id, variant_id) => {
+    this.props.removeVariant(id, variant_id);
   };
   onHandleRemoveVariantImage = (id, variant_id) => {
     this.props.removeVariantImage(id, variant_id);
@@ -81,7 +96,9 @@ class WpsProductContainer extends React.Component {
           pushToCatalog={this.pushToCatalog}
           onSearchCategories={this.onSearchCategories}
           onSetCategory={this.onSetCategory}
+          onHandleChangeName={this.onHandleChangeName}
           onHandleContentChange={this.onHandleContentChange}
+          onHandleRemoveVariant={this.onHandleRemoveVariant}
           onHandleRemoveVariantImage={this.onHandleRemoveVariantImage}
           onHandleChangeVariantName={this.onHandleChangeVariantName}
           onGetChatgptContent={this.onGetChatgptContent}
@@ -115,7 +132,9 @@ export default compose(
     setCategory,
     resetCategories,
     setHandleContentChange,
+    changeName,
     removeVariantImage,
+    removeVariant,
     changeVariantName,
     getChatgptContent,
   }),

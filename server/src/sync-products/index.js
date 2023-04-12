@@ -10,7 +10,7 @@ import {
 
 // Define the IDs of the products to update
 const getSyncedProducts = async (page, pageSize) => {
-  return await getInventoryProducts("", page, pageSize);
+  return await getInventoryProducts("", "", page, pageSize);
 };
 // response
 // [
@@ -181,8 +181,8 @@ const getWPSProduct = async (id) => {
 // }
 
 // Define the data to compare before update
-const getSyncedProduct = async (vendor_id) => {
-  return await getInventoryProducts(vendor_id, "", "");
+const getSyncedProduct = async (vendor_id, name) => {
+  return await getInventoryProducts(vendor_id, name, "", "");
 };
 
 // Define update product (id = bigcommerce product id, data = updated data)
@@ -238,20 +238,26 @@ export const updateWpsProducts = () => {
         for (const syncedProduct of syncedProducts) {
           // Get WPS product data and compare it with the synced product data
           const wpsProduct = await getWPSProduct(syncedProduct.vendor_id);
+          // put product name for same products with different variations
+          wpsProduct.product_name = syncedProduct.product_name;
+          
           const syncedProductData = await getSyncedProduct(
-            syncedProduct.vendor_id
+            syncedProduct.vendor_id, syncedProduct.product_name
           );
-
           // Check if an update is needed
           const isPriceUpdated = wpsProduct.price !== syncedProductData.price;
-          const isInventoryUpdated = wpsProduct.variants.some(
-            (wpsVariant, index) => {
-              return (
-                wpsVariant.inventory_level !==
-                syncedProductData.variants[index].inventory_level
-              );
-            }
-          );
+          const isInventoryUpdated = wpsProduct.variants.some((wpsVariant) => {
+            // Find the corresponding synced variant using the vendor_id
+            const syncedVariant = syncedProductData.variants.find(
+              (v) => v.vendor_id === wpsVariant.id
+            );
+      
+            // Check if the inventory_level has changed
+            return (
+              syncedVariant &&
+              wpsVariant.inventory_level !== syncedVariant.inventory_level
+            );
+          });
 
           // If an update is needed, update the product and its variants
           if (isPriceUpdated || isInventoryUpdated) {
