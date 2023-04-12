@@ -1,6 +1,7 @@
 import defaultImg from "../../assets/default-image.png";
 import chatgpt from "../../assets/chatgpt.svg";
 import CategoriesSearch from "./../common/categoriesSearch/CategoriesSearch";
+import WpsProductPageVariants from "./WpsProductPageVariants";
 
 const WpsProductPage = (props) => {
   const productImg =
@@ -27,25 +28,6 @@ const WpsProductPage = (props) => {
 
   const handleChangeName = (event) => {
     props.onHandleChangeName(event.target.value);
-  };
-  const handleRemoveVariant = (event) => {
-    props.onHandleRemoveVariant(
-      +event.target.id,
-      +event.target.dataset.variant_id
-    );
-  };
-
-  const handleRemoveVariantImage = (event) => {
-    props.onHandleRemoveVariantImage(
-      +event.target.id,
-      +event.target.dataset.variant_id
-    );
-  };
-  const handleChangeVariantName = (event) => {
-    props.onHandleChangeVariantName(
-      +event.target.dataset.id,
-      event.target.value
-    );
   };
   return (
     <div className="container">
@@ -192,124 +174,7 @@ const WpsProductPage = (props) => {
           <span>Chat GPT</span>
         </button>
       </div>
-      <div className="bg-white shadow-lg px-8 py-10">
-        <h3 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mb-6">
-          Variants
-        </h3>
-        <div className="overflow-x-auto">
-          <div className="inline-block min-w-full overflow-hidden">
-            <table className="min-w-full w-full leading-normal">
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                  >
-                    #
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                  ></th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                  >
-                    SKU
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                  >
-                    Name
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                  >
-                    Stock
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                  >
-                    Price
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                  >
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {props.product.variants &&
-                  props.product.variants.map((item, i) => (
-                    <tr key={i}>
-                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
-                        <p className="text-gray-900 whitespace-no-wrap font-bold">
-                          {i + 1}.
-                        </p>
-                      </td>
-                      <td className="w-28 px-5 py-5 text-sm bg-white border-t border-gray-200 relative">
-                        <img
-                          className="w-28 h-28 object-contain mb-1"
-                          src={item.image_url || defaultImg}
-                          alt="variant"
-                        />
-                        {item.image_url && (
-                          <button
-                            onClick={handleRemoveVariantImage}
-                            id={i}
-                            data-variant_id={item.id}
-                            className="text-red-600 w-full text-center border-t"
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </td>
-                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {item.sku}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
-                        <input
-                          className="flex-1 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                          type="text"
-                          data-id={i}
-                          value={item.option_values[0].label}
-                          onChange={handleChangeVariantName}
-                        />
-                      </td>
-                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {item.inventory_level}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          ${item.price}
-                        </p>
-                      </td>
-                      <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
-                        <button
-                          onClick={handleRemoveVariant}
-                          id={i}
-                          data-variant_id={item.id}
-                          className="text-red-600 w-full text-left"
-                        >
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      <WpsProductPageVariants variants={props.product.variants} onHandleRemoveVariant={props.onHandleRemoveVariant} onHandleRemoveVariantImage={props.onHandleRemoveVariantImage} onHandleChangeVariantName={props.onHandleChangeVariantName} />
     </div>
   );
 };
