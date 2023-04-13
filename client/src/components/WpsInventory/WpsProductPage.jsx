@@ -174,7 +174,7 @@ const WpsProductPage = (props) => {
           <span>Chat GPT</span>
         </button>
       </div>
-      <WpsProductPageVariants variants={props.product.variants} onHandleRemoveVariant={props.onHandleRemoveVariant} onHandleRemoveVariantImage={props.onHandleRemoveVariantImage} onHandleChangeVariantName={props.onHandleChangeVariantName} />
+      <WpsProductPageVariants variants={props.product.variants} onFindAndReplace={props.onFindAndReplace} onHandleRemoveVariant={props.onHandleRemoveVariant} onHandleRemoveVariants={props.onHandleRemoveVariants} onHandleRemoveVariantImage={props.onHandleRemoveVariantImage} onHandleChangeVariantName={props.onHandleChangeVariantName} />
     </div>
   );
 };

@@ -52,10 +52,10 @@ const WpsProductPageVariants = (props) => {
 
         for (let i = startIndex; i <= endIndex; i++) {
           const id = parseInt(props.variants[i].id);
-          if (!selectedVariants.includes(id)) {
+          if (!selectedVariants.some((item) => item.variantId === id)) {
             setSelectedVariants((prevSelectedVariants) => [
               ...prevSelectedVariants,
-              id,
+              { dataId: i, variantId: id },
             ]);
             setCheckboxStates((prevState) => ({
               ...prevState,
@@ -64,12 +64,17 @@ const WpsProductPageVariants = (props) => {
           }
         }
       } else {
-        setSelectedVariants([...selectedVariants, variantId]);
+        setSelectedVariants([
+          ...selectedVariants,
+          { dataId: index, variantId: variantId },
+        ]);
       }
 
       setLastCheckedIndex(index);
     } else {
-      setSelectedVariants(selectedVariants.filter((id) => id !== variantId));
+      setSelectedVariants(
+        selectedVariants.filter((item) => item.variantId !== variantId)
+      );
 
       if (index === lastCheckedIndex) {
         setLastCheckedIndex(null);
@@ -78,21 +83,53 @@ const WpsProductPageVariants = (props) => {
   };
 
   const handleRemoveSelectedVariants = () => {
-    // Perform remove action for all selected variants
-    // You can use the `selectedVariants` state to get the list of selected variant ids
-    // For example, you can call your remove function for each selected variant:
-    selectedVariants.forEach((variantId) => {
-      // Call your remove function here with variantId
-    });
+    const idsToRemove = selectedVariants.map(({ dataId }) => dataId);
+    const variantIdsToRemove = selectedVariants.map(
+      ({ variantId }) => variantId
+    );
+
+    // Remove all selected variants at once
+    props.onHandleRemoveVariants(idsToRemove, variantIdsToRemove);
 
     // Reset the selected variants state
     setSelectedVariants([]);
+    setLastCheckedIndex(null);
   };
+
+  const handleFindAndReplace = (event) => {
+    event.preventDefault();
+    const formElements = event.target.elements;
+    const find = formElements.find.value;
+    const replace = formElements.replace.value;
+    props.onFindAndReplace(find, replace);
+  };
+
   return (
     <div className="bg-white shadow-lg px-8 py-10">
       <h3 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mb-6">
         Variants
       </h3>
+      <span class="block text-sm font-medium text-gray-700 mb-2">Find and Replace variant names:</span>
+      <form onSubmit={handleFindAndReplace} className="flex mb-4">
+        <input
+          className="mr-2 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+          type="text"
+          id="find"
+          placeholder="Find"
+        />
+        <input
+          className="mr-2 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+          type="text"
+          id="replace"
+          placeholder="Replace with"
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 text-base text-white bg-blue-600 border border-blue-600 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+        >
+          Apply Filter
+        </button>
+      </form>
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full overflow-hidden">
           <table className="min-w-full w-full leading-normal">
@@ -104,7 +141,7 @@ const WpsProductPageVariants = (props) => {
                 >
                   <button
                     onClick={handleRemoveSelectedVariants}
-                    className="text-red-600 w-full text-left"
+                    className="py-2 px-4  bg-red-600 hover:bg-red-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
                   >
                     Remove Selected
                   </button>

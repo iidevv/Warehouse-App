@@ -8,12 +8,14 @@ const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 const SET_CONTENT = "SET_CONTENT";
 const CHANGE_NAME = "CHANGE_NAME";
 const REMOVE_VARIANT = "REMOVE_VARIANT";
+const REMOVE_VARIANTS = "REMOVE_VARIANTS";
 const REMOVE_VARIANT_IMAGE = "REMOVE_VARIANT_IMAGE";
 const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
+const FIND_AND_REPLACE = "FIND_AND_REPLACE";
 
 let initialState = {
   productData: {
-    name: ''
+    name: "",
   },
   isFetching: true,
   info: {},
@@ -71,6 +73,41 @@ const wpsProductReducer = (state = initialState, action) => {
           name: action.payload.name,
         },
       };
+    case FIND_AND_REPLACE:
+      const { find, replace } = action.payload;
+
+      // Make sure find text is provided
+      if (!find) {
+        alert("Find text is missing");
+        return state;
+      }
+      const updatedVariantsReplace = state.productData.variants.map(
+        (variant) => {
+          const updatedOptionValues = variant.option_values.map(
+            (optionValue) => {
+              const updatedLabel = optionValue.label.replaceAll(find, replace);
+              return {
+                ...optionValue,
+                label: updatedLabel,
+              };
+            }
+          );
+
+          return {
+            ...variant,
+            option_values: updatedOptionValues,
+          };
+        }
+      );
+
+      return {
+        ...state,
+        productData: {
+          ...state.productData,
+          variants: updatedVariantsReplace,
+        },
+      };
+
     case CHANGE_VARIANT_NAME:
       const updatedVariantsName = state.productData.variants.map(
         (variant, i) => {
@@ -105,11 +142,26 @@ const wpsProductReducer = (state = initialState, action) => {
         },
       };
     case REMOVE_VARIANT:
-      const updatedImagesRemove = state.productData.images.filter(
+      const updatedImagesRemoveOne = state.productData.images.filter(
         (image) => image.variant_id !== action.payload.variant_id
       );
+      const updatedVariantsRemoveOne = state.productData.variants.filter(
+        (_, i) => i !== action.payload.id
+      );
+      return {
+        ...state,
+        productData: {
+          ...state.productData,
+          variants: updatedVariantsRemoveOne,
+          images: updatedImagesRemoveOne,
+        },
+      };
+    case REMOVE_VARIANTS:
+      const updatedImagesRemove = state.productData.images.filter(
+        (image) => !action.payload.variantIds.includes(image.variant_id)
+      );
       const updatedVariantsRemove = state.productData.variants.filter(
-        (variant, i) => i !== action.payload.id
+        (_, i) => !action.payload.ids.includes(i)
       );
       return {
         ...state,
@@ -204,6 +256,13 @@ export const removeVariant = (id, variant_id) => {
   };
 };
 
+export const removeVariants = (ids, variantIds) => {
+  return {
+    type: REMOVE_VARIANTS,
+    payload: { ids, variantIds },
+  };
+};
+
 export const removeVariantImage = (id, variant_id) => {
   return {
     type: REMOVE_VARIANT_IMAGE,
@@ -229,6 +288,16 @@ export const changeVariantName = (id, name) => {
     payload: {
       id,
       name,
+    },
+  };
+};
+
+export const findAndReplace = (find, replace) => {
+  return {
+    type: FIND_AND_REPLACE,
+    payload: {
+      find,
+      replace,
     },
   };
 };

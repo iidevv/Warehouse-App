@@ -18,8 +18,10 @@ import {
   changeName,
   removeVariantImage,
   removeVariant,
+  removeVariants,
   changeVariantName,
   getChatgptContent,
+  findAndReplace,
 } from "../../redux/reducers/wps-product-reducer";
 
 class WpsProductContainer extends React.Component {
@@ -44,15 +46,17 @@ class WpsProductContainer extends React.Component {
 
     // remove duplicates
     data.images = data.images.filter((image, index, array) => {
-      const firstIndex = array.findIndex((item) => item.image_url === image.image_url);
+      const firstIndex = array.findIndex(
+        (item) => item.image_url === image.image_url
+      );
       return firstIndex === index;
     });
     // remove variant_id
     data.images = data.images.map((image, i) => {
       delete image.variant_id;
-      if(i == 0) image.is_thumbnail = true;
+      if (i == 0) image.is_thumbnail = true;
       image.sort_order = i;
-      return image
+      return image;
     });
     this.props.createBigcommerceProduct(data);
   };
@@ -71,9 +75,12 @@ class WpsProductContainer extends React.Component {
   };
   onHandleChangeName = (name) => {
     this.props.changeName(name);
-  }
+  };
   onHandleRemoveVariant = (id, variant_id) => {
     this.props.removeVariant(id, variant_id);
+  };
+  onHandleRemoveVariants = (idsToRemove, variantIdsToRemove) => {
+    this.props.removeVariants(idsToRemove, variantIdsToRemove);
   };
   onHandleRemoveVariantImage = (id, variant_id) => {
     this.props.removeVariantImage(id, variant_id);
@@ -83,6 +90,9 @@ class WpsProductContainer extends React.Component {
   };
   onGetChatgptContent = (contentField, text) => {
     this.props.getChatgptContent(contentField, text);
+  };
+  onFindAndReplace = (find, replace) => {
+    this.props.findAndReplace(find, replace);
   };
 
   render() {
@@ -98,7 +108,9 @@ class WpsProductContainer extends React.Component {
           onSetCategory={this.onSetCategory}
           onHandleChangeName={this.onHandleChangeName}
           onHandleContentChange={this.onHandleContentChange}
+          onFindAndReplace={this.onFindAndReplace}
           onHandleRemoveVariant={this.onHandleRemoveVariant}
+          onHandleRemoveVariants={this.onHandleRemoveVariants}
           onHandleRemoveVariantImage={this.onHandleRemoveVariantImage}
           onHandleChangeVariantName={this.onHandleChangeVariantName}
           onGetChatgptContent={this.onGetChatgptContent}
@@ -135,9 +147,10 @@ export default compose(
     changeName,
     removeVariantImage,
     removeVariant,
+    removeVariants,
     changeVariantName,
     getChatgptContent,
+    findAndReplace
   }),
-  // withAuthRedirect,
   withRouter
 )(WpsProductContainer);
