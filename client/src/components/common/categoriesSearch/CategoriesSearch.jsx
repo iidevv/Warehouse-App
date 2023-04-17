@@ -49,7 +49,7 @@ const categoriesSearch = (props) => {
         </div>
         <div className="relative w-full">
           <input
-            type="search"
+            type="text"
             id="category-search"
             className="block p-2.5 rounded-none w-full z-20 text-sm text-black text-center border-l-gray-50 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Category search"
