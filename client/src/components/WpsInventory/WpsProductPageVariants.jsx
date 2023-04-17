@@ -105,99 +105,111 @@ const WpsProductPageVariants = (props) => {
   };
 
   return (
-    <div className="bg-white shadow-lg px-8 py-10">
-      <h3 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mb-6">
-        Variants
-      </h3>
-      <span class="block text-sm font-medium text-gray-700 mb-2">Find and Replace variant names:</span>
-      <form onSubmit={handleFindAndReplace} className="flex mb-4">
-        <input
-          className="mr-2 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-          type="text"
-          id="find"
-          placeholder="Find"
-        />
-        <input
-          className="mr-2 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-          type="text"
-          id="replace"
-          placeholder="Replace with"
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 text-base text-white bg-blue-600 border border-blue-600 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+    <div className="bg-white shadow-lg lg:px-8 py-10">
+      <div className="px-4 lg:px-0">
+        <h3 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mb-6">
+          Variants
+        </h3>
+        <span className="block text-sm font-medium text-gray-700 mb-2">
+          Find and Replace variant names:
+        </span>
+        <form
+          onSubmit={handleFindAndReplace}
+          className="flex flex-col lg:flex-row mb-4"
         >
-          Apply Filter
-        </button>
-      </form>
-      <div className="overflow-x-auto">
-        <div className="inline-block min-w-full overflow-hidden">
-          <table className="min-w-full w-full leading-normal">
-            <thead>
-              <tr>
-                <th
-                  scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                >
-                  <button
-                    onClick={handleRemoveSelectedVariants}
-                    className="py-2 px-4  bg-red-600 hover:bg-red-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
-                  >
-                    Remove Selected
-                  </button>
-                </th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                ></th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                >
-                  SKU
-                </th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                >
-                  Name
-                </th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                >
-                  Stock
-                </th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                >
-                  Price
-                </th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {props.variants &&
-                props.variants.map((item, i) => (
-                  <tr key={i}>
-                    <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
+          <input
+            className="mb-2 lg:mb-0 lg:mr-2 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            type="text"
+            id="find"
+            placeholder="Find"
+          />
+          <input
+            className="mb-2 lg:mb-0 lg:mr-2 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            type="text"
+            id="replace"
+            placeholder="Replace with"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 text-base text-white bg-blue-600 border border-blue-600 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+          >
+            Apply Filter
+          </button>
+        </form>
+        <div className="bg-white shadow-sm border-b py-1 left-0 bottom-0 w-full">
+          <button
+            onClick={handleRemoveSelectedVariants}
+            className="py-2 px-4 z-20 bg-red-600 hover:bg-red-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
+          >
+            Remove Selected
+          </button>
+        </div>
+      </div>
+      <div className="inline-block w-full h-screen-80 overflow-y-auto relative">
+        <table className="min-w-full w-full leading-normal">
+          <thead className="hidden lg:table-header-group">
+            <tr>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              ></th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              ></th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                SKU
+              </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                Name
+              </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                Stock
+              </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                Price
+              </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {props.variants &&
+              props.variants.map((item, i) => {
+                let checked = checkboxStates[item.id] || false;
+                let itemClass = checked
+                  ? "relative flex flex-col pt-8 bg-red-100 lg:pt-0 lg:table-row border-b-8 lg:border-b border-gray-100"
+                  : "relative flex flex-col pt-8 lg:pt-0 lg:table-row border-b-8 lg:border-b border-gray-100";
+                return (
+                  <tr className={itemClass} key={i}>
+                    <td className="px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200">
                       <input
                         type="checkbox"
-                        className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                        className="absolute left-4 top-2 z-10 lg:static w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                         data-variant_id={item.id}
-                        checked={checkboxStates[item.id] || false}
+                        checked={checked}
                         onChange={(event) => handleCheckboxChange(event, i)}
                       />
                     </td>
-                    <td className="w-28 px-5 py-5 text-sm bg-white border-t border-gray-200 relative">
+                    <td className="lg:w-28 px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200 relative">
                       <img
-                        className="w-28 h-28 object-contain mb-1"
+                        className="w-full h-56 lg:w-28 lg:h-28 object-contain mb-1"
                         src={item.image_url || defaultImg}
                         alt="variant"
                       />
@@ -206,51 +218,53 @@ const WpsProductPageVariants = (props) => {
                           onClick={handleRemoveVariantImage}
                           id={i}
                           data-variant_id={item.id}
-                          className="text-red-600 w-full text-center border-t"
+                          className="text-red-600 w-full text-center lg:border-t"
                         >
-                          Remove
+                          Remove Image
                         </button>
                       )}
                     </td>
-                    <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
+                    <td className="px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200">
                       <p className="text-gray-900 whitespace-no-wrap">
+                        <span className="lg:hidden">SKU: </span>
                         {item.sku}
                       </p>
                     </td>
-                    <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
+                    <td className="px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200">
                       <input
-                        className="flex-1 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                        className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400  border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:lg:border-transparent"
                         type="text"
                         data-id={i}
                         value={item.option_values[0].label}
                         onChange={handleChangeVariantName}
                       />
                     </td>
-                    <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
+                    <td className="px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200">
                       <p className="text-gray-900 whitespace-no-wrap">
-                        {item.inventory_level}
+                        <span className="lg:hidden">STOCK: </span>
+                        <b>{item.inventory_level}</b>
                       </p>
                     </td>
-                    <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
+                    <td className="px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200">
                       <p className="text-gray-900 whitespace-no-wrap">
                         ${item.price}
                       </p>
                     </td>
-                    <td className="px-5 py-5 text-sm bg-white border-t border-gray-200">
+                    <td className="px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200">
                       <button
                         onClick={handleRemoveVariant}
                         id={i}
                         data-variant_id={item.id}
-                        className="text-red-600 w-full text-left"
+                        className="absolute right-4 rounded-lg px-1 top-2 z-10 text-white bg-red-600 lg:bg-transparent lg:static lg:text-red-600 text-left"
                       >
                         Remove
                       </button>
                     </td>
                   </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+                );
+              })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

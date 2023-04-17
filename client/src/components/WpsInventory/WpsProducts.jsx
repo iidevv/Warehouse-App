@@ -30,9 +30,9 @@ const WpsProducts = (props) => {
   return (
     <div className="container">
       <div>
-        <h2 className="text-2xl leading-tight mb-4">Catalog</h2>
-        <div className="flex">
-          <div className="w-1/2 mr-4 pr-4 border-r">
+        <h2 className="text-2xl leading-tight mb-4">WPS Catalog</h2>
+        <div className="flex flex-col-reverse lg:flex-row">
+          <div className="lg:w-1/2 lg:mr-4 lg:pr-4 lg:border-r">
             <input
               type="text"
               className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
@@ -41,36 +41,41 @@ const WpsProducts = (props) => {
               onChange={handleInputChange}
             />
           </div>
-          <form onSubmit={handleFormSubmit} className="w-1/2 flex relative">
-            <select
-              name="search_by"
-              className="rounded-lg border-transparent mr-2 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-            >
-              <option value="name">Name</option>
-              <option value="sku">SKU</option>
-            </select>
-            <input
-              type="text"
-              name="search_value"
-              className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-              placeholder="Search by variants"
-            />
-            <button
-              type="submit"
-              className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+          <form
+            onSubmit={handleFormSubmit}
+            className="mb-4 lg:mb-0 lg:w-1/2 flex flex-col relative"
+          >
+            <div className="flex">
+              <select
+                name="search_by"
+                className="rounded-lg border-transparent mr-2 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               >
-                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
-              <span className="sr-only">Search</span>
-            </button>
-            <div className="flex flex-col absolute overflow-hidden top-full left-0 w-full rounded-lg mt-2 bg-white shadow-lg">
+                <option value="name">Name</option>
+                <option value="sku">SKU</option>
+              </select>
+              <input
+                type="text"
+                name="search_value"
+                className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                placeholder="Search by variants"
+              />
+              <button
+                type="submit"
+                className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <span className="sr-only">Search</span>
+              </button>
+            </div>
+            <div className="flex flex-col relative lg:absolute overflow-hidden top-full left-0 w-full rounded-lg mt-2 bg-white shadow-lg">
               {props.items &&
                 props.items.map((item, i) => <WpsItem key={i} item={item} />)}
               <div className="flex justify-center">
@@ -100,25 +105,25 @@ const WpsProducts = (props) => {
         </div>
       </div>
       <div className="py-4 overflow-x-auto">
-        <div className="inline-block min-w-full overflow-hidden rounded-lg shadow">
+        <div className="inline-block min-w-full rounded-lg shadow">
           <table className="min-w-full leading-normal">
             <thead>
               <tr>
                 <th
                   scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
                   ID
                 </th>
                 <th
                   scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                  className="px-2 lg:px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
                   Product name
                 </th>
                 <th
                   scope="col"
-                  className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                  className="px-2 lg:px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
                   Variants
                 </th>

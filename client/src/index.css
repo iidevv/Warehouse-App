@@ -9,6 +9,9 @@
   .menu-link {
     @apply flex items-center justify-start w-full p-4 my-2 font-thin text-gray-500 uppercase transition-colors duration-200 hover:text-blue-500;
   }
+  .h-screen-80 {
+    height: 80vh;
+  }
   .product-description ul {
     list-style: disc;
     padding-left: 30px;

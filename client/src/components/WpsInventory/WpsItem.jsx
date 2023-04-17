@@ -13,17 +13,17 @@ const WpsItem = (props) => {
       <a
         href={link}
         target="_blank"
-        className="flex justify-between px-4 py-2 border-t transition hover:bg-gray-100"
+        className="flex justify-between items-center px-4 py-2 border-t transition hover:bg-gray-100"
       >
-        <span className="inline-block pl-2">{sku}</span>
+        <span className="hidden lg:inline-block pl-2">{sku}</span>
         <span className="inline-block pl-2">{name}</span>
         <span className={in_stock}>{total}</span>
       </a>
     );
   }
   return (
-    <span className="flex justify-between px-4 py-2 border-t transition bg-gray-100">
-      <span className="inline-block pl-2">{sku}</span>
+    <span className="flex justify-between items-center px-4 py-2 border-t transition bg-gray-100">
+      <span className="hidden lg:inline-block pl-2">{sku}</span>
       <span className="inline-block pl-2">{name}</span>
       <span className={in_stock}>{total}</span>
     </span>

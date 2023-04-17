@@ -53,7 +53,7 @@ const Dashboard = (props) => {
     <div className="container">
       <div className="flex flex-row items-center w-full mb-6">
         <h2 className="text-2xl leading-tight mr-6">
-          Synced Products ({props.total})
+          WPS Products ({props.total})
         </h2>
         <button
           onClick={handleUpdateClick}
@@ -63,9 +63,9 @@ const Dashboard = (props) => {
           {props.status ? "Processing" : "Update"}
         </button>
       </div>
-      <div className="inline-block min-w-full overflow-hidden rounded-lg shadow">
+      <div className="inline-block min-w-full rounded-lg shadow">
         <table className="min-w-full leading-normal">
-          <thead>
+          <thead className="hidden lg:table-header-group">
             <tr>
               <th
                 scope="col"
@@ -102,28 +102,28 @@ const Dashboard = (props) => {
           <tbody>
             {props.products.map((m, i) => {
               return (
-                <tr key={i}>
-                  <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
+                <tr key={i} className="flex flex-col lg:table-row">
+                  <td className="px-5 pt-4 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                     <p className="text-gray-900 whitespace-no-wrap">
                       {m.vendor}
                     </p>
                   </td>
-                  <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">
+                  <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
+                    <p className="text-xl font-bold lg:font-normal lg:text-sm lg:text-gray-900 whitespace-no-wrap">
                       {m.product_name}
                     </p>
                   </td>
-                  <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
+                  <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                     <p className="text-gray-900 whitespace-no-wrap">
                       {createNewDate(m.last_updated)}
                     </p>
                   </td>
-                  <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
+                  <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                     <p className="text-gray-900 whitespace-no-wrap">
                       {m.status}
                     </p>
                   </td>
-                  <td className="relative px-5 py-5 text-sm bg-white border-b border-gray-200">
+                  <td className="relative px-5 pb-4 lg:py-5 text-sm bg-white border-b-8 lg:border-b border-gray-100">
                     <button
                       onClick={() => toggleDropdown(i)}
                       className="text-red-600 hover:text-indigo-900"

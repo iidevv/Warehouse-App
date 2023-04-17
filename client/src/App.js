@@ -9,7 +9,7 @@ function App() {
         <div className="flex items-start justify-between">
           <SideBar />
           <div className="flex flex-col w-full pl-0 md:py-4 md:space-y-4">
-            <div className="h-screen py-20 overflow-auto">
+            <div className="h-screen py-10 overflow-y-auto">
               <Outlet />
             </div>
           </div>

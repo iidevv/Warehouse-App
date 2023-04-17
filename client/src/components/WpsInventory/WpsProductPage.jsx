@@ -31,15 +31,15 @@ const WpsProductPage = (props) => {
   };
   return (
     <div className="container">
-      <div className="md:flex items-start mb-10">
-        <div className="bg-white shadow-lg md:w-1/2">
+      <div className="lg:flex items-start mb-10">
+        <div className="bg-white shadow-lg lg:w-1/2">
           <img
             className="p-4 w-full object-contain"
             alt="main img"
             src={productImg || defaultImg}
           />
         </div>
-        <div className="md:w-1/2 lg:ml-8 md:ml-6 md:mt-0 mt-6 bg-white shadow-lg px-8 py-10">
+        <div className="lg:w-1/2  lg:ml-6 lg:mt-0 mt-6 bg-white shadow-lg px-4 lg:px-8 py-10">
           <div>
             <p className="mb-2">{props.product.brand_name}</p>
             <p className="block text-sm font-medium text-gray-700 mb-2">Title:</p>
@@ -100,7 +100,7 @@ const WpsProductPage = (props) => {
           </button>
         </div>
       </div>
-      <div className="bg-white shadow-lg px-8 py-10 mb-10">
+      <div className="bg-white shadow-lg px-4 lg:px-8 py-10 mb-10">
         <h3 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mb-6">
           SEO & Description
         </h3>
@@ -174,7 +174,7 @@ const WpsProductPage = (props) => {
           <span>Chat GPT</span>
         </button>
       </div>
-      <WpsProductPageVariants variants={props.product.variants} onFindAndReplace={props.onFindAndReplace} onHandleRemoveVariant={props.onHandleRemoveVariant} onHandleRemoveVariants={props.onHandleRemoveVariants} onHandleRemoveVariantImage={props.onHandleRemoveVariantImage} onHandleChangeVariantName={props.onHandleChangeVariantName} />
+      <WpsProductPageVariants variants={props.product.variants} onHandleRemoveVariants={props.onHandleRemoveVariants} onHandleRemoveVariant={props.onHandleRemoveVariant} onHandleRemoveVariantImage={props.onHandleRemoveVariantImage} onHandleChangeVariantName={props.onHandleChangeVariantName} />
     </div>
   );
 };
