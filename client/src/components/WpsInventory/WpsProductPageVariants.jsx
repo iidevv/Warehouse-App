@@ -136,16 +136,18 @@ const WpsProductPageVariants = (props) => {
             Apply Filter
           </button>
         </form>
-        <div className="bg-white shadow-sm border-b py-1 left-0 bottom-0 w-full">
-          <button
-            onClick={handleRemoveSelectedVariants}
-            className="py-2 px-4 z-20 bg-red-600 hover:bg-red-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
-          >
-            Remove Selected
-          </button>
+        <div className="overflow-hidden block pb-4">
+          <div className="bg-white shadow-lg pb-4">
+            <button
+              onClick={handleRemoveSelectedVariants}
+              className="m-1 py-2 px-4 z-20 bg-red-600 hover:bg-red-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
+            >
+              Remove Selected
+            </button>
+          </div>
         </div>
       </div>
-      <div className="inline-block w-full h-screen-80 overflow-y-auto relative">
+      <div className="inline-block w-full h-screen-80 scrollbar overflow-y-auto relative">
         <table className="min-w-full w-full leading-normal">
           <thead className="hidden lg:table-header-group">
             <tr>
@@ -209,7 +211,7 @@ const WpsProductPageVariants = (props) => {
                     </td>
                     <td className="lg:w-28 px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200 relative">
                       <img
-                        className="w-full h-56 lg:w-28 lg:h-28 object-contain mb-1"
+                        className="w-full h-36 lg:w-28 lg:h-28 object-contain mb-1"
                         src={item.image_url || defaultImg}
                         alt="variant"
                       />
@@ -265,6 +267,9 @@ const WpsProductPageVariants = (props) => {
               })}
           </tbody>
         </table>
+      </div>
+      <div className="overflow-hidden block pt-4">
+        <div className="shadow-t-lg block pt-4"></div>
       </div>
     </div>
   );

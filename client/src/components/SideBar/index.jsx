@@ -98,7 +98,7 @@ const SideBar = (props) => {
               </li>
             </ul>
           </nav>
-          <div className="mt-auto mb-12 py-2 px-6">
+          <div className="mt-auto mb-24 lg:mb-12 py-2 px-6">
             <LogoutButton />
           </div>
         </div>
