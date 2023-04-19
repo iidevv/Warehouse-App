@@ -16,6 +16,7 @@ import { CronJob } from "cron";
 import { updateWpsProducts } from "./sync-products/index.js";
 import { authenticate } from "./routes/user.js"
 import cookieParser from "cookie-parser";
+import { puRouter } from "./routes/pu-products.js";
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -37,6 +38,7 @@ app.use(
 
 
 app.use("/api/auth", userRouter);
+
 app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
 app.use("/api/inventory", SyncProductsRouter);
@@ -44,6 +46,7 @@ app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);
 app.use("/api/wps", WPSProductsRouter);
 app.use("/api/wps", WPSProductRouter);
+app.use("/api/pu", puRouter);
 
 mongoose.connect(
   `mongodb+srv://${dbUsername}:${dbPassword}@dmg.eqxtdze.mongodb.net/${dbname}?retryWrites=true&w=majority`

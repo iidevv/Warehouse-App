@@ -84,6 +84,21 @@ export const wpsProductAPI = {
   },
 };
 
+export const puProductsAPI = {
+  getProducts(name, offset) {
+    return instance
+      .get(`/pu/products/`, {
+        params: {
+          name,
+          offset,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+};
+
 export const chatgptAPI = {
   getText(s) {
     return instance

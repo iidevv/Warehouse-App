@@ -14,6 +14,7 @@ import WpsProductPageContainer from "./components/WpsInventory/WpsProductPageCon
 import { Auth } from "./routes/Auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import UPInventory from './routes/UPInventory';
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = localStorage.getItem("userID") ? true : false;
@@ -48,8 +49,12 @@ const router = createBrowserRouter(
           element: <Index />,
         },
         {
-          path: "/wps-inventory",
+          path: "/wps-catalog",
           element: <WPSInventory />,
+        },
+        {
+          path: "/pu-catalog",
+          element: <UPInventory />,
         },
         {
           path: "/settings",
