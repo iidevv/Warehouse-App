@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import PuProduct from "./PuProduct";
 
 const PuProducts = (props) => {
-  let currentPage = props.currentPage;
-  let totalPages = props.totalPages;
+  let currentPage = +props.currentPage;
+  let totalPages = +props.totalPages;
   const handleInputChange = (event) => {
     props.onSearch(event.target.value);
   };
@@ -72,7 +72,7 @@ const PuProducts = (props) => {
             </thead>
             <tbody>
               {props.products.map((m, i) => {
-                return <PuProduct key={i} data={m} />;
+                return <PuProduct key={i} id={m.product.id} image={m.primaryMedia.absoluteUrl} sku={m.partNumber} name={m.description} stock={m.inventory.locales} price={m.prices.retail} />;
               })}
             </tbody>
           </table>

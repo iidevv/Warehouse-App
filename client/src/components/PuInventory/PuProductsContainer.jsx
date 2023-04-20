@@ -8,7 +8,7 @@ import {
   getProducts,
   setProducts,
   setSearchKeyword,
-  setToggleIsFetching
+  setToggleIsFetching,
 } from "../../redux/reducers/pu-products-reducer";
 
 class PuProductsContainer extends React.Component {
@@ -19,16 +19,17 @@ class PuProductsContainer extends React.Component {
     const search = urlParams.get("s") || "";
     this.props.getProducts(search, page);
     this.props.setSearchKeyword(search);
-
   }
   componentDidUpdate(prevProps) {
     if (this.props.currentPage !== prevProps.currentPage) {
-        const newUrl = `${window.location.origin}${window.location.pathname}?page=${this.props.currentPage}&s=${this.props.searchKeyword}`;
-        window.history.pushState({ path: newUrl }, "", newUrl);
-      }
+      const newUrl = `${window.location.origin}${window.location.pathname}?page=${this.props.currentPage}&s=${this.props.searchKeyword}`;
+      window.history.pushState({ path: newUrl }, "", newUrl);
+    }
   }
   onPageChanged = (p) => {
     this.props.getProducts(this.props.searchKeyword, p);
+    const container = document.querySelector(".scroll-container");
+    if (container) container.scrollTo(0, 0);
   };
   onSearch = (name) => {
     this.props.setSearchKeyword(name);
@@ -68,6 +69,6 @@ export default compose(
     getProducts,
     setProducts,
     setSearchKeyword,
-    setToggleIsFetching
+    setToggleIsFetching,
   })
 )(PuProductsContainer);

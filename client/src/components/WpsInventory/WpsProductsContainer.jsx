@@ -29,6 +29,8 @@ class WpsProductsContainer extends React.Component {
   }
   onCursorChanged = (p) => {
     this.props.getProducts(this.props.searchKeyword, p);
+    const container = document.querySelector(".scroll-container");
+    if (container) container.scrollTo(0, 0);
   };
   onSearch = (name) => {
     this.props.setSearchKeyword(name);

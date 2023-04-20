@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import defaultImg from "../../assets/default-image.png";
 
 const PuProduct = (props) => {
@@ -17,38 +18,50 @@ const PuProduct = (props) => {
 
     return `#${intToRGB(hashCode(id.toString()))}`;
   };
-  const idColor = props.data.product && props.data.product.id ? generateColorById(props.data.product.id) : '';
+  const idColor = props.id ? generateColorById(props.id) : "";
   let stock;
-  if (props.data.inventory && props.data.inventory.locales) {
-    stock = props.data.inventory.locales.reduce(
+  if (props.stock) {
+    stock = props.stock.reduce(
       (total, local) => total + local.quantity,
       0
     );
   }
-  let image = props.data.primaryMedia ? props.data.primaryMedia.absoluteUrl : defaultImg;
+  // Состояние для отслеживания загрузки изображения
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  useEffect(() => {
+    // Сброс состояния загрузки изображения при изменении идентификатора продукта
+    setIsImageLoaded(false);
+  }, [props.id]);
+
+  const handleImageLoad = () => {
+    setIsImageLoaded(true);
+  };
+  let image = props.primaryMedia ? props.primaryMedia.absoluteUrl : defaultImg;
   return (
     <tr style={{ borderLeft: `15px solid ${idColor}` }}>
       <td className="px-2 lg:px-5 py-5 hidden lg:table-cell text-sm bg-white border-b border-gray-200">
-        {props.data.product && props.data.product.id}
+        {props.id}
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
         <img
           className="w-32 h-24 object-contain"
-          src={image}
+          src={isImageLoaded ? image : defaultImg}
           alt="img"
+          onLoad={handleImageLoad}
         />
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
-        {props.data && props.data.partNumber}
+        {props.sku}
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
-        {props.data.product && props.data.product.name}
+        {props.name}
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
         {stock}
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
-        ${props.data.prices && props.data.prices.retail}
+        ${props.price}
       </td>
     </tr>
   );
