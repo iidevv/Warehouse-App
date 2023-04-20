@@ -15,14 +15,17 @@ class PuProductsContainer extends React.Component {
   componentDidMount() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const page = urlParams.get("page") || 1;
+    const page = urlParams.get("page") || 0;
     const search = urlParams.get("s") || "";
     this.props.getProducts(search, page);
     this.props.setSearchKeyword(search);
 
   }
-  componentDidUpdate() {
-    
+  componentDidUpdate(prevProps) {
+    if (this.props.currentPage !== prevProps.currentPage) {
+        const newUrl = `${window.location.origin}${window.location.pathname}?page=${this.props.currentPage}&s=${this.props.searchKeyword}`;
+        window.history.pushState({ path: newUrl }, "", newUrl);
+      }
   }
   onPageChanged = (p) => {
     this.props.getProducts(this.props.searchKeyword, p);
@@ -42,6 +45,7 @@ class PuProductsContainer extends React.Component {
           searchKeyword={this.props.searchKeyword}
           totalCount={this.props.totalCount}
           totalPages={this.props.totalPages}
+          currentPage={this.props.currentPage}
         />
       </>
     );
@@ -53,6 +57,7 @@ let mapStateToProps = (state) => {
     products: state.puInventory.products,
     totalCount: state.puInventory.totalCount,
     totalPages: state.puInventory.totalPages,
+    currentPage: state.puInventory.currentPage,
     searchKeyword: state.puInventory.searchKeyword,
     isFetching: state.puInventory.isFetching,
   };

@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import PuProduct from "./PuProduct";
 
 const PuProducts = (props) => {
+  let currentPage = props.currentPage;
+  let totalPages = props.totalPages;
   const handleInputChange = (event) => {
     props.onSearch(event.target.value);
   };
   const handlePageChanged = (p) => {
     props.onPageChanged(p);
-  }
+  };
   return (
     <div className="container">
       <div>
@@ -38,20 +40,39 @@ const PuProducts = (props) => {
                 </th>
                 <th
                   scope="col"
+                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                >
+                  Image
+                </th>
+                <th
+                  scope="col"
+                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                >
+                  SKU
+                </th>
+                <th
+                  scope="col"
                   className="px-2 lg:px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
                   Product name
+                </th>
+                <th
+                  scope="col"
+                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                >
+                  STOCK
+                </th>
+                <th
+                  scope="col"
+                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                >
+                  Price
                 </th>
               </tr>
             </thead>
             <tbody>
               {props.products.map((m, i) => {
-                return (
-                  <PuProduct
-                    key={i}
-                    data={m}
-                  />
-                );
+                return <PuProduct key={i} data={m} />;
               })}
             </tbody>
           </table>
@@ -59,8 +80,10 @@ const PuProducts = (props) => {
             <div className="flex items-center">
               <button
                 type="button"
-                onClick={handlePageChanged}
-                disabled={true}
+                onClick={() => {
+                  handlePageChanged(currentPage - 1);
+                }}
+                disabled={currentPage == 0 ? true : false}
                 className="disabled:opacity-50 w-full p-4 text-base text-gray-600 bg-white border rounded-l-xl hover:bg-gray-100"
               >
                 <svg
@@ -76,8 +99,10 @@ const PuProducts = (props) => {
               </button>
               <button
                 type="button"
-                onClick={handlePageChanged}
-                disabled={true}
+                onClick={() => {
+                  handlePageChanged(currentPage + 1);
+                }}
+                disabled={currentPage + 1 == totalPages ? true : false}
                 className="disabled:opacity-50 w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
               >
                 <svg
