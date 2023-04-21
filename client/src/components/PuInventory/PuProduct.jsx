@@ -1,30 +1,11 @@
 import React, { useState, useEffect } from "react";
 import defaultImg from "../../assets/default-image.png";
+import { NavLink } from 'react-router-dom';
 
 const PuProduct = (props) => {
-  const generateColorById = (id) => {
-    const hashCode = (str) => {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      return hash;
-    };
-
-    const intToRGB = (i) => {
-      const c = (i & 0x00ffffff).toString(16).toUpperCase();
-      return "00000".substring(0, 6 - c.length) + c;
-    };
-
-    return `#${intToRGB(hashCode(id.toString()))}`;
-  };
-  const idColor = props.id ? generateColorById(props.id) : "";
   let stock;
   if (props.stock) {
-    stock = props.stock.reduce(
-      (total, local) => total + local.quantity,
-      0
-    );
+    stock = props.stock.reduce((total, local) => total + local.quantity, 0);
   }
   // Состояние для отслеживания загрузки изображения
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -37,9 +18,9 @@ const PuProduct = (props) => {
   const handleImageLoad = () => {
     setIsImageLoaded(true);
   };
-  let image =  props.image || defaultImg;
+  let image = props.image || defaultImg;
   return (
-    <tr style={{ borderLeft: `15px solid ${idColor}` }}>
+    <tr>
       <td className="px-2 lg:px-5 py-5 hidden lg:table-cell text-sm bg-white border-b border-gray-200">
         {props.id}
       </td>
@@ -55,7 +36,13 @@ const PuProduct = (props) => {
         {props.sku}
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
-        {props.name}
+        <NavLink
+          to={"/pu-product/" + props.sku}
+          target="_blank"
+          className="text-gray-900 whitespace-no-wrap underline hover:text-blue-600"
+        >
+          {props.name}
+        </NavLink>
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
         {stock}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Dashboard = (props) => {
+const PuDashboard = (props) => {
   const createNewDate = (current_date) => {
     const date = new Date(current_date);
     const options = {
@@ -53,15 +53,17 @@ const Dashboard = (props) => {
     <div className="m-5">
       <div className="flex flex-row items-center w-full mb-6">
         <h2 className="text-2xl leading-tight mr-6">
-          WPS Products ({props.total})
+          PU Products ({props.total})
         </h2>
         <button
           onClick={handleUpdateClick}
-          disabled={props.status}
+          // disabled={props.status}
+          disabled={true}
           className="py-2 px-4 disabled:opacity-50 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
         >
           {props.status ? "Processing" : "Update"}
         </button>
+        <p className="ml-5">Inventory update coming soon</p>
       </div>
       <div className="inline-block min-w-full rounded-lg shadow">
         <table className="min-w-full leading-normal">
@@ -189,4 +191,4 @@ const Dashboard = (props) => {
   );
 };
 
-export default Dashboard;
+export default PuDashboard;

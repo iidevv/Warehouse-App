@@ -12,7 +12,7 @@ const WpsProduct = (props) => {
         <NavLink
           to={"/wps-product/" + props.id}
           target="_blank"
-          className="text-gray-900 whitespace-no-wrap"
+          className="text-gray-900 whitespace-no-wrap underline hover:text-blue-600"
         >
           {props.name}
         </NavLink>

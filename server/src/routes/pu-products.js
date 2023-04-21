@@ -23,4 +23,4 @@ router.get("/products", async (req, res) => {
     });
 });
 
-export { router as puRouter };
+export { router as puProductsRouter };

@@ -15,6 +15,7 @@ import { Auth } from "./routes/Auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UPInventory from './routes/UPInventory';
+import PuProductPageContainer from "./components/PuInventory/PuProductPageContainer";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = localStorage.getItem("userID") ? true : false;
@@ -59,6 +60,10 @@ const router = createBrowserRouter(
         {
           path: "/settings",
           element: <Settings />,
+        },
+        {
+          path: "/pu-product/:id",
+          element: <PuProductPageContainer />,
         },
         {
           path: "/wps-product/:id",
