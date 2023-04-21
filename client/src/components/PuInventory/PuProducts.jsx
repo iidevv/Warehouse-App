@@ -71,9 +71,24 @@ const PuProducts = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.products.map((m, i) => {
-                return <PuProduct key={i} id={m.product.id} image={m.primaryMedia.absoluteUrl} sku={m.partNumber} name={m.description} stock={m.inventory.locales} price={m.prices.retail} />;
-              })}
+              {props.products &&
+                props.products.map((m, i) => {
+                  if (m && m.product) {
+                    return (
+                      <PuProduct
+                        key={i}
+                        id={m.product.id}
+                        image={m.primaryMedia.absoluteUrl}
+                        sku={m.partNumber}
+                        name={m.description}
+                        stock={m.inventory.locales}
+                        price={m.prices.retail}
+                      />
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
             </tbody>
           </table>
           <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">

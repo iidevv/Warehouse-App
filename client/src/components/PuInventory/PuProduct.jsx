@@ -37,7 +37,7 @@ const PuProduct = (props) => {
   const handleImageLoad = () => {
     setIsImageLoaded(true);
   };
-  let image = props.primaryMedia ? props.primaryMedia.absoluteUrl : defaultImg;
+  let image =  props.image || defaultImg;
   return (
     <tr style={{ borderLeft: `15px solid ${idColor}` }}>
       <td className="px-2 lg:px-5 py-5 hidden lg:table-cell text-sm bg-white border-b border-gray-200">

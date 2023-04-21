@@ -130,17 +130,22 @@ const WpsProducts = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.products.map((m, i) => {
-                return (
-                  <WpsProduct
-                    key={i}
-                    id={m.id}
-                    name={m.name}
-                    updated_at={m.updated_at}
-                    items={m.items ? m.items.data : null}
-                  />
-                );
-              })}
+              {props.products &&
+                props.products.map((m, i) => {
+                  if (m) {
+                    return (
+                      <WpsProduct
+                        key={i}
+                        id={m.id}
+                        name={m.name}
+                        updated_at={m.updated_at}
+                        items={m.items ? m.items.data : null}
+                      />
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
             </tbody>
           </table>
           <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">

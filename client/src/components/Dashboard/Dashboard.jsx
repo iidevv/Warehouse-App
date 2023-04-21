@@ -100,57 +100,62 @@ const Dashboard = (props) => {
             </tr>
           </thead>
           <tbody>
-            {props.products.map((m, i) => {
-              return (
-                <tr key={i} className="flex flex-col lg:table-row">
-                  <td className="px-5 pt-4 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {m.vendor}
-                    </p>
-                  </td>
-                  <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
-                    <p className="text-xl font-bold lg:font-normal lg:text-sm lg:text-gray-900 whitespace-no-wrap">
-                      {m.product_name}
-                    </p>
-                  </td>
-                  <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {createNewDate(m.last_updated)}
-                    </p>
-                  </td>
-                  <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {m.status}
-                    </p>
-                  </td>
-                  <td className="relative px-5 pb-4 lg:py-5 text-sm bg-white border-b-8 lg:border-b border-gray-100">
-                    <button
-                      onClick={() => toggleDropdown(i)}
-                      className="text-red-600 hover:text-indigo-900"
-                    >
-                      Delete
-                    </button>
-                    {activeDropdownIndex === i && (
-                      <div className="absolute top-1/2 -translate-y-1/2 bg-white shadow-md rounded-sm px-1 py-1 border z-10">
+            {props.products &&
+              props.products.map((m, i) => {
+                if (m) {
+                  return (
+                    <tr key={i} className="flex flex-col lg:table-row">
+                      <td className="px-5 pt-4 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {/* {m.vendor} */}
+                        </p>
+                      </td>
+                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
+                        <p className="text-xl font-bold lg:font-normal lg:text-sm lg:text-gray-900 whitespace-no-wrap">
+                          {m.product_name}
+                        </p>
+                      </td>
+                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {createNewDate(m.last_updated)}
+                        </p>
+                      </td>
+                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {m.status}
+                        </p>
+                      </td>
+                      <td className="relative px-5 pb-4 lg:py-5 text-sm bg-white border-b-8 lg:border-b border-gray-100">
                         <button
                           onClick={() => toggleDropdown(i)}
-                          className="text-blue-600 mr-2 pr-2 border-r"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={handleDeleteClick}
-                          id={m.bigcommerce_id}
-                          className="text-red-600"
+                          className="text-red-600 hover:text-indigo-900"
                         >
                           Delete
                         </button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
+                        {activeDropdownIndex === i && (
+                          <div className="absolute top-1/2 -translate-y-1/2 bg-white shadow-md rounded-sm px-1 py-1 border z-10">
+                            <button
+                              onClick={() => toggleDropdown(i)}
+                              className="text-blue-600 mr-2 pr-2 border-r"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleDeleteClick}
+                              id={m.bigcommerce_id}
+                              className="text-red-600"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                } else {
+                  return null;
+                }
+              })}
           </tbody>
         </table>
         <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">
