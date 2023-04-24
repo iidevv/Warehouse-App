@@ -50,7 +50,7 @@ const PuDashboard = (props) => {
     return pageNumbers;
   };
   return (
-    <div className="m-5">
+    <div className="m-5 lg:w-full">
       <div className="flex flex-row items-center w-full mb-6">
         <h2 className="text-2xl leading-tight mr-6">
           PU Products ({props.total})

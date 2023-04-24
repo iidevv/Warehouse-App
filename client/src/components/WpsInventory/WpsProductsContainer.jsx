@@ -61,12 +61,12 @@ class WpsProductsContainer extends React.Component {
 
 let mapStateToProps = (state) => {
   return {
-    products: state.wpsInventory.products,
-    cursor: state.wpsInventory.cursor,
-    searchKeyword: state.wpsInventory.searchKeyword,
-    items: state.wpsInventory.items,
-    itemsCursor: state.wpsInventory.itemsCursor,
-    isFetching: state.wpsInventory.isFetching,
+    products: state.wpsProducts.products,
+    cursor: state.wpsProducts.cursor,
+    searchKeyword: state.wpsProducts.searchKeyword,
+    items: state.wpsProducts.items,
+    itemsCursor: state.wpsProducts.itemsCursor,
+    isFetching: state.wpsProducts.isFetching,
   };
 };
 

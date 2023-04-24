@@ -16,7 +16,7 @@ import {
 class PuDashboardContainer extends React.Component {
   componentDidMount() {
     this.props.getProducts();
-    this.props.getStatus();
+    // this.props.getStatus();
   }
   onPageChanged = (name, page) => {
     this.props.getProducts(name, page);
@@ -25,7 +25,7 @@ class PuDashboardContainer extends React.Component {
     this.props.deleteProduct(id);
   }
   onUpdateProducts = () => {
-    this.props.updateProducts();
+    // this.props.updateProducts();
   }
 
   render() {

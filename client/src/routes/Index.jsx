@@ -6,7 +6,7 @@ const Index = (props) => {
     <div className="container">
       <div className="flex flex-col lg:flex-row">
         <DashboardContainer />
-        {/* <PuDashboardContainer /> */}
+        <PuDashboardContainer />
       </div>
     </div>
   );

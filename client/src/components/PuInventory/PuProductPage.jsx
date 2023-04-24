@@ -34,7 +34,7 @@ const PuProductPage = (props) => {
       <div className="lg:flex items-start mb-10">
         <div className="bg-white shadow-lg lg:w-1/2">
           <img
-            className="p-4 w-full object-contain"
+            className="p-4 w-full object-contain max-h-96"
             alt="main img"
             src={productImg || defaultImg}
           />

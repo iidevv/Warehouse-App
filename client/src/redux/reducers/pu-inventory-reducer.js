@@ -1,11 +1,11 @@
 import { puInventoryAPI, dmgProductAPI } from "../../api/api";
 
-const SET_PRODUCTS = "SET_PRODUCTS";
-const SET_PRODUCTS_TOTAL = "SET_PRODUCTS_TOTAL";
-const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
-const SET_TOTAL_PAGES = "SET_TOTAL_PAGES";
+const SET_PRODUCTS_PU = "SET_PRODUCTS_PU";
+const SET_PRODUCTS_TOTAL_PU = "SET_PRODUCTS_TOTAL_PU";
+const SET_CURRENT_PAGE_PU = "SET_CURRENT_PAGE_PU";
+const SET_TOTAL_PAGES_PU = "SET_TOTAL_PAGES_PU";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
-const SET_STATUS = "SET_STATUS";
+const SET_STATUS_PU = "SET_STATUS_PU";
 
 let initialState = {
   products: [],
@@ -18,27 +18,27 @@ let initialState = {
 
 const PuInventoryReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_PRODUCTS:
+    case SET_PRODUCTS_PU:
       return {
         ...state,
         products: [...action.products],
       };
-    case SET_PRODUCTS_TOTAL:
+    case SET_PRODUCTS_TOTAL_PU:
       return {
         ...state,
         total: action.total,
       };
-    case SET_CURRENT_PAGE:
+    case SET_CURRENT_PAGE_PU:
       return {
         ...state,
         currentPage: action.currentPage,
       };
-    case SET_TOTAL_PAGES:
+    case SET_TOTAL_PAGES_PU:
       return {
         ...state,
         totalPages: action.totalPages,
       };
-    case SET_STATUS:
+    case SET_STATUS_PU:
       return {
         ...state,
         status: action.status,
@@ -56,35 +56,35 @@ const PuInventoryReducer = (state = initialState, action) => {
 
 export const setProducts = (products) => {
   return {
-    type: SET_PRODUCTS,
+    type: SET_PRODUCTS_PU,
     products,
   };
 };
 
 export const setProductsTotal = (total) => {
   return {
-    type: SET_PRODUCTS_TOTAL,
+    type: SET_PRODUCTS_TOTAL_PU,
     total,
   };
 };
 
 export const setCurrentPage = (currentPage) => {
   return {
-    type: SET_CURRENT_PAGE,
+    type: SET_CURRENT_PAGE_PU,
     currentPage,
   };
 };
 
 export const setTotalPages = (totalPages) => {
   return {
-    type: SET_TOTAL_PAGES,
+    type: SET_TOTAL_PAGES_PU,
     totalPages,
   };
 };
 
 export const setStatus = (status) => {
   return {
-    type: SET_STATUS,
+    type: SET_STATUS_PU,
     status,
   };
 };

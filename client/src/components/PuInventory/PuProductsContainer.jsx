@@ -55,12 +55,12 @@ class PuProductsContainer extends React.Component {
 
 let mapStateToProps = (state) => {
   return {
-    products: state.puInventory.products,
-    totalCount: state.puInventory.totalCount,
-    totalPages: state.puInventory.totalPages,
-    currentPage: state.puInventory.currentPage,
-    searchKeyword: state.puInventory.searchKeyword,
-    isFetching: state.puInventory.isFetching,
+    products: state.puProducts.products,
+    totalCount: state.puProducts.totalCount,
+    totalPages: state.puProducts.totalPages,
+    currentPage: state.puProducts.currentPage,
+    searchKeyword: state.puProducts.searchKeyword,
+    isFetching: state.puProducts.isFetching,
   };
 };
 
