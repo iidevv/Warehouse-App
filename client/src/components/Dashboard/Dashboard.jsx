@@ -125,14 +125,14 @@ const Dashboard = (props) => {
                           <div className="absolute top-1/2 -translate-y-1/2 bg-white shadow-md rounded-sm px-1 py-1 border z-10">
                             <button
                               onClick={() => toggleDropdown(i)}
-                              className="text-blue-600 mr-2 pr-2 border-r"
+                              className="text-blue-600 mr-2 hover:underline"
                             >
                               Cancel
                             </button>
                             <button
                               onClick={handleDeleteClick}
                               id={m.bigcommerce_id}
-                              className="text-red-600"
+                              className="text-red-600 hover:underline"
                             >
                               Delete
                             </button>
