@@ -27,13 +27,14 @@ const createProduct = (obj) => {
       .join("");
     description += "</ul>";
   }
+  const price = data.prices.retail || data.prices.originalBase + (data.prices.originalBase*0.35);
   const product = {
     vendor: "PU",
     vendor_id: data.product.id,
     name: data.productName,
     type: "physical",
     weight: obj.info.physicalDimensions.weight,
-    price: data.prices.retail,
+    price: price,
     description: description || "",
     brand_name: data.brandName || "",
     inventory_tracking: "variant",
@@ -52,6 +53,7 @@ const createProduct = (obj) => {
         0
       );
       const is_default = i === 1 ? true : false;
+      const price = item.prices.retail || item.prices.originalBase + (item.prices.originalBase*0.35);
       if (imageUrl) {
         return {
           id: item.partNumber,
@@ -62,7 +64,7 @@ const createProduct = (obj) => {
               label: option,
             },
           ],
-          price: item.prices.retail,
+          price: price,
           inventory_level: inventoryLevel,
           image_url: imageUrl,
           is_default: is_default,
