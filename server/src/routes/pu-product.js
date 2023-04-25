@@ -27,18 +27,11 @@ const createProduct = (obj) => {
       .join("");
     description += "</ul>";
   }
-  const price = data.prices.retail || data.prices.originalBase + (data.prices.originalBase*0.35);
-  const product = {
-    vendor: "PU",
-    vendor_id: data.product.id,
-    name: data.productName,
-    type: "physical",
-    weight: obj.info.physicalDimensions.weight,
-    price: price,
-    description: description || "",
-    brand_name: data.brandName || "",
-    inventory_tracking: "variant",
-    variants: variants.map((item, i) => {
+  const price =
+    data.prices.retail ||
+    data.prices.originalBase + data.prices.originalBase * 0.35;
+  const sortedVariants = variants
+    .map((item, i) => {
       const cleanName = removeDuplicateWords(
         data.productName,
         item.description
@@ -53,7 +46,9 @@ const createProduct = (obj) => {
         0
       );
       const is_default = i === 1 ? true : false;
-      const price = item.prices.retail || item.prices.originalBase + (item.prices.originalBase*0.35);
+      const price =
+        item.prices.retail ||
+        item.prices.originalBase + item.prices.originalBase * 0.35;
       if (imageUrl) {
         return {
           id: item.partNumber,
@@ -84,7 +79,21 @@ const createProduct = (obj) => {
           is_default: is_default,
         };
       }
-    }),
+    })
+    .sort((a, b) => {
+      return a.sku.localeCompare(b.sku);
+    });
+  const product = {
+    vendor: "PU",
+    vendor_id: data.product.id,
+    name: data.productName,
+    type: "physical",
+    weight: obj.info.physicalDimensions.weight,
+    price: price,
+    description: description || "",
+    brand_name: data.brandName || "",
+    inventory_tracking: "variant",
+    variants: sortedVariants,
     images: variants
       .map((item, i) => {
         const imageUrl = item.primaryMedia
@@ -145,7 +154,7 @@ const fetchData = async (id) => {
     const productData = await puInstance.get(`parts/${id}/`);
     const productInfo = {
       physicalDimensions: productData.data.physicalDimensions,
-      features: productData.data.product.features
+      features: productData.data.product.features,
     };
     const puProduct = {
       info: productInfo,
