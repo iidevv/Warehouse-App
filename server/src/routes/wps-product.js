@@ -9,7 +9,7 @@ const removeDuplicateWords = (title, variation) => {
 
   const filteredVariation = variationWords.filter((word) => !titleWords.has(word));
 
-  return filteredVariation.join(" ").toLowerCase();
+  return filteredVariation.join(" ").toLowerCase().replace(/(^\W+|\W+$)/g, "");
 }
 
 const createProduct = (obj) => {
