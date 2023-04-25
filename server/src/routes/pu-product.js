@@ -68,6 +68,7 @@ const createProduct = (obj) => {
         return {
           id: item.partNumber,
           sku: item.partNumber,
+          name: option,
           option_values: [
             {
               option_display_name: "Options",

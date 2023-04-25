@@ -4,7 +4,7 @@ import PuDashboardContainer from "../components/Dashboard/PuDashboardContainer";
 const Index = (props) => {
   return (
     <div className="container">
-      <div className="flex flex-col lg:flex-row">
+      <div className="">
         <DashboardContainer />
         <PuDashboardContainer />
       </div>
