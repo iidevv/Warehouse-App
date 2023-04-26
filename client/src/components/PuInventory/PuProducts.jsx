@@ -52,7 +52,7 @@ const PuProducts = (props) => {
                 </th>
                 <th
                   scope="col"
-                  className="px-2 lg:px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                  className="px-2 lg:px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
                   Product name
                 </th>

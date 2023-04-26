@@ -122,28 +122,28 @@ export const updatePuProducts = () => {
         // Loop through each synced product
         for (const syncedProduct of syncedProducts) {
           // Get WPS product data and compare it with the synced product data
-          const wpsProduct = await getPuProduct(
+          const puProduct = await getPuProduct(
             syncedProduct.variants[0].vendor_id
           );
           // put product name for same products with different variations
-          wpsProduct.product_name = syncedProduct.product_name;
+          puProduct.product_name = syncedProduct.product_name;
 
           const syncedProductData = await getSyncedProduct(
             syncedProduct.vendor_id,
             syncedProduct.product_name
           );
           // Check if an update is needed
-          const isPriceUpdated = wpsProduct.price !== syncedProductData.price;
-          const isInventoryUpdated = wpsProduct.variants.some((wpsVariant) => {
+          const isPriceUpdated = puProduct.price !== syncedProductData.price;
+          const isInventoryUpdated = puProduct.variants.some((puVariant) => {
             // Find the corresponding synced variant using the vendor_id
             const syncedVariant = syncedProductData.variants.find(
-              (v) => v.vendor_id === wpsVariant.id
+              (v) => v.vendor_id === puVariant.id
             );
 
             // Check if the inventory_level has changed
             return (
               syncedVariant &&
-              wpsVariant.inventory_level !== syncedVariant.inventory_level
+              puVariant.inventory_level !== syncedVariant.inventory_level
             );
           });
 
@@ -152,21 +152,21 @@ export const updatePuProducts = () => {
             try {
               // Update the product
               await updateBigcommerceProduct(syncedProduct.bigcommerce_id, {
-                price: wpsProduct.price,
+                price: puProduct.price,
               });
 
               // Loop through each variant in the synced product
               for (const syncedVariant of syncedProduct.variants) {
                 // Find the corresponding WPS variant using the vendor_id
-                const wpsVariant = wpsProduct.variants.find(
+                const puVariant = puProduct.variants.find(
                   (v) => v.id === syncedVariant.vendor_id
                 );
 
                 // Check if the variant price or inventory_level has changed
                 const isPriceUpdated =
-                  wpsVariant.price !== syncedVariant.variant_price;
+                  puVariant.price !== syncedVariant.variant_price;
                 const isInventoryUpdated =
-                  wpsVariant.inventory_level !== syncedVariant.inventory_level;
+                  puVariant.inventory_level !== syncedVariant.inventory_level;
 
                 if (isPriceUpdated || isInventoryUpdated) {
                   // Update the product variant
@@ -175,8 +175,8 @@ export const updatePuProducts = () => {
                     [
                       {
                         id: syncedVariant.bigcommerce_id,
-                        price: wpsVariant.price,
-                        inventory_level: wpsVariant.inventory_level,
+                        price: puVariant.price,
+                        inventory_level: puVariant.inventory_level,
                       },
                     ]
                   );
@@ -184,17 +184,17 @@ export const updatePuProducts = () => {
               }
 
               // Update the synced product status to 'Updated'
-              wpsProduct.status = "Updated";
-              await updateSyncedProduct(wpsProduct);
+              puProduct.status = "Updated";
+              await updateSyncedProduct(puProduct);
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'
-              wpsProduct.status = "Error";
-              await updateSyncedProduct(wpsProduct);
+              puProduct.status = "Error";
+              await updateSyncedProduct(puProduct);
             }
           } else {
             // If there's no change, update the synced product status to 'No changes'
-            wpsProduct.status = "No changes";
-            await updateSyncedProduct(wpsProduct);
+            puProduct.status = "No changes";
+            await updateSyncedProduct(puProduct);
           }
         }
         currentPage++;

@@ -36,7 +36,7 @@ const WpsProductPageVariants = (props) => {
     );
   };
   const handleCheckboxChange = (event, index) => {
-    const variantId = parseInt(event.target.dataset.variant_id);
+    const variantId = event.target.dataset.variant_id;
     const isChecked = event.target.checked;
 
     // Update the checkbox state
@@ -51,7 +51,7 @@ const WpsProductPageVariants = (props) => {
         const endIndex = Math.max(index, lastCheckedIndex);
 
         for (let i = startIndex; i <= endIndex; i++) {
-          const id = parseInt(props.variants[i].id);
+          const id = props.variants[i].id;
           if (!selectedVariants.some((item) => item.variantId === id)) {
             setSelectedVariants((prevSelectedVariants) => [
               ...prevSelectedVariants,
