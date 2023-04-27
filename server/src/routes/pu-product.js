@@ -11,7 +11,10 @@ const removeDuplicateWords = (title, variation) => {
     (word) => !titleWords.has(word)
   );
 
-  return filteredVariation.join(" ").toLowerCase().replace(/(^\W+|\W+$)/g, "");
+  return filteredVariation
+    .join(" ")
+    .toLowerCase()
+    .replace(/(^\W+|\W+$)/g, "");
 };
 
 const createProduct = (obj) => {
@@ -84,6 +87,30 @@ const createProduct = (obj) => {
     .sort((a, b) => {
       return a.sku.localeCompare(b.sku);
     });
+  const mainImages = variants
+    .map((item, i) => {
+      const imageUrl = item.primaryMedia
+        ? item.primaryMedia.absoluteUrl
+        : false;
+      i++;
+      const is_thumbnail = i === 1;
+      if (imageUrl) {
+        return {
+          variant_id: item.partNumber,
+          is_thumbnail: is_thumbnail,
+          sort_order: i,
+          image_url: imageUrl,
+        };
+      }
+    })
+    .filter((image) => image);
+  const additionalImages = obj.info.images.map((image, i) => ({
+    is_additional: true,
+    is_thumbnail: false,
+    sort_order: mainImages.length + 1 + i,
+    image_url: image,
+  }));
+  const images = [...mainImages, ...additionalImages];
   const product = {
     vendor: "PU",
     vendor_id: data.product.id,
@@ -95,23 +122,7 @@ const createProduct = (obj) => {
     brand_name: data.brandName || "",
     inventory_tracking: "variant",
     variants: sortedVariants,
-    images: variants
-      .map((item, i) => {
-        const imageUrl = item.primaryMedia
-          ? item.primaryMedia.absoluteUrl
-          : false;
-        i++;
-        const is_thumbnail = i === 1;
-        if (imageUrl) {
-          return {
-            variant_id: item.partNumber,
-            is_thumbnail: is_thumbnail,
-            sort_order: i,
-            image_url: imageUrl,
-          };
-        }
-      })
-      .filter((image) => image),
+    images: images,
   };
   return product;
 };
@@ -153,9 +164,17 @@ const fetchData = async (id) => {
     );
 
     const productData = await puInstance.get(`parts/${id}/`);
+    const imageExtensions = [".jpg", ".png", ".webp"];
+
+    const images = productData.data.media
+      .flatMap((image) => image.absoluteUrl)
+      .filter((imageUrl) =>
+        imageExtensions.some((extension) => imageUrl.endsWith(extension))
+      );
     const productInfo = {
       physicalDimensions: productData.data.physicalDimensions,
       features: productData.data.product.features,
+      images: images
     };
     const puProduct = {
       info: productInfo,

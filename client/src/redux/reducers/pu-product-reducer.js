@@ -12,7 +12,7 @@ const REMOVE_VARIANTS = "REMOVE_VARIANTS";
 const REMOVE_VARIANT_IMAGE = "REMOVE_VARIANT_IMAGE";
 const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
 const FIND_AND_REPLACE = "FIND_AND_REPLACE";
-
+const REMOVE_ADDITIONAL_IMAGE = "REMOVE_ADDITIONAL_IMAGE";
 let initialState = {
   productData: {
     name: "",
@@ -38,13 +38,25 @@ const puProductReducer = (state = initialState, action) => {
         productData: action.productData,
       };
     case SET_CONTENT:
-      return {
-        ...state,
-        content: {
-          ...state.content,
-          [action.payload.id]: action.payload.value,
-        },
-      };
+      if (action.payload.id == "description" && action.payload.isGpt) {
+        return {
+          ...state,
+          content: {
+            ...state.content,
+            [action.payload.id]:
+              action.payload.value +
+              ("<br> " + state.productData.description || ""),
+          },
+        };
+      } else {
+        return {
+          ...state,
+          content: {
+            ...state.content,
+            [action.payload.id]: action.payload.value,
+          },
+        };
+      }
     case SET_INFO_ALERT:
       return {
         ...state,
@@ -141,6 +153,17 @@ const puProductReducer = (state = initialState, action) => {
           variants: updatedVariantsName,
         },
       };
+    case REMOVE_ADDITIONAL_IMAGE:
+      const updatedAdditionalImagesRemoveOne = state.productData.images.filter(
+        (image) => image.image_url !== action.payload.url
+      );
+      return {
+        ...state,
+        productData: {
+          ...state.productData,
+          images: updatedAdditionalImagesRemoveOne,
+        },
+      };
     case REMOVE_VARIANT:
       const updatedImagesRemoveOne = state.productData.images.filter(
         (image) => image.variant_id !== action.payload.variant_id
@@ -201,12 +224,13 @@ export const setProduct = (productData) => {
   };
 };
 
-export const setHandleContentChange = (id, value) => {
+export const setHandleContentChange = (id, value, isGpt) => {
   return {
     type: SET_CONTENT,
     payload: {
       id,
       value,
+      isGpt
     },
   };
 };
@@ -269,6 +293,15 @@ export const removeVariantImage = (id, variant_id) => {
     payload: {
       id,
       variant_id,
+    },
+  };
+};
+
+export const removeAdditionalImage = (url) => {
+  return {
+    type: REMOVE_ADDITIONAL_IMAGE,
+    payload: {
+      url,
     },
   };
 };
@@ -337,7 +370,7 @@ export const getChatgptContent = (contentField, text) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
     chatgptAPI.getText(text).then((data) => {
-      dispatch(setHandleContentChange(contentField, data.trim()));
+      dispatch(setHandleContentChange(contentField, data.replace(/(^\W+|\W+$)/g, ""), true));
       dispatch(setToggleIsFetching(false));
     });
   };

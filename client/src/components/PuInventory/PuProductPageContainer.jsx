@@ -22,6 +22,7 @@ import {
   changeVariantName,
   getChatgptContent,
   findAndReplace,
+  removeAdditionalImage
 } from "../../redux/reducers/pu-product-reducer";
 
 class PuProductContainer extends React.Component {
@@ -54,6 +55,7 @@ class PuProductContainer extends React.Component {
     // remove variant_id
     data.images = data.images.map((image, i) => {
       delete image.variant_id;
+      delete image.is_additional;
       if (i == 0) image.is_thumbnail = true;
       image.sort_order = i;
       return image;
@@ -94,6 +96,9 @@ class PuProductContainer extends React.Component {
   onFindAndReplace = (find, replace) => {
     this.props.findAndReplace(find, replace);
   };
+  onHandleRemoveAdditionalImage = (url) => {
+    this.props.removeAdditionalImage(url);
+  };
 
   render() {
     return (
@@ -113,6 +118,7 @@ class PuProductContainer extends React.Component {
           onHandleRemoveVariants={this.onHandleRemoveVariants}
           onHandleRemoveVariantImage={this.onHandleRemoveVariantImage}
           onHandleChangeVariantName={this.onHandleChangeVariantName}
+          onHandleRemoveAdditionalImage={this.onHandleRemoveAdditionalImage}
           onGetChatgptContent={this.onGetChatgptContent}
           categories={this.props.categories}
           current_category={this.props.current_category}
@@ -150,7 +156,8 @@ export default compose(
     removeVariants,
     changeVariantName,
     getChatgptContent,
-    findAndReplace
+    findAndReplace,
+    removeAdditionalImage
   }),
   withRouter
 )(PuProductContainer);

@@ -38,13 +38,25 @@ const wpsProductReducer = (state = initialState, action) => {
         productData: action.productData,
       };
     case SET_CONTENT:
-      return {
-        ...state,
-        content: {
-          ...state.content,
-          [action.payload.id]: action.payload.value,
-        },
-      };
+      if (action.payload.id == "description" && action.payload.isGpt) {
+        return {
+          ...state,
+          content: {
+            ...state.content,
+            [action.payload.id]:
+              action.payload.value +
+              ("<br> " + state.productData.description || ""),
+          },
+        };
+      } else {
+        return {
+          ...state,
+          content: {
+            ...state.content,
+            [action.payload.id]: action.payload.value,
+          },
+        };
+      }
     case SET_INFO_ALERT:
       return {
         ...state,
@@ -201,12 +213,13 @@ export const setProduct = (productData) => {
   };
 };
 
-export const setHandleContentChange = (id, value) => {
+export const setHandleContentChange = (id, value, isGpt) => {
   return {
     type: SET_CONTENT,
     payload: {
       id,
       value,
+      isGpt
     },
   };
 };
@@ -337,7 +350,7 @@ export const getChatgptContent = (contentField, text) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
     chatgptAPI.getText(text).then((data) => {
-      dispatch(setHandleContentChange(contentField, data.trim()));
+      dispatch(setHandleContentChange(contentField, data.replace(/(^\W+|\W+$)/g, ""), true));
       dispatch(setToggleIsFetching(false));
     });
   };
