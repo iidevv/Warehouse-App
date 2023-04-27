@@ -9,7 +9,7 @@ import {
   setProducts,
   setSearchKeyword,
   getItems,
-  setToggleIsFetching
+  setToggleIsFetching,
 } from "../../redux/reducers/wps-products-reducer";
 
 class WpsProductsContainer extends React.Component {
@@ -38,7 +38,7 @@ class WpsProductsContainer extends React.Component {
   };
   onItemsSearch = (searchby, keyword, p) => {
     this.props.getItems(searchby, keyword, p);
-  }
+  };
 
   render() {
     return (
@@ -76,6 +76,6 @@ export default compose(
     setProducts,
     setSearchKeyword,
     getItems,
-    setToggleIsFetching
+    setToggleIsFetching,
   })
 )(WpsProductsContainer);

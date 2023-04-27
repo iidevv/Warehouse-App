@@ -7,10 +7,15 @@ const removeDuplicateWords = (title, variation) => {
   const titleWords = new Set(title.toLowerCase().split(" "));
   const variationWords = variation.toLowerCase().split(" ");
 
-  const filteredVariation = variationWords.filter((word) => !titleWords.has(word));
+  const filteredVariation = variationWords.filter(
+    (word) => !titleWords.has(word)
+  );
 
-  return filteredVariation.join(" ").toLowerCase().replace(/(^\W+|\W+$)/g, "");
-}
+  return filteredVariation
+    .join(" ")
+    .toLowerCase()
+    .replace(/(^\W+|\W+$)/g, "");
+};
 
 const createProduct = (obj) => {
   const data = obj.data;
@@ -25,6 +30,40 @@ const createProduct = (obj) => {
       .join("");
     description += "</ul>";
   }
+
+  const mainImages = variants
+    .map((item, i) => {
+      const imageUrl = item.images.data[0]
+        ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
+        : false;
+      i++;
+      const is_thumbnail = i === 1;
+      if (imageUrl) {
+        return {
+          variant_id: item.id,
+          is_thumbnail: is_thumbnail,
+          sort_order: i,
+          image_url: imageUrl,
+        };
+      }
+    })
+    .filter((image) => image);
+
+  const additionalImages = variants
+    .flatMap((variant, i) => {
+      return variant.images.data.map((image, i) => {
+        if (i == 0) return;
+        return {
+          is_additional: true,
+          is_thumbnail: false,
+          sort_order: i,
+          image_url: `https://${image.domain}${image.path}${image.filename}`,
+        };
+      });
+    })
+    .filter((image) => image);
+
+  const images = [...mainImages, ...additionalImages];
   const product = {
     vendor: "WPS",
     vendor_id: data.id,
@@ -37,7 +76,7 @@ const createProduct = (obj) => {
     inventory_tracking: "variant",
     variants: variants.map((item, i) => {
       const cleanName = removeDuplicateWords(data.name, item.name);
-      const option =  cleanName ? cleanName : item.name.toLowerCase();
+      const option = cleanName ? cleanName : item.name.toLowerCase();
       const imageUrl = item.images.data[0]
         ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
         : false;
@@ -74,23 +113,7 @@ const createProduct = (obj) => {
         };
       }
     }),
-    images: variants
-      .map((item, i) => {
-        const imageUrl = item.images.data[0]
-          ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
-          : false;
-        i++;
-        const is_thumbnail = i === 1;
-        if (imageUrl) {
-          return {
-            variant_id: item.id,
-            is_thumbnail: is_thumbnail,
-            sort_order: i,
-            image_url: imageUrl,
-          };
-        }
-      })
-      .filter((image) => image),
+    images: images,
   };
   return product;
 };

@@ -230,7 +230,7 @@ export const setHandleContentChange = (id, value, isGpt) => {
     payload: {
       id,
       value,
-      isGpt
+      isGpt,
     },
   };
 };
@@ -370,7 +370,13 @@ export const getChatgptContent = (contentField, text) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
     chatgptAPI.getText(text).then((data) => {
-      dispatch(setHandleContentChange(contentField, data.replace(/(^\W+|\W+$)/g, ""), true));
+      dispatch(
+        setHandleContentChange(
+          contentField,
+          data.replace(/(^\W+|\W+$)/g, ""),
+          true
+        )
+      );
       dispatch(setToggleIsFetching(false));
     });
   };

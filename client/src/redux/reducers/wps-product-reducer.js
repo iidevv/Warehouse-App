@@ -12,7 +12,7 @@ const REMOVE_VARIANTS = "REMOVE_VARIANTS";
 const REMOVE_VARIANT_IMAGE = "REMOVE_VARIANT_IMAGE";
 const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
 const FIND_AND_REPLACE = "FIND_AND_REPLACE";
-
+const REMOVE_ADDITIONAL_IMAGE = "REMOVE_ADDITIONAL_IMAGE";
 let initialState = {
   productData: {
     name: "",
@@ -153,6 +153,17 @@ const wpsProductReducer = (state = initialState, action) => {
           variants: updatedVariantsName,
         },
       };
+    case REMOVE_ADDITIONAL_IMAGE:
+      const updatedAdditionalImagesRemoveOne = state.productData.images.filter(
+        (image) => image.image_url !== action.payload.url
+      );
+      return {
+        ...state,
+        productData: {
+          ...state.productData,
+          images: updatedAdditionalImagesRemoveOne,
+        },
+      };
     case REMOVE_VARIANT:
       const updatedImagesRemoveOne = state.productData.images.filter(
         (image) => image.variant_id !== action.payload.variant_id
@@ -219,7 +230,7 @@ export const setHandleContentChange = (id, value, isGpt) => {
     payload: {
       id,
       value,
-      isGpt
+      isGpt,
     },
   };
 };
@@ -282,6 +293,15 @@ export const removeVariantImage = (id, variant_id) => {
     payload: {
       id,
       variant_id,
+    },
+  };
+};
+
+export const removeAdditionalImage = (url) => {
+  return {
+    type: REMOVE_ADDITIONAL_IMAGE,
+    payload: {
+      url,
     },
   };
 };
@@ -350,7 +370,13 @@ export const getChatgptContent = (contentField, text) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
     chatgptAPI.getText(text).then((data) => {
-      dispatch(setHandleContentChange(contentField, data.replace(/(^\W+|\W+$)/g, ""), true));
+      dispatch(
+        setHandleContentChange(
+          contentField,
+          data.replace(/(^\W+|\W+$)/g, ""),
+          true
+        )
+      );
       dispatch(setToggleIsFetching(false));
     });
   };

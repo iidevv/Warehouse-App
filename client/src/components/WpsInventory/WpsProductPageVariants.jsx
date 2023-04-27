@@ -38,7 +38,7 @@ const WpsProductPageVariants = (props) => {
   const handleCheckboxChange = (event, index) => {
     const variantId = event.target.dataset.variant_id;
     const isChecked = event.target.checked;
-
+    
     // Update the checkbox state
     setCheckboxStates({
       ...checkboxStates,

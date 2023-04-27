@@ -4,6 +4,7 @@ import CategoriesSearch from "./../common/categoriesSearch/CategoriesSearch";
 import WpsProductPageVariants from "./WpsProductPageVariants";
 
 const WpsProductPage = (props) => {
+  console.log(props.product.images);
   const productImg =
     props.product.images &&
     props.product.images.length &&
@@ -29,20 +30,55 @@ const WpsProductPage = (props) => {
   const handleChangeName = (event) => {
     props.onHandleChangeName(event.target.value);
   };
+  const handleRemoveAdditionalImage = (event) => {
+    props.onHandleRemoveAdditionalImage(event.target.dataset.url);
+  };
   return (
     <div className="container">
       <div className="lg:flex items-start mb-10">
-        <div className="bg-white shadow-lg lg:w-1/2">
-          <img
-            className="p-4 w-full object-contain max-h-96"
-            alt="main img"
-            src={productImg || defaultImg}
-          />
+        <div className="lg:w-1/2">
+          <div className="bg-white shadow-lg mb-4 ml-1">
+            <img
+              className="p-4 w-full object-contain max-h-96"
+              alt="main img"
+              src={productImg || defaultImg}
+            />
+          </div>
+          <div className="flex flex-wrap">
+            {props.product.images &&
+              props.product.images.map((image, i) => {
+                if (!image.is_additional || image.image_url == productImg)
+                  return;
+                return (
+                  <div key={i} className="bg-white shadow-lg p-1 m-1 relative">
+                    <button
+                      onClick={handleRemoveAdditionalImage}
+                      data-url={image.image_url}
+                      className="absolute right-0 top-0 px-2 text-white bg-red-600"
+                    >
+                      &times;
+                    </button>
+                    <a
+                      className="block mt-2"
+                      href={image.image_url}
+                      target="_blank"
+                    >
+                      <img
+                        src={image.image_url}
+                        className="w-24 h-20 object-contain"
+                      />
+                    </a>
+                  </div>
+                );
+              })}
+          </div>
         </div>
         <div className="lg:w-1/2  lg:ml-6 lg:mt-0 mt-6 bg-white shadow-lg px-4 lg:px-8 py-10">
           <div>
             <p className="mb-2">{props.product.brand_name}</p>
-            <p className="block text-sm font-medium text-gray-700 mb-2">Title:</p>
+            <p className="block text-sm font-medium text-gray-700 mb-2">
+              Title:
+            </p>
             <input
               className="flex w-full mb-4 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               type="text"
@@ -174,7 +210,14 @@ const WpsProductPage = (props) => {
           <span>Chat GPT</span>
         </button>
       </div>
-      <WpsProductPageVariants variants={props.product.variants} onFindAndReplace={props.onFindAndReplace} onHandleRemoveVariants={props.onHandleRemoveVariants} onHandleRemoveVariant={props.onHandleRemoveVariant} onHandleRemoveVariantImage={props.onHandleRemoveVariantImage} onHandleChangeVariantName={props.onHandleChangeVariantName} />
+      <WpsProductPageVariants
+        variants={props.product.variants}
+        onFindAndReplace={props.onFindAndReplace}
+        onHandleRemoveVariants={props.onHandleRemoveVariants}
+        onHandleRemoveVariant={props.onHandleRemoveVariant}
+        onHandleRemoveVariantImage={props.onHandleRemoveVariantImage}
+        onHandleChangeVariantName={props.onHandleChangeVariantName}
+      />
     </div>
   );
 };
