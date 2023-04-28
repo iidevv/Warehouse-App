@@ -17,26 +17,27 @@ class WpsProductsContainer extends React.Component {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const cursor = urlParams.get("cursor") || "";
+    const searchby = urlParams.get("q") || "name";
     const search = urlParams.get("s") || "";
-    this.props.getProducts(search, cursor);
     this.props.setSearchKeyword(search);
+    this.props.getItems(searchby, search, cursor);
   }
   componentDidUpdate(prevProps) {
-    if (this.props.cursor.current !== prevProps.cursor.current) {
-      const newUrl = `${window.location.origin}${window.location.pathname}?cursor=${this.props.cursor.current}&s=${this.props.searchKeyword}`;
+    if (this.props.itemsCursor.current !== prevProps.itemsCursor.current) {
+      const newUrl = `${window.location.origin}${window.location.pathname}?cursor=${this.props.itemsCursor.current}&s=${this.props.searchKeyword}`;
       window.history.pushState({ path: newUrl }, "", newUrl);
     }
   }
-  onCursorChanged = (p) => {
-    this.props.getProducts(this.props.searchKeyword, p);
+  onItemsPageChanged = (searchby, keyword, p) => {
+    this.props.getItems(searchby, keyword, p);
     const container = document.querySelector(".scroll-container");
     if (container) container.scrollTo(0, 0);
   };
   onSearch = (name) => {
-    this.props.setSearchKeyword(name);
     this.props.getProducts(name, "");
   };
   onItemsSearch = (searchby, keyword, p) => {
+    this.props.setSearchKeyword(keyword);
     this.props.getItems(searchby, keyword, p);
   };
 
@@ -52,6 +53,7 @@ class WpsProductsContainer extends React.Component {
           items={this.props.items}
           itemsCursor={this.props.itemsCursor}
           onItemsSearch={this.onItemsSearch}
+          onItemsPageChanged={this.onItemsPageChanged}
           searchKeyword={this.props.searchKeyword}
         />
       </>

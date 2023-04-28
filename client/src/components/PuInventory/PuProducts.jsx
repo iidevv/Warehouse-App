@@ -13,7 +13,7 @@ const PuProducts = (props) => {
   return (
     <div className="container">
       <div>
-        <h2 className="text-2xl leading-tight mb-4">PU Catalog</h2>
+        <h2 className="text-2xl leading-tight mb-4">Parts Unlimited Catalog</h2>
         <div className="flex flex-col-reverse lg:flex-row items-center">
           <div className="lg:w-1/2">
             <input
@@ -34,15 +34,9 @@ const PuProducts = (props) => {
               <tr>
                 <th
                   scope="col"
-                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                  className="px-5 py-3 hidden lg:table-cell text-sm text-center font-normal text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
-                  ID
-                </th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                >
-                  Image
+                  
                 </th>
                 <th
                   scope="col"
@@ -54,19 +48,19 @@ const PuProducts = (props) => {
                   scope="col"
                   className="px-2 lg:px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
-                  Product name
-                </th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-                >
-                  STOCK
+                  Name
                 </th>
                 <th
                   scope="col"
                   className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
                   Price
+                </th>
+                <th
+                  scope="col"
+                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                >
+                  STOCK
                 </th>
               </tr>
             </thead>

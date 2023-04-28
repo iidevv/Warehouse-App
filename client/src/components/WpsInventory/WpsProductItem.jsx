@@ -1,4 +1,4 @@
-const WpsItem = (props) => {
+const WpsProductItem = (props) => {
   const link = props.item.product_id ? `/wps-product/${props.item.product_id}` : "#";
   const sku = props.item.sku;
   const name = props.item.name;
@@ -30,4 +30,4 @@ const WpsItem = (props) => {
   );
 };
 
-export default WpsItem;
+export default WpsProductItem;

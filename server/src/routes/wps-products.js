@@ -21,11 +21,12 @@ router.get("/items/", async (req, res) => {
   let keyword = req.query.keyword ? req.query.keyword : "";
   let searchby = req.query.searchby ? req.query.searchby : "name";
   await wpsInstance
-    .get(`/items?include=inventory&filter[${searchby}][pre]=${keyword}&page[cursor]=${cursor}`)
+    .get(`/items?include=inventory,images&filter[${searchby}][pre]=${keyword}&page[cursor]=${cursor}`)
     .then((response) => {
       res.json(response.data);
     })
     .catch((error) => {
+      console.log(error);
       res.status(500).json({error: error.message});
     });
 });

@@ -26,7 +26,7 @@ const puProductsReducer = (state = initialState, action) => {
       return {
         ...state,
         totalCount: action.totalCount,
-        totalPages: Math.ceil(action.totalCount / 20),
+        totalPages: Math.ceil(action.totalCount / 10),
       };
     case SET_SEARCH_KEYWORD:
       return {
@@ -86,7 +86,7 @@ export const setToggleIsFetching = (isFetching) => {
 };
 
 export const getProducts = (name, page) => {
-  let offset = page * 20;
+  let offset = page * 10;
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
     puProductsAPI.getProducts(name, offset).then((data) => {

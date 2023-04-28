@@ -103,7 +103,15 @@ const createProduct = (obj) => {
         };
       }
     })
-    .filter((image) => image);
+    .filter((image) => image)
+    .filter((image, index, self) => {
+      const urls = self.map((img) => img.image_url);
+      const uniqueUrls = new Set(urls);
+      return (
+        uniqueUrls.has(image.image_url) &&
+        urls.indexOf(image.image_url) === index
+      );
+    });
   const additionalImages = obj.info.images.map((image, i) => ({
     is_additional: true,
     is_thumbnail: false,
@@ -174,7 +182,7 @@ const fetchData = async (id) => {
     const productInfo = {
       physicalDimensions: productData.data.physicalDimensions,
       features: productData.data.product.features,
-      images: images
+      images: images,
     };
     const puProduct = {
       info: productInfo,

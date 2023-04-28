@@ -1,107 +1,52 @@
 import React, { useState } from "react";
-import WpsItem from "./WpsItem";
+import WpsProductItem from "./WpsProductItem";
 import WpsProduct from "./WpsProduct";
 
 const WpsProducts = (props) => {
-  const handleInputChange = (event) => {
-    props.onSearch(event.target.value);
+  const handleInputChangeProductItems = (e) => {
+    props.onSearch(e.target.value);
   };
 
-  const [searchBy, setSearchBy] = useState("");
-  const [searchValue, setSearchValue] = useState("");
+  const [searchBy, setSearchBy] = useState("name");
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-
-    const formElements = event.target.elements;
-    const searchByValue = formElements.search_by.value;
-    const searchValueValue = formElements.search_value.value;
-    setSearchBy(formElements.search_by.value);
-    setSearchValue(formElements.search_value.value);
-
-    props.onItemsSearch(searchByValue, searchValueValue, "");
+  const handleInputChange = (e) => {
+    const keyword = e.target.value;
+    props.onItemsSearch(searchBy, keyword, "");
   };
 
-  const handleOnPageChanged = (event) => {
-    const cursor = event.target.value;
-    props.onItemsSearch(searchBy, searchValue, cursor);
+  const handleSelectChange = (e) => {
+    setSearchBy(e.target.value);
+  };
+
+  const handleOnItemsPageChanged = (e) => {
+    const cursor = e.target.value;
+    props.onItemsPageChanged(searchBy, props.searchKeyword, cursor);
   };
 
   return (
     <div className="container">
       <div>
-        <h2 className="text-2xl leading-tight mb-4">WPS Catalog</h2>
+        <h2 className="text-2xl leading-tight mb-4">
+          Western Power Sports Catalog
+        </h2>
         <div className="flex flex-col-reverse lg:flex-row">
-          <div className="lg:w-1/2 lg:mr-4 lg:pr-4 lg:border-r">
+          <div className="lg:w-1/2 flex">
+            <select
+              value={searchBy}
+              onChange={handleSelectChange}
+              className="rounded-lg border-transparent mr-2 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+            >
+              <option value="name">Name</option>
+              <option value="sku">SKU</option>
+            </select>
             <input
               type="text"
-              className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-              placeholder="Search by product name"
               value={props.searchKeyword}
               onChange={handleInputChange}
+              className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+              placeholder="Search by variants"
             />
           </div>
-          <form
-            onSubmit={handleFormSubmit}
-            className="mb-4 lg:mb-0 lg:w-1/2 flex flex-col relative"
-          >
-            <div className="flex">
-              <select
-                name="search_by"
-                className="rounded-lg border-transparent mr-2 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-              >
-                <option value="name">Name</option>
-                <option value="sku">SKU</option>
-              </select>
-              <input
-                type="text"
-                name="search_value"
-                className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                placeholder="Search by variants"
-              />
-              <button
-                type="submit"
-                className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <span className="sr-only">Search</span>
-              </button>
-            </div>
-            <div className="flex flex-col relative lg:absolute overflow-hidden top-full left-0 w-full rounded-lg mt-2 bg-white shadow-lg">
-              {props.items &&
-                props.items.map((item, i) => <WpsItem key={i} item={item} />)}
-              <div className="flex justify-center">
-                {props.itemsCursor && props.itemsCursor.prev && (
-                  <button
-                    type="button"
-                    onClick={handleOnPageChanged}
-                    value={props.itemsCursor.prev}
-                    className="py-2 px-4 text-blue-800 underline hover:no-underline"
-                  >
-                    Prev
-                  </button>
-                )}
-                {props.itemsCursor && props.itemsCursor.next && (
-                  <button
-                    type="button"
-                    onClick={handleOnPageChanged}
-                    value={props.itemsCursor.next}
-                    className="py-2 px-4 text-blue-800 underline hover:no-underline"
-                  >
-                    Next
-                  </button>
-                )}
-              </div>
-            </div>
-          </form>
         </div>
       </div>
       <div className="py-4 overflow-x-auto">
@@ -111,35 +56,48 @@ const WpsProducts = (props) => {
               <tr>
                 <th
                   scope="col"
+                  className="px-5 py-3 hidden lg:table-cell text-sm text-center font-normal text-gray-800 uppercase bg-white border-b border-gray-200"
+                ></th>
+                <th
+                  scope="col"
                   className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
-                  ID
+                  SKU
                 </th>
                 <th
                   scope="col"
-                  className="px-2 lg:px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                  className="px-2 lg:px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
-                  Product name
+                  Name
                 </th>
                 <th
                   scope="col"
-                  className="px-2 lg:px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
                 >
-                  Variants
+                  Price
+                </th>
+                <th
+                  scope="col"
+                  className="px-5 py-3 hidden lg:table-cell text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+                >
+                  STOCK
                 </th>
               </tr>
             </thead>
             <tbody>
-              {props.products &&
-                props.products.map((m, i) => {
+              {props.items &&
+                props.items.map((m, i) => {
                   if (m) {
+                    console.log(m);
                     return (
                       <WpsProduct
                         key={i}
-                        id={m.id}
+                        id={m.product_id}
+                        image={m.images.data}
+                        sku={m.sku}
                         name={m.name}
-                        updated_at={m.updated_at}
-                        items={m.items ? m.items.data : null}
+                        stock={m.inventory.data && m.inventory.data.total}
+                        price={m.list_price}
                       />
                     );
                   } else {
@@ -151,9 +109,10 @@ const WpsProducts = (props) => {
           <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">
             <div className="flex items-center">
               <button
-                onClick={() => props.onCursorChanged(props.cursor.prev)}
                 type="button"
-                disabled={props.cursor.prev ? false : true}
+                onClick={handleOnItemsPageChanged}
+                value={props.itemsCursor.prev}
+                disabled={props.itemsCursor.prev ? false : true}
                 className="disabled:opacity-50 w-full p-4 text-base text-gray-600 bg-white border rounded-l-xl hover:bg-gray-100"
               >
                 <svg
@@ -168,9 +127,10 @@ const WpsProducts = (props) => {
                 </svg>
               </button>
               <button
-                onClick={() => props.onCursorChanged(props.cursor.next)}
                 type="button"
-                disabled={props.cursor.next ? false : true}
+                onClick={handleOnItemsPageChanged}
+                value={props.itemsCursor.next}
+                disabled={props.itemsCursor.next ? false : true}
                 className="disabled:opacity-50 w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
               >
                 <svg

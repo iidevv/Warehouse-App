@@ -9,7 +9,7 @@ router.get("/products", async (req, res) => {
   let payload = {
     queryString: name,
     pagination: {
-      limit: 20,
+      limit: 10,
       offset: offset,
     },
   };
