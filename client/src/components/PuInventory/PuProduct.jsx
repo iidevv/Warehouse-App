@@ -25,7 +25,7 @@ const PuProduct = (props) => {
       : "flex items-start justify-center w-10 px-2 text-base  rounded-lg text-white bg-red-500";
   return (
     <tr>
-      <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
+      <td className="px-2 w-24 lg:w-auto lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
         <img
           className="w-32 h-24 object-contain mx-auto"
           src={isImageLoaded ? image : defaultImg}
@@ -33,7 +33,7 @@ const PuProduct = (props) => {
           onLoad={handleImageLoad}
         />
       </td>
-      <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
+      <td className="px-2 hidden lg:table-cell lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
         {props.sku}
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">

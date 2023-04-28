@@ -147,7 +147,7 @@ const WpsProductPageVariants = (props) => {
           </div>
         </div>
       </div>
-      <div className="inline-block w-full h-screen-80 scrollbar overflow-y-auto relative">
+      <div className="inline-block w-11/12 lg:w-full h-screen-80 scrollbar overflow-y-auto relative">
         <table className="min-w-full w-full leading-normal">
           <thead className="hidden lg:table-header-group">
             <tr>
@@ -211,7 +211,7 @@ const WpsProductPageVariants = (props) => {
                     </td>
                     <td className="lg:w-28 px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200 relative">
                       <img
-                        className="w-full h-36 lg:w-28 lg:h-28 object-contain mb-1"
+                        className="w-full h-20 lg:w-28 lg:h-28 object-contain mb-1"
                         src={item.image_url || defaultImg}
                         alt="variant"
                       />

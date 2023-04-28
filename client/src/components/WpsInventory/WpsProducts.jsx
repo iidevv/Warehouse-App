@@ -1,12 +1,7 @@
-import React, { useState } from "react";
-import WpsProductItem from "./WpsProductItem";
+import React, { useState, useRef } from "react";
 import WpsProduct from "./WpsProduct";
 
 const WpsProducts = (props) => {
-  const handleInputChangeProductItems = (e) => {
-    props.onSearch(e.target.value);
-  };
-
   const [searchBy, setSearchBy] = useState("name");
 
   const handleInputChange = (e) => {
@@ -18,8 +13,7 @@ const WpsProducts = (props) => {
     setSearchBy(e.target.value);
   };
 
-  const handleOnItemsPageChanged = (e) => {
-    const cursor = e.target.value;
+  const handleOnItemsPageChanged = (cursor) => {
     props.onItemsPageChanged(searchBy, props.searchKeyword, cursor);
   };
 
@@ -88,7 +82,6 @@ const WpsProducts = (props) => {
               {props.items &&
                 props.items.map((m, i) => {
                   if (m) {
-                    console.log(m);
                     return (
                       <WpsProduct
                         key={i}
@@ -110,7 +103,9 @@ const WpsProducts = (props) => {
             <div className="flex items-center">
               <button
                 type="button"
-                onClick={handleOnItemsPageChanged}
+                onClick={() => {
+                  handleOnItemsPageChanged(props.itemsCursor.prev);
+                }}
                 value={props.itemsCursor.prev}
                 disabled={props.itemsCursor.prev ? false : true}
                 className="disabled:opacity-50 w-full p-4 text-base text-gray-600 bg-white border rounded-l-xl hover:bg-gray-100"
@@ -128,8 +123,9 @@ const WpsProducts = (props) => {
               </button>
               <button
                 type="button"
-                onClick={handleOnItemsPageChanged}
-                value={props.itemsCursor.next}
+                onClick={() => {
+                  handleOnItemsPageChanged(props.itemsCursor.next);
+                }}
                 disabled={props.itemsCursor.next ? false : true}
                 className="disabled:opacity-50 w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
               >

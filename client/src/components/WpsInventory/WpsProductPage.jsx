@@ -4,7 +4,6 @@ import CategoriesSearch from "./../common/categoriesSearch/CategoriesSearch";
 import WpsProductPageVariants from "./WpsProductPageVariants";
 
 const WpsProductPage = (props) => {
-  console.log(props.product.images);
   const productImg =
     props.product.images &&
     props.product.images.length &&

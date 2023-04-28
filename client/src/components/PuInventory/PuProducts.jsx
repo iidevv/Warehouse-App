@@ -14,8 +14,8 @@ const PuProducts = (props) => {
     <div className="container">
       <div>
         <h2 className="text-2xl leading-tight mb-4">Parts Unlimited Catalog</h2>
-        <div className="flex flex-col-reverse lg:flex-row items-center">
-          <div className="lg:w-1/2">
+        <div className="flex items-center">
+          <div className="lg:w-1/2 pr-2 mr-2 border-r">
             <input
               type="text"
               className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
@@ -24,7 +24,7 @@ const PuProducts = (props) => {
               onChange={handleInputChange}
             />
           </div>
-          <p className="px-2">Total: {props.totalCount}</p>
+          <p className="p-1 rounded-sm shadow-sm bg-white font-bold">{props.totalCount}</p>
         </div>
       </div>
       <div className="py-4 overflow-x-auto">
