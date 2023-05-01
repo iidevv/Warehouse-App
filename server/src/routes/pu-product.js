@@ -32,6 +32,7 @@ const createProduct = (obj) => {
   }
   const price =
     data.prices.retail ||
+    data.prices.originalRetail ||
     data.prices.originalBase + data.prices.originalBase * 0.35;
   const sortedVariants = variants
     .map((item, i) => {
@@ -51,6 +52,7 @@ const createProduct = (obj) => {
       const is_default = i === 1 ? true : false;
       const price =
         item.prices.retail ||
+        item.prices.originalRetail ||
         item.prices.originalBase + item.prices.originalBase * 0.35;
       if (imageUrl) {
         return {
