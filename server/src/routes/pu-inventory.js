@@ -9,9 +9,13 @@ router.get("/products", async (req, res) => {
   const name = "";
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.pageSize) || 20;
-
   try {
-    const products = await getInventoryProducts(vendor_id, name, page, pageSize);
+    const products = await getInventoryProducts(
+      vendor_id,
+      name,
+      page,
+      pageSize
+    );
     res.json(products);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -19,15 +23,19 @@ router.get("/products", async (req, res) => {
 });
 
 export const getInventoryProducts = async (vendor_id, name, page, pageSize) => {
-  if (vendor_id, name) {
-    const product = await puInventoryModel.findOne({ vendor_id, product_name: name });
+  if ((vendor_id, name)) {
+    const product = await puInventoryModel.findOne({
+      vendor_id,
+      product_name: name,
+    });
     return product;
   } else {
     const total = await puInventoryModel.count();
     const totalPages = Math.ceil(total / pageSize);
     const skip = (page - 1) * pageSize;
 
-    const Inventory = await puInventoryModel.find()
+    const Inventory = await puInventoryModel
+      .find()
       .sort({ last_updated: -1 })
       .skip(skip)
       .limit(pageSize);
@@ -60,6 +68,8 @@ export const addInventoryProduct = async (productData) => {
     product_name,
     last_updated,
     status,
+    create_type,
+    create_value
   } = productData;
   const Inventory = await puInventoryModel.findOne({
     product_name,
@@ -76,6 +86,8 @@ export const addInventoryProduct = async (productData) => {
     product_name,
     last_updated,
     status,
+    create_type,
+    create_value
   });
   await newProduct.save();
 

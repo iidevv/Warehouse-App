@@ -1,5 +1,5 @@
 import { createNewDate } from "./../common/index.js";
-import { addInventoryProduct } from '../routes/pu-inventory.js';
+import { addInventoryProduct } from "../routes/pu-inventory.js";
 
 export const createPuInventoryProduct = async (
   vendorProduct,
@@ -20,6 +20,8 @@ export const createPuInventoryProduct = async (
     })),
     last_updated: createNewDate(),
     status: status,
+    create_type: "sku",
+    create_value: "",
   };
   try {
     const res = await addInventoryProduct(inventoryProduct);
