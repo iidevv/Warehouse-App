@@ -20,8 +20,8 @@ export const createPuInventoryProduct = async (
     })),
     last_updated: createNewDate(),
     status: status,
-    create_type: "sku",
-    create_value: "",
+    create_type: vendorProduct.create_type,
+    create_value: vendorProduct.create_value,
   };
   try {
     const res = await addInventoryProduct(inventoryProduct);

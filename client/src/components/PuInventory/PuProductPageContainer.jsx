@@ -22,14 +22,23 @@ import {
   changeVariantName,
   getChatgptContent,
   findAndReplace,
-  removeAdditionalImage
+  removeAdditionalImage,
+  setProductCreateData,
 } from "../../redux/reducers/pu-product-reducer";
 
 class PuProductContainer extends React.Component {
   componentDidMount() {
-    let id = this.props.params.id;
+    const id = this.props.params.id;
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const search = urlParams.get("search") || undefined;
     if (!id) id = 1;
-    this.props.getProduct(id);
+    if (search) {
+      this.props.getProduct(id, search);
+      this.props.setProductCreateData("search", search);
+    } else {
+      this.props.getProduct(id);
+    }
     this.props.setCategory(
       localStorage.getItem("category_name"),
       localStorage.getItem("category_id")
@@ -44,7 +53,8 @@ class PuProductContainer extends React.Component {
     data.categories = {
       id: +localStorage.getItem("category_id"),
     };
-
+    data.create_type = this.props.create_type;
+    data.create_value = this.props.create_value;
     // remove duplicates
     data.images = data.images.filter((image, index, array) => {
       const firstIndex = array.findIndex(
@@ -99,6 +109,9 @@ class PuProductContainer extends React.Component {
   onHandleRemoveAdditionalImage = (url) => {
     this.props.removeAdditionalImage(url);
   };
+  onSetProductCreateData = (type, value) => {
+    this.props.setProductCreateData(type, value);
+  };
 
   render() {
     return (
@@ -120,8 +133,11 @@ class PuProductContainer extends React.Component {
           onHandleChangeVariantName={this.onHandleChangeVariantName}
           onHandleRemoveAdditionalImage={this.onHandleRemoveAdditionalImage}
           onGetChatgptContent={this.onGetChatgptContent}
+          onSetProductCreateData={this.onSetProductCreateData}
           categories={this.props.categories}
           current_category={this.props.current_category}
+          create_type={this.props.create_type}
+          create_value={this.props.create_value}
         />
       </>
     );
@@ -136,6 +152,8 @@ let mapStateToProps = (state) => {
     isFetching: state.puProduct.isFetching,
     categories: state.puProduct.categories,
     current_category: state.puProduct.current_category,
+    create_type: state.puProduct.create_type,
+    create_value: state.puProduct.create_value,
   };
 };
 
@@ -157,7 +175,8 @@ export default compose(
     changeVariantName,
     getChatgptContent,
     findAndReplace,
-    removeAdditionalImage
+    removeAdditionalImage,
+    setProductCreateData,
   }),
   withRouter
 )(PuProductContainer);

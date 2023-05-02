@@ -31,9 +31,34 @@ const PuProductPage = (props) => {
   };
   const handleRemoveAdditionalImage = (event) => {
     props.onHandleRemoveAdditionalImage(event.target.dataset.url);
-  }
+  };
+  const handleSetProductCreateData = (event) => {
+    props.onSetProductCreateData("search", event.target.value);
+  };
   return (
     <div className="container">
+      {props.create_value && (
+        <div className="bg-white shadow-lg mb-10 p-4 flex flex-col lg:flex-row lg:items-center">
+          <p className="font-semibold mr-6 mb-2 lg:mb-0 lg:w-48">
+            Combine By Name:
+          </p>
+          <form className="flex flex-col lg:flex-row items-start lg:items-center w-full">
+            <input
+              type="text"
+              name="search"
+              className="flex w-full px-4 py-2 mr-2 mb-2 lg:mb-0 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+              onChange={handleSetProductCreateData}
+              value={props.create_value}
+            />
+            <button
+              className="flex-shrink-0 px-6 py-2 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200"
+              type="submit"
+            >
+              Refresh
+            </button>
+          </form>
+        </div>
+      )}
       <div className="lg:flex items-start mb-10">
         <div className="lg:w-1/2">
           <div className="bg-white shadow-lg mb-4 ml-1">
@@ -50,8 +75,18 @@ const PuProductPage = (props) => {
                   return;
                 return (
                   <div key={i} className="bg-white shadow-lg p-1 m-1 relative">
-                    <button onClick={handleRemoveAdditionalImage} data-url={image.image_url} className="absolute right-0 top-0 px-2 text-white bg-red-600">&times;</button>
-                    <a className="block mt-2" href={image.image_url} target="_blank">
+                    <button
+                      onClick={handleRemoveAdditionalImage}
+                      data-url={image.image_url}
+                      className="absolute right-0 top-0 px-2 text-white bg-red-600"
+                    >
+                      &times;
+                    </button>
+                    <a
+                      className="block mt-2"
+                      href={image.image_url}
+                      target="_blank"
+                    >
                       <img
                         src={image.image_url}
                         className="w-24 h-20 object-contain"

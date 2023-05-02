@@ -137,41 +137,55 @@ const createProduct = (obj) => {
   return product;
 };
 
-const fetchData = async (id) => {
+const fetchData = async (id, search) => {
   try {
-    // get all variants sku's
-    const puVariationsResponse = await puInstance.get(
-      `parts/${id}/style-variations`
-    );
-    const styleVariationsOptions =
-      puVariationsResponse.data.styleVariationsOptions;
-
-    const incorporatingPartNumbers = styleVariationsOptions.flatMap(
-      (option) => option.incorporatingPartNumbers
-    );
-    // get all variants
-    let payload = {
-      filters: [
-        {
-          matches: [
-            {
-              matches: [
-                {
-                  path: "partNumber.verbatim",
-                  values: incorporatingPartNumbers,
-                },
-              ],
-              operator: "OR",
-            },
-          ],
-          operator: "OR",
+    let puVariationItemsResponse;
+    if (search) {
+      let payload = {
+        queryString: search,
+        pagination: {
+          limit: 50,
         },
-      ],
-    };
-    const puVariationItemsResponse = await puInstance.post(
-      `parts/search/`,
-      payload
-    );
+      };
+      puVariationItemsResponse = await puInstance.post(
+        "parts/search/",
+        payload
+      );
+    } else {
+      // get all variants sku's
+      const puVariationsResponse = await puInstance.get(
+        `parts/${id}/style-variations`
+      );
+      const styleVariationsOptions =
+        puVariationsResponse.data.styleVariationsOptions;
+
+      const incorporatingPartNumbers = styleVariationsOptions.flatMap(
+        (option) => option.incorporatingPartNumbers
+      );
+      // get all variants
+      let payload = {
+        filters: [
+          {
+            matches: [
+              {
+                matches: [
+                  {
+                    path: "partNumber.verbatim",
+                    values: incorporatingPartNumbers,
+                  },
+                ],
+                operator: "OR",
+              },
+            ],
+            operator: "OR",
+          },
+        ],
+      };
+      puVariationItemsResponse = await puInstance.post(
+        `parts/search/`,
+        payload
+      );
+    }
 
     const productData = await puInstance.get(`parts/${id}/`);
     const imageExtensions = [".jpg", ".png", ".webp"];
@@ -200,8 +214,9 @@ const fetchData = async (id) => {
 
 router.get("/product/", async (req, res) => {
   const id = req.query.id;
+  const search = req.query.search;
   try {
-    const product = await fetchData(id);
+    const product = await fetchData(id, search);
     res.json(product);
   } catch (error) {
     res.status(500).json({ error: error });

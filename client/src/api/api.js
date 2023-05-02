@@ -100,11 +100,12 @@ export const puProductsAPI = {
 };
 
 export const puProductAPI = {
-  getProduct(id) {
+  getProduct(id, search) {
     return instance
       .get(`/pu/product/`, {
         params: {
           id,
+          search,
         },
       })
       .then((response) => {

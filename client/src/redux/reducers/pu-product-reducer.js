@@ -13,6 +13,7 @@ const REMOVE_VARIANT_IMAGE = "REMOVE_VARIANT_IMAGE";
 const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
 const FIND_AND_REPLACE = "FIND_AND_REPLACE";
 const REMOVE_ADDITIONAL_IMAGE = "REMOVE_ADDITIONAL_IMAGE";
+const SET_PRODUCT_CREATE_DATA = "SET_PRODUCT_CREATE_DATA";
 let initialState = {
   productData: {
     name: "",
@@ -28,6 +29,8 @@ let initialState = {
     meta_description: "",
     description: "",
   },
+  create_type: "sku",
+  create_value: "",
 };
 
 const puProductReducer = (state = initialState, action) => {
@@ -119,7 +122,13 @@ const puProductReducer = (state = initialState, action) => {
           variants: updatedVariantsReplace,
         },
       };
-
+    case SET_PRODUCT_CREATE_DATA:
+      const { type, value } = action.payload;
+      return {
+        ...state,
+        create_type: type,
+        create_value: value,
+      };
     case CHANGE_VARIANT_NAME:
       const updatedVariantsName = state.productData.variants.map(
         (variant, i) => {
@@ -231,6 +240,16 @@ export const setHandleContentChange = (id, value, isGpt) => {
       id,
       value,
       isGpt,
+    },
+  };
+};
+
+export const setProductCreateData = (type, value) => {
+  return {
+    type: SET_PRODUCT_CREATE_DATA,
+    payload: {
+      type,
+      value,
     },
   };
 };
@@ -355,10 +374,10 @@ export const createBigcommerceProduct = (data) => {
   };
 };
 
-export const getProduct = (id) => {
+export const getProduct = (id, search) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    puProductAPI.getProduct(id).then((data) => {
+    puProductAPI.getProduct(id, search).then((data) => {
       dispatch(setProduct(data));
       dispatch(setHandleContentChange("description", data.description));
       dispatch(setToggleIsFetching(false));

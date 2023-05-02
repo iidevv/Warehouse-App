@@ -9,37 +9,49 @@ const getSyncedProducts = async (page, pageSize) => {
   return await getInventoryProducts("", "", page, pageSize);
 };
 
-const getPuProduct = async (id) => {
+const getPuProduct = async (id, search) => {
   try {
-    // get all variants sku's
-    const puVariationsResponse = await puInstance.get(
-      `parts/${id}/style-variations`
-    );
-
-    const styleVariationsOptions =
-      puVariationsResponse.data.styleVariationsOptions;
-    const incorporatingPartNumbers = styleVariationsOptions.flatMap(
-      (option) => option.incorporatingPartNumbers
-    );
-    let payload = {
-      filters: [
-        {
-          matches: [
-            {
-              matches: [
-                {
-                  path: "partNumber.verbatim",
-                  values: incorporatingPartNumbers,
-                },
-              ],
-              operator: "OR",
-            },
-          ],
-          operator: "OR",
+    let response;
+    if (search) {
+      let payload = {
+        queryString: search,
+        pagination: {
+          limit: 50,
         },
-      ],
-    };
-    const response = await puInstance.post(`parts/search/`, payload);
+      };
+      response = await puInstance.post("parts/search/", payload);
+    } else {
+      // get all variants sku's
+      const puVariationsResponse = await puInstance.get(
+        `parts/${id}/style-variations`
+      );
+      const styleVariationsOptions =
+        puVariationsResponse.data.styleVariationsOptions;
+
+      const incorporatingPartNumbers = styleVariationsOptions.flatMap(
+        (option) => option.incorporatingPartNumbers
+      );
+      // get all variants
+      let payload = {
+        filters: [
+          {
+            matches: [
+              {
+                matches: [
+                  {
+                    path: "partNumber.verbatim",
+                    values: incorporatingPartNumbers,
+                  },
+                ],
+                operator: "OR",
+              },
+            ],
+            operator: "OR",
+          },
+        ],
+      };
+      response = await puInstance.post(`parts/search/`, payload);
+    }
     const items = response.data.result.hits;
     const data = items[0];
     const price =
@@ -125,7 +137,8 @@ export const updatePuProducts = () => {
         for (const syncedProduct of syncedProducts) {
           // Get WPS product data and compare it with the synced product data
           const puProduct = await getPuProduct(
-            syncedProduct.variants[0].vendor_id
+            syncedProduct.variants[0].vendor_id,
+            syncedProduct.create_value
           );
           // put product name for same products with different variations
           puProduct.product_name = syncedProduct.product_name;

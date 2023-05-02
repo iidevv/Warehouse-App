@@ -44,6 +44,14 @@ const PuProduct = (props) => {
         >
           {props.name}
         </NavLink>
+         <span> | </span> 
+        <NavLink
+          to={`/pu-product/${props.sku}?search=${props.name}`}
+          target="_blank"
+          className="text-gray-700 whitespace-no-wrap underline hover:text-blue-600"
+        >
+          Сombine By Name
+        </NavLink>
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
         ${props.price}
