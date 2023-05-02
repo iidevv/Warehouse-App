@@ -44,6 +44,7 @@ const getPuProduct = async (id) => {
     const data = items[0];
     const price =
       data.prices.retail ||
+      data.prices.originalRetail ||
       data.prices.originalBase + data.prices.originalBase * 0.35;
     return {
       id: data.product.id,
@@ -51,6 +52,7 @@ const getPuProduct = async (id) => {
       variants: items.map((item) => {
         const price =
           item.prices.retail ||
+          item.prices.originalRetail ||
           item.prices.originalBase + item.prices.originalBase * 0.35;
         const inventoryLevel = item.inventory.locales.reduce(
           (total, local) => total + (local.quantity || 0),
