@@ -114,7 +114,7 @@ const WpsProductPage = (props) => {
             onClick={() => {
               props.pushToCatalog(props.product);
             }}
-            disabled={props.current_categories[0] ? false : true}
+            disabled={props.current_categories && props.current_categories[0] ? false : true}
             className="
             disabled:opacity-50
 						focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800
