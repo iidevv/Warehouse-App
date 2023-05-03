@@ -31,8 +31,7 @@ class WpsProductContainer extends React.Component {
     if (!id) id = 1;
     this.props.getProduct(id);
     this.props.setCategory(
-      localStorage.getItem("category_name"),
-      localStorage.getItem("category_id")
+      JSON.parse(localStorage.getItem("current_categories"))
     );
   }
   pushToCatalog = (data) => {
@@ -41,9 +40,10 @@ class WpsProductContainer extends React.Component {
     data.meta_keywords = this.props.content.meta_keywords.split(", ");
     data.meta_description = this.props.content.meta_description;
     data.description = this.props.content.description;
-    data.categories = {
-      id: +localStorage.getItem("category_id"),
-    };
+    const categories = JSON.parse(
+      localStorage.getItem("current_categories")
+    ).flatMap((id) => +id.category_id);
+    data.categories = categories;
 
     // remove duplicates
     data.images = data.images.filter((image, index, array) => {
@@ -67,8 +67,7 @@ class WpsProductContainer extends React.Component {
   };
   onSetCategory = () => {
     this.props.setCategory(
-      localStorage.getItem("category_name"),
-      localStorage.getItem("category_id")
+      JSON.parse(localStorage.getItem("current_categories"))
     );
     this.props.resetCategories();
   };
@@ -120,7 +119,7 @@ class WpsProductContainer extends React.Component {
           onHandleRemoveAdditionalImage={this.onHandleRemoveAdditionalImage}
           onGetChatgptContent={this.onGetChatgptContent}
           categories={this.props.categories}
-          current_category={this.props.current_category}
+          current_categories={this.props.current_categories}
         />
       </>
     );
@@ -134,7 +133,7 @@ let mapStateToProps = (state) => {
     info: state.wpsProduct.info,
     isFetching: state.wpsProduct.isFetching,
     categories: state.wpsProduct.categories,
-    current_category: state.wpsProduct.current_category,
+    current_categories: state.wpsProduct.current_categories,
   };
 };
 

@@ -131,7 +131,7 @@ const PuProductPage = (props) => {
           </div>
           <CategoriesSearch
             categories={props.categories}
-            current_category={props.current_category}
+            current_categories={props.current_categories}
             onSearchCategories={props.onSearchCategories}
             onSetCategory={props.onSetCategory}
           />
@@ -139,7 +139,7 @@ const PuProductPage = (props) => {
             onClick={() => {
               props.pushToCatalog(props.product);
             }}
-            disabled={props.current_category.id ? false : true}
+            disabled={props.current_categories[0] ? false : true}
             className="
             disabled:opacity-50
 						focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800
@@ -156,7 +156,7 @@ const PuProductPage = (props) => {
 						hover:bg-gray-700
 					"
           >
-            Add To {props.current_category.name}
+            Add To Catalog
           </button>
         </div>
       </div>

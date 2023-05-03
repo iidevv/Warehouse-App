@@ -20,7 +20,7 @@ let initialState = {
   isFetching: true,
   info: {},
   categories: [],
-  current_category: {},
+  current_categories: [],
   content: {
     page_title: "",
     search_keywords: "",
@@ -75,7 +75,7 @@ const wpsProductReducer = (state = initialState, action) => {
     case SET_CURRENT_CATEGORY:
       return {
         ...state,
-        current_category: action.current_category,
+        current_categories: action.current_categories,
       };
     case CHANGE_NAME:
       return {
@@ -256,10 +256,10 @@ export const setCategories = (categories) => {
   };
 };
 
-export const setCategory = (name, id) => {
+export const setCategory = (categories) => {
   return {
     type: SET_CURRENT_CATEGORY,
-    current_category: { name, id },
+    current_categories: categories,
   };
 };
 

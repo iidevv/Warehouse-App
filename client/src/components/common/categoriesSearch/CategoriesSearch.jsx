@@ -4,24 +4,48 @@ const categoriesSearch = (props) => {
       props.onSearchCategories(event.target.value);
   };
   const handleButtonClick = (event) => {
-    localStorage.setItem("category_id", event.target.id);
-    localStorage.setItem("category_name", event.target.textContent);
+    let categories =
+      JSON.parse(localStorage.getItem("current_categories")) || [];
+
+    const categoryId = event.target.id;
+    const categoryName = event.target.textContent;
+
+    const categoryExists = categories.some(
+      (category) => category.category_id === categoryId
+    );
+
+    if (!categoryExists) {
+      categories.push({
+        category_id: categoryId,
+        category_name: categoryName,
+      });
+      localStorage.setItem("current_categories", JSON.stringify(categories));
+    }
+
     props.onSetCategory();
   };
+  const handleButtonResetClick = (event) => {
+    localStorage.setItem("current_categories", JSON.stringify([]));
+    props.onSetCategory();
+  };
+
   return (
     <>
-      <span className="block text-sm font-medium text-gray-700 mb-2">
-        Current category:
-      </span>
+      <div className="text-sm font-medium text-gray-700 mt-4 pt-4 border-t mb-4">
+        <p className="p-1 ml-1">Current categories:</p>
+        <div>
+          {props.current_categories &&
+            props.current_categories.map((category, i) => (
+              <span
+                key={i}
+                className="inline-block bg-gray-600 rounded-sm text-white p-1 ml-2 mb-2"
+              >
+                {category.category_name}
+              </span>
+            ))}
+        </div>
+      </div>
       <div className="flex mb-3 relative flex-col lg:flex-row">
-        <label
-          htmlFor="category-search"
-          className="flex-shrink-0 md:w-1/2 text-center cursor-pointer inline-flex items-center py-2.5 px-2 text-sm font-medium text-gray-500 bg-gray-100 border border-gray-300 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100"
-        >
-          <span className="mx-auto">
-            {props.current_category.name ? props.current_category.name : "None"}
-          </span>
-        </label>
         <div
           id="dropdown-search"
           className="z-10 absolute top-full bg-white divide-y divide-gray-100 shadow w-full lg:w-96"
@@ -51,11 +75,17 @@ const categoriesSearch = (props) => {
           <input
             type="text"
             id="category-search"
-            className="block p-2.5 rounded-none w-full z-20 text-black text-center lg:border-l-gray-50 lg:border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Category search"
+            className="block p-2.5 rounded-none w-full z-20 text-black border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Categories search"
             onChange={handleInputChange}
           />
         </div>
+        <button
+          className="bg-red-500 text-white p-2"
+          onClick={handleButtonResetClick}
+        >
+          Reset
+        </button>
       </div>
     </>
   );

@@ -39,10 +39,7 @@ class PuProductContainer extends React.Component {
     } else {
       this.props.getProduct(id);
     }
-    this.props.setCategory(
-      localStorage.getItem("category_name"),
-      localStorage.getItem("category_id")
-    );
+    this.props.setCategory(JSON.parse(localStorage.getItem("current_categories")));
   }
   pushToCatalog = (data) => {
     data.page_title = this.props.content.page_title;
@@ -50,9 +47,9 @@ class PuProductContainer extends React.Component {
     data.meta_keywords = this.props.content.meta_keywords.split(", ");
     data.meta_description = this.props.content.meta_description;
     data.description = this.props.content.description;
-    data.categories = {
-      id: +localStorage.getItem("category_id"),
-    };
+    const categories = JSON.parse(localStorage.getItem("current_categories")).flatMap(id => +id.category_id);
+    console.log(categories);
+    data.categories = categories;
     data.create_type = this.props.create_type;
     data.create_value = this.props.create_value;
     // remove duplicates
@@ -76,10 +73,7 @@ class PuProductContainer extends React.Component {
     this.props.searchCategories(query);
   };
   onSetCategory = () => {
-    this.props.setCategory(
-      localStorage.getItem("category_name"),
-      localStorage.getItem("category_id")
-    );
+    this.props.setCategory(JSON.parse(localStorage.getItem("current_categories")));
     this.props.resetCategories();
   };
   onHandleContentChange = (id, value) => {
@@ -135,7 +129,7 @@ class PuProductContainer extends React.Component {
           onGetChatgptContent={this.onGetChatgptContent}
           onSetProductCreateData={this.onSetProductCreateData}
           categories={this.props.categories}
-          current_category={this.props.current_category}
+          current_categories={this.props.current_categories}
           create_type={this.props.create_type}
           create_value={this.props.create_value}
         />
@@ -151,7 +145,7 @@ let mapStateToProps = (state) => {
     info: state.puProduct.info,
     isFetching: state.puProduct.isFetching,
     categories: state.puProduct.categories,
-    current_category: state.puProduct.current_category,
+    current_categories: state.puProduct.current_categories,
     create_type: state.puProduct.create_type,
     create_value: state.puProduct.create_value,
   };
