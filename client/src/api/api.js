@@ -184,10 +184,17 @@ export const puInventoryAPI = {
         return response.data;
       });
   },
-  updateProducts() {
-    return instance.get(`/pu-inventory/sync/`).then((response) => {
-      return response.data;
-    });
+  updateProducts(vendor_id, name) {
+    return instance
+      .get(`/pu-inventory/sync/`, {
+        params: {
+          vendor_id,
+          name,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
   },
   updateProductsStatus() {
     return instance.get(`/pu-inventory/sync-status/`).then((response) => {

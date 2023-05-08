@@ -5,8 +5,8 @@ import {
 } from "../routes/pu-inventory.js";
 import { bigCommerceInstance, puInstance } from "../instances/index.js";
 
-const getSyncedProducts = async (page, pageSize) => {
-  return await getInventoryProducts("", "", page, pageSize);
+const getSyncedProducts = async (vendor_id, name, page, pageSize) => {
+  return await getInventoryProducts(vendor_id, name, page, pageSize);
 };
 
 const getPuProduct = async (id, search) => {
@@ -120,7 +120,7 @@ const updateSyncedProduct = async (data) => {
 
 let updateStatus = false;
 
-export const updatePuProducts = () => {
+export const updatePuProducts = (vendor_id, name) => {
   return new Promise(async (resolve, reject) => {
     const pageSize = 50;
     let currentPage = 1;
@@ -129,12 +129,21 @@ export const updatePuProducts = () => {
 
     while (currentPage <= totalPages) {
       try {
-        // Get synced products
-        const { products: syncedProducts, totalPages: totalPagesFromResponse } =
-          await getSyncedProducts(currentPage, pageSize);
+        const response = await getSyncedProducts(vendor_id, name, currentPage, pageSize);
+
+        let productsToProcess = [];
+        let totalPagesFromResponse = 1;
+        
+        if (Array.isArray(response.products)) {
+          totalPagesFromResponse = response.totalPages;
+          productsToProcess = response.products;
+        } else {
+          productsToProcess = [response];
+        }
+
         totalPages = totalPagesFromResponse;
         // Loop through each synced product
-        for (const syncedProduct of syncedProducts) {
+        for (const syncedProduct of productsToProcess) {
           // Get WPS product data and compare it with the synced product data
           const puProduct = await getPuProduct(
             syncedProduct.variants[0].vendor_id,
@@ -231,8 +240,10 @@ router.get("/sync-status", async (req, res) => {
 });
 
 router.get("/sync", async (req, res) => {
+  const vendor_id = req.query.vendor_id;
+  const name = req.query.name;
   try {
-    await updatePuProducts();
+    await updatePuProducts(vendor_id, name);
     res.send({ status: updateStatus });
   } catch (error) {
     res.status(500).json({ error: error });

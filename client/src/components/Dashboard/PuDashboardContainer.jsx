@@ -24,8 +24,8 @@ class PuDashboardContainer extends React.Component {
   onDeleteProduct = (id) => {
     this.props.deleteProduct(id);
   }
-  onUpdateProducts = () => {
-    this.props.updateProducts();
+  onUpdateProducts = (vendor_id, name) => {
+    this.props.updateProducts(vendor_id, name);
   }
 
   render() {

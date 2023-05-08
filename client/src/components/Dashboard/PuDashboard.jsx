@@ -24,8 +24,8 @@ const PuDashboard = (props) => {
     setActiveDropdownIndex(activeDropdownIndex === index ? null : index);
   };
 
-  const handleUpdateClick = () => {
-    props.onUpdateProducts();
+  const handleUpdateClick = (vendor_id, name) => {
+    props.onUpdateProducts(vendor_id, name);
   };
   const handlePageClick = (name, page) => {
     props.onPageChanged(name, page);
@@ -56,7 +56,9 @@ const PuDashboard = (props) => {
           PU Products ({props.total})
         </h2>
         <button
-          onClick={handleUpdateClick}
+          onClick={() => {
+            handleUpdateClick();
+          }}
           disabled={props.status}
           className="py-2 px-4 disabled:opacity-50 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
         >
@@ -101,7 +103,7 @@ const PuDashboard = (props) => {
                     <tr key={i} className="flex flex-col lg:table-row">
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                         <p className="text-xl font-bold lg:font-normal lg:text-sm lg:text-gray-900 whitespace-no-wrap">
-                          {m.product_name}
+                          {m.product_name} {m.create_type == 'search' ? ' (Combined)' : ''}
                         </p>
                       </td>
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
@@ -115,6 +117,14 @@ const PuDashboard = (props) => {
                         </p>
                       </td>
                       <td className="relative px-5 pb-4 lg:py-5 text-sm bg-white border-b-8 lg:border-b border-gray-100">
+                        <button
+                          className="text-blue-600 hover:text-indigo-900 mr-1 pr-1 border-r"
+                          onClick={() => {
+                            handleUpdateClick(m.vendor_id, m.product_name);
+                          }}
+                        >
+                          Update
+                        </button>
                         <button
                           onClick={() => toggleDropdown(i)}
                           className="text-red-600 hover:text-indigo-900"
@@ -165,7 +175,7 @@ const PuDashboard = (props) => {
                 <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"></path>
               </svg>
             </button>
-            {renderPageNumbers()}
+            <div className="hidden lg:flex">{renderPageNumbers()}</div>
             <button
               type="button"
               disabled={props.currentPage === props.totalPages ? true : false}

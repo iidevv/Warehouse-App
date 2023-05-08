@@ -75,7 +75,7 @@ export const addInventoryProduct = async (productData) => {
     product_name,
   });
 
-  if (Inventory) return res.json({ message: "Product already exists!" });
+  if (Inventory) throw new Error("Product already exists!");
 
   const newProduct = new puInventoryModel({
     vendor,
@@ -90,7 +90,6 @@ export const addInventoryProduct = async (productData) => {
     create_value
   });
   await newProduct.save();
-
   return newProduct;
 };
 
