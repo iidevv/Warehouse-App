@@ -39,4 +39,5 @@ export const wpsInstance = axios.create({
 
 export const puInstance = axios.create({
   baseURL: "https://dealer.parts-unlimited.com/api/",
+  timeout: 10000,
 });

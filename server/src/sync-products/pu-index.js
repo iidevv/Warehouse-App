@@ -122,7 +122,7 @@ let updateStatus = false;
 
 export const updatePuProducts = (vendor_id, name) => {
   return new Promise(async (resolve, reject) => {
-    const pageSize = 50;
+    const pageSize = 20;
     let currentPage = 1;
     let totalPages = 1;
     updateStatus = true;
