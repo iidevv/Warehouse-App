@@ -16,6 +16,8 @@ const InventorySchema = new mongoose.Schema({
   variants: [variantSchema],
   last_updated: { type: Date, required: true },
   status: { type: String, required: true },
+  create_type: { type: String, required: true },
+  create_value: { type: String, required: false },
 });
 
 export const InventoryModel = mongoose.model("wps-products", InventorySchema);

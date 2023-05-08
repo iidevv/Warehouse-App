@@ -60,6 +60,8 @@ export const addInventoryProduct = async (productData) => {
     product_name,
     last_updated,
     status,
+    create_type = "sku",
+    create_value = ""
   } = productData;
   const Inventory = await InventoryModel.findOne({
     product_name,
@@ -76,6 +78,8 @@ export const addInventoryProduct = async (productData) => {
     product_name,
     last_updated,
     status,
+    create_type,
+    create_value
   });
   await newProduct.save();
 
