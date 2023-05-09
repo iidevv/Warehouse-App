@@ -1,6 +1,8 @@
-import express from "express";
-import { puInventoryModel } from "../models/puInventory.js";
+import express, { response } from "express";
+import { puInventoryModel, puProductModel } from "../models/puInventory.js";
 import { createNewDate } from "./../common/index.js";
+import { puInstance } from "../instances/index.js";
+
 const router = express.Router();
 
 // get
@@ -69,7 +71,7 @@ export const addInventoryProduct = async (productData) => {
     last_updated,
     status,
     create_type,
-    create_value
+    create_value,
   } = productData;
   const Inventory = await puInventoryModel.findOne({
     product_name,
@@ -87,7 +89,7 @@ export const addInventoryProduct = async (productData) => {
     last_updated,
     status,
     create_type,
-    create_value
+    create_value,
   });
   await newProduct.save();
   return newProduct;
@@ -166,6 +168,85 @@ router.delete("/products", async (req, res) => {
   if (!Inventory) return res.json({ message: "Product doesn't exists!" });
 
   res.json({ message: "Deleted Successfully" });
+});
+
+// new inventory
+
+// export const addProduct = async (productData) => {
+//   const {
+//     vendor,
+//     vendor_id,
+//     bigcommerce_id,
+//     sku,
+//     original_name,
+//     name,
+//     price,
+//     inventory_level,
+//     last_updated,
+//     status
+//   } = productData;
+//   const Inventory = await puProductModel.findOne({
+//     sku,
+//   });
+
+//   if (Inventory) throw new Error("Product already exists!");
+
+//   const newProduct = new puProductModel({
+//     vendor,
+//     vendor_id,
+//     bigcommerce_id,
+//     sku,
+//     original_name,
+//     name,
+//     price,
+//     inventory_level,
+//     last_updated,
+//     status
+//   });
+//   await newProduct.save();
+//   return newProduct;
+// };
+
+router.get("/transfer", async (req, res) => {
+  try {
+    // const Inventory = await getInventoryProducts("", "", 1, 1);
+    // for (const item of Inventory.products) {
+    //   for (const variant of item.variants) {
+    //     try {
+    //       const productData = {
+    //         vendor_id: variant.vendor_id,
+    //         bigcommerce_id: variant.bigcommerce_id,
+    //         sku: variant.vendor_id,
+    //         price: variant.variant_price,
+    //         inventory_level: variant.inventory_level,
+    //         last_updated: item.last_updated,
+    //         status: item.status,
+    //       };
+
+    //       const newProduct = new puProductModel(productData);
+    //       await newProduct.save();
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   }
+    // }
+    let search = "";
+    let puVariationItemsResponse = "";
+    let payload = {
+      queryString: search,
+      pagination: {
+        limit: 50,
+      },
+    };
+    puVariationItemsResponse = await puInstance.post(
+      "parts/search/",
+      payload
+    );
+
+    res.json({ m: puVariationItemsResponse.data });
+  } catch (error) {
+    res.json({ m: "Error during data transfer: " + error });
+  }
 });
 
 export { router as puInventoryRouter };
