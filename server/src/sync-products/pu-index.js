@@ -120,20 +120,52 @@ const updateSyncedProduct = async (data) => {
 
 let updateStatus = false;
 
+// Helper function to process array items in parallel with a limited concurrency
+async function asyncForEach(array, callback, concurrency = 5) {
+  const queue = [...array];
+  const promises = [];
+  while (queue.length) {
+    while (promises.length < concurrency && queue.length) {
+      const item = queue.shift();
+      promises.push(callback(item));
+    }
+    await Promise.race(promises).then((completed) => {
+      promises.splice(promises.indexOf(completed), 1);
+    });
+  }
+  return Promise.all(promises);
+}
+
+// Helper function to execute a function with retries
+async function executeWithRetry(fn, maxRetries = 3, delay = 1000) {
+  let retries = 0;
+  while (retries < maxRetries) {
+    try {
+      return await fn();
+    } catch (error) {
+      retries++;
+      console.error(`Attempt ${retries} failed. Retrying...`, error);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Max retries reached.");
+}
+
 export const updatePuProducts = (vendor_id, name) => {
   return new Promise(async (resolve, reject) => {
-    const pageSize = 20;
+    const pageSize = 5;
     let currentPage = 1;
     let totalPages = 1;
-    updateStatus = true;
 
     while (currentPage <= totalPages) {
       try {
-        const response = await getSyncedProducts(vendor_id, name, currentPage, pageSize);
+        const response = await executeWithRetry(() =>
+          getSyncedProducts(vendor_id, name, currentPage, pageSize)
+        );
 
         let productsToProcess = [];
         let totalPagesFromResponse = 1;
-        
+
         if (Array.isArray(response.products)) {
           totalPagesFromResponse = response.totalPages;
           productsToProcess = response.products;
@@ -142,19 +174,27 @@ export const updatePuProducts = (vendor_id, name) => {
         }
 
         totalPages = totalPagesFromResponse;
-        // Loop through each synced product
-        for (const syncedProduct of productsToProcess) {
+
+        // Process products with limited concurrency
+        await asyncForEach(productsToProcess, async (syncedProduct) => {
+          // Add a delay between requests
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
           // Get WPS product data and compare it with the synced product data
-          const puProduct = await getPuProduct(
-            syncedProduct.variants[0].vendor_id,
-            syncedProduct.create_value
+          const puProduct = await executeWithRetry(() =>
+            getPuProduct(
+              syncedProduct.variants[0].vendor_id,
+              syncedProduct.create_value
+            )
           );
           // put product name for same products with different variations
           puProduct.product_name = syncedProduct.product_name;
 
-          const syncedProductData = await getSyncedProduct(
-            syncedProduct.vendor_id,
-            syncedProduct.product_name
+          const syncedProductData = await executeWithRetry(() =>
+            getSyncedProduct(
+              syncedProduct.vendor_id,
+              syncedProduct.product_name
+            )
           );
           // Check if an update is needed
           const isPriceUpdated = puProduct.price !== syncedProductData.price;
@@ -175,9 +215,11 @@ export const updatePuProducts = (vendor_id, name) => {
           if (isPriceUpdated || isInventoryUpdated) {
             try {
               // Update the product
-              await updateBigcommerceProduct(syncedProduct.bigcommerce_id, {
-                price: puProduct.price,
-              });
+              await executeWithRetry(() =>
+                updateBigcommerceProduct(syncedProduct.bigcommerce_id, {
+                  price: puProduct.price,
+                })
+              );
 
               // Loop through each variant in the synced product
               for (const syncedVariant of syncedProduct.variants) {
@@ -185,7 +227,6 @@ export const updatePuProducts = (vendor_id, name) => {
                 const puVariant = puProduct.variants.find(
                   (v) => v.id === syncedVariant.vendor_id
                 );
-
                 // Check if the variant price or inventory_level has changed
                 const isPriceUpdated =
                   puVariant.price !== syncedVariant.variant_price;
@@ -194,40 +235,42 @@ export const updatePuProducts = (vendor_id, name) => {
 
                 if (isPriceUpdated || isInventoryUpdated) {
                   // Update the product variant
-                  await updateBigcommerceProductVariants(
-                    syncedProduct.bigcommerce_id,
-                    [
-                      {
-                        id: syncedVariant.bigcommerce_id,
-                        price: puVariant.price,
-                        inventory_level: puVariant.inventory_level,
-                      },
-                    ]
+                  await executeWithRetry(() =>
+                    updateBigcommerceProductVariants(
+                      syncedProduct.bigcommerce_id,
+                      [
+                        {
+                          id: syncedVariant.bigcommerce_id,
+                          price: puVariant.price,
+                          inventory_level: puVariant.inventory_level,
+                        },
+                      ]
+                    )
                   );
                 }
               }
 
               // Update the synced product status to 'Updated'
               puProduct.status = "Updated";
-              await updateSyncedProduct(puProduct);
+              await executeWithRetry(() => updateSyncedProduct(puProduct));
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'
               puProduct.status = "Error";
-              await updateSyncedProduct(puProduct);
+              await executeWithRetry(() => updateSyncedProduct(puProduct));
             }
           } else {
             // If there's no change, update the synced product status to 'No changes'
             puProduct.status = "No changes";
-            await updateSyncedProduct(puProduct);
+            await executeWithRetry(() => updateSyncedProduct(puProduct));
           }
-        }
+        });
+
         currentPage++;
       } catch (error) {
         console.error("Error updating products:", error);
         break;
       }
     }
-    updateStatus = false;
     console.log("All Products Updated!");
     resolve();
   });

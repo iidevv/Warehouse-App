@@ -119,6 +119,7 @@ const PuDashboard = (props) => {
                       <td className="relative px-5 pb-4 lg:py-5 text-sm bg-white border-b-8 lg:border-b border-gray-100">
                         <button
                           className="text-blue-600 hover:text-indigo-900 mr-1 pr-1 border-r"
+                          data-product-id={m.bigcommerce_id}
                           onClick={() => {
                             handleUpdateClick(m.vendor_id, m.product_name);
                           }}

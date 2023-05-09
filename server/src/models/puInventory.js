@@ -21,15 +21,3 @@ const InventorySchema = new mongoose.Schema({
 });
 
 export const puInventoryModel = mongoose.model("pu-products", InventorySchema);
-
-const productSchema = new mongoose.Schema({
-  vendor_id: { type: String, required: true },
-  bigcommerce_id: { type: Number, required: true },
-  sku: { type: String, required: true, unique: true },
-  price: { type: Number, required: true },
-  inventory_level: Number,
-  last_updated: { type: Date, required: true },
-  status: { type: String, required: true },
-});
-
-export const puProductModel = mongoose.model("pu_products", productSchema);

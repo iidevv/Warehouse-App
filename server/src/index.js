@@ -45,12 +45,11 @@ app.use(
 );
 
 app.use("/api/auth", userRouter);
-app.use("/api/pu-inventory", puInventoryRouter);
 
 app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
 app.use("/api/inventory", SyncProductsRouter);
-// app.use("/api/pu-inventory", puInventoryRouter);
+app.use("/api/pu-inventory", puInventoryRouter);
 app.use("/api/pu-inventory", SyncPuProductsRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);
