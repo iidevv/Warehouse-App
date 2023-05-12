@@ -23,6 +23,7 @@ import {
   SyncPuProductsRouter,
   updatePuProducts,
 } from "./sync-products/pu-index.js";
+import { puExternalProductRouter } from "./routes/external/pu-product.js";
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -43,6 +44,8 @@ app.use(
     credentials: true,
   })
 );
+
+app.use("/api/external", puExternalProductRouter);
 
 app.use("/api/auth", userRouter);
 
