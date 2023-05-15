@@ -36,6 +36,9 @@ const app = express();
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../client/build")));
 app.use(express.json());
+
+app.use("/external", puExternalProductRouter);
+
 app.use(
   cors({
     origin: useHttps
@@ -44,8 +47,6 @@ app.use(
     credentials: true,
   })
 );
-
-app.use("/external", puExternalProductRouter);
 
 app.use("/api/auth", userRouter);
 
