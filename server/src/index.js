@@ -45,7 +45,7 @@ app.use(
   })
 );
 
-app.use("/api/external", puExternalProductRouter);
+app.use("/external", puExternalProductRouter);
 
 app.use("/api/auth", userRouter);
 
