@@ -33,18 +33,38 @@ const PuDashboard = (props) => {
   const renderPageNumbers = () => {
     const pageNumbers = [];
 
+    let leftSide = props.currentPage - 2;
+    let rightSide = props.currentPage + 2;
+
+    if (leftSide < 1) {
+      rightSide += 1 - leftSide;
+      leftSide = 1;
+    }
+    if (rightSide > props.totalPages) {
+      leftSide -= rightSide - props.totalPages;
+      rightSide = props.totalPages;
+    }
+
     for (let i = 1; i <= props.totalPages; i++) {
-      pageNumbers.push(
-        <button
-          key={i}
-          disabled={props.currentPage === i ? true : false}
-          onClick={() => handlePageClick("", i)}
-          type="button"
-          className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black"
-        >
-          {i}
-        </button>
-      );
+      if (
+        i === 1 ||
+        i === props.totalPages ||
+        (i >= leftSide && i <= rightSide)
+      ) {
+        pageNumbers.push(
+          <button
+            key={i}
+            disabled={props.currentPage === i}
+            onClick={() => handlePageClick("", i)}
+            type="button"
+            className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black"
+          >
+            {i}
+          </button>
+        );
+      } else if (i === leftSide - 1 || i === rightSide + 1) {
+        pageNumbers.push(<span key={i} className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black">...</span>);
+      }
     }
 
     return pageNumbers;
@@ -103,7 +123,8 @@ const PuDashboard = (props) => {
                     <tr key={i} className="flex flex-col lg:table-row">
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                         <p className="text-xl font-bold lg:font-normal lg:text-sm lg:text-gray-900 whitespace-no-wrap">
-                          {m.product_name} {m.create_type == 'search' ? ' (Combined)' : ''}
+                          {m.product_name}{" "}
+                          {m.create_type == "search" ? " (Combined)" : ""}
                         </p>
                       </td>
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
