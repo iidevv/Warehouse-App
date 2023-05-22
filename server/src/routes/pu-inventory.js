@@ -10,12 +10,16 @@ router.get("/products", async (req, res) => {
   const name = "";
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.pageSize) || 20;
+  const status = req.query.status || "";
+  const search = req.query.search || "";
   try {
     const products = await getInventoryProducts(
       vendor_id,
       name,
       page,
-      pageSize
+      pageSize,
+      status,
+      search
     );
     res.json(products);
   } catch (error) {
@@ -23,7 +27,14 @@ router.get("/products", async (req, res) => {
   }
 });
 
-export const getInventoryProducts = async (vendor_id, name, page, pageSize) => {
+export const getInventoryProducts = async (
+  vendor_id,
+  name,
+  page,
+  pageSize,
+  status,
+  search
+) => {
   if ((vendor_id, name)) {
     const product = await puInventoryModel.findOne({
       vendor_id,
@@ -31,12 +42,20 @@ export const getInventoryProducts = async (vendor_id, name, page, pageSize) => {
     });
     return product;
   } else {
-    const total = await puInventoryModel.count();
+    let query = {};
+    if (status) {
+      query.status = status;
+    }
+    if (search) {
+      query.product_name = { $regex: search, $options: 'i' };
+    }
+
+    const total = await puInventoryModel.countDocuments(query);
     const totalPages = Math.ceil(total / pageSize);
     const skip = (page - 1) * pageSize;
 
     const Inventory = await puInventoryModel
-      .find()
+      .find(query)
       .sort({ last_updated: -1 })
       .skip(skip)
       .limit(pageSize);
