@@ -15,6 +15,7 @@ import { Auth } from "./routes/Auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UPInventory from './routes/UPInventory';
+import Dropship from './routes/Dropship';
 import PuProductPageContainer from "./components/PuInventory/PuProductPageContainer";
 
 function AuthRoute({ component: Component, ...rest }) {
@@ -56,6 +57,10 @@ const router = createBrowserRouter(
         {
           path: "/pu-catalog",
           element: <UPInventory />,
+        },
+        {
+          path: "/dropship",
+          element: <Dropship />,
         },
         {
           path: "/settings",

@@ -73,6 +73,15 @@ const SideBar = (props) => {
                 >
                   <span className="mx-4 text-sm font-normal">Dashboard</span>
                 </NavLink>
+                <NavLink
+                  to="/dropship"
+                  onClick={handleSetMenuActive}
+                  className={({ isPending, isActive }) =>
+                    isActive ? "active-menu-link" : "menu-link"
+                  }
+                >
+                  <span className="mx-4 text-sm font-normal">Dropship PU (TEST API)</span>
+                </NavLink>
               </li>
               <li>
                 <NavLink

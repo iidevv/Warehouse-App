@@ -11,6 +11,7 @@ const WPSToken = process.env.WPS_TOKEN;
 const UPuserId = process.env.PU_USER_ID;
 const UPpassword = process.env.PU_PASSWORD;
 const UPdealerNumber = process.env.PU_DEALER_NUMBER;
+const puAccessToken = process.env.PU_ACCESS_TOKEN;
 
 const useHttps = process.env.USE_HTTPS === "true";
 
@@ -40,4 +41,12 @@ export const wpsInstance = axios.create({
 export const puInstance = axios.create({
   baseURL: "https://dealer.parts-unlimited.com/api/",
   timeout: 10000,
+});
+
+export const puDropshipInstance = axios.create({
+  baseURL: "https://stage-api.lemansplatform.com/api/",
+  headers: {
+    'api-key': puAccessToken,
+    'content-type': 'application/json;charset=UTF-8'
+  },
 });

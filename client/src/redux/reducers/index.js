@@ -6,6 +6,7 @@ import puProductsReducer from "./pu-products-reducer";
 import puProductReducer from "./pu-product-reducer";
 import inventoryReducer from "./inventory-reducer";
 import PuInventoryReducer from "./pu-inventory-reducer";
+import PuDropshipReducer from "./pu-dropship-reducer";
 
 export default combineReducers({
   inventory: inventoryReducer,
@@ -14,5 +15,6 @@ export default combineReducers({
   puProducts: puProductsReducer,
   puInventory: PuInventoryReducer,
   puProduct: puProductReducer,
+  puDropship: PuDropshipReducer,
   dmgInventory: dmgInventoryReducer,
 });

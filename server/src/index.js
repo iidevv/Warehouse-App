@@ -24,6 +24,8 @@ import {
   updatePuProducts,
 } from "./sync-products/pu-index.js";
 import { puExternalProductRouter } from "./routes/external/pu-product.js";
+import { puDropshipRouter } from "./routes/pu-dropship.js";
+
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -47,6 +49,7 @@ app.use(
     credentials: true,
   })
 );
+app.use("/api/pu-dropship", puDropshipRouter);
 
 app.use("/api/auth", userRouter);
 
@@ -55,6 +58,7 @@ app.use("/api/inventory", inventoryRouter);
 app.use("/api/inventory", SyncProductsRouter);
 app.use("/api/pu-inventory", puInventoryRouter);
 app.use("/api/pu-inventory", SyncPuProductsRouter);
+// app.use("/api/pu-dropship", puDropshipRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);
 app.use("/api/wps", WPSProductsRouter);

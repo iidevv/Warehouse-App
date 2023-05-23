@@ -170,7 +170,7 @@ export const puInventoryAPI = {
           name,
           page,
           status,
-          search
+          search,
         },
       })
       .then((response) => {
@@ -202,5 +202,21 @@ export const puInventoryAPI = {
     return instance.get(`/pu-inventory/sync-status/`).then((response) => {
       return response.data;
     });
+  },
+};
+
+export const puDropshipAPI = {
+  getOrders(from, to, page) {
+    return instance
+      .get(`/pu-dropship/orders/`, {
+        params: {
+          from,
+          to,
+          page
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
   },
 };
