@@ -163,12 +163,14 @@ export const inventoryAPI = {
 };
 
 export const puInventoryAPI = {
-  getProducts(name, page) {
+  getProducts(name, page, status, search) {
     return instance
       .get(`/pu-inventory/products/`, {
         params: {
           name,
           page,
+          status,
+          search
         },
       })
       .then((response) => {

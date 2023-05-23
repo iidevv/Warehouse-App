@@ -115,10 +115,10 @@ export const deleteProduct = (id) => {
   };
 };
 
-export const getProducts = (name, page) => {
+export const getProducts = (name, page, status, search) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    puInventoryAPI.getProducts(name, page).then((data) => {
+    puInventoryAPI.getProducts(name, page, status, search).then((data) => {
       dispatch(setProducts(data.products));
       dispatch(setProductsTotal(data.total));
       dispatch(setTotalPages(data.totalPages));

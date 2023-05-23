@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 
 const PuDashboard = (props) => {
   const createNewDate = (current_date) => {
@@ -27,9 +27,29 @@ const PuDashboard = (props) => {
   const handleUpdateClick = (vendor_id, name) => {
     props.onUpdateProducts(vendor_id, name);
   };
-  const handlePageClick = (name, page) => {
-    props.onPageChanged(name, page);
+  const handlePageClick = (name, page, statusFilter, searchFilter) => {
+    props.onPageChanged(name, page, statusFilter, searchFilter);
   };
+
+  const [statusFilter, setStatusFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+  const [isInitialSearch, setIsInitialSearch] = useState(true);
+
+  const handleFilterChange = (event) => {
+    const target = event.target;
+    if(isInitialSearch) setIsInitialSearch(false);
+    if (target.type === "select-one") {
+      setStatusFilter(target.value);
+    } else if (target.type === "text") {
+      setSearchFilter(target.value);
+    }
+  };
+
+  useEffect(() => {
+    if(isInitialSearch) return;
+    props.onFilterChanged("", "", statusFilter, searchFilter);
+  }, [statusFilter, searchFilter, isInitialSearch]);
+
   const renderPageNumbers = () => {
     const pageNumbers = [];
 
@@ -55,7 +75,7 @@ const PuDashboard = (props) => {
           <button
             key={i}
             disabled={props.currentPage === i}
-            onClick={() => handlePageClick("", i)}
+            onClick={() => handlePageClick("", i, statusFilter, searchFilter)}
             type="button"
             className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black"
           >
@@ -63,7 +83,14 @@ const PuDashboard = (props) => {
           </button>
         );
       } else if (i === leftSide - 1 || i === rightSide + 1) {
-        pageNumbers.push(<span key={i} className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black">...</span>);
+        pageNumbers.push(
+          <span
+            key={i}
+            className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black"
+          >
+            ...
+          </span>
+        );
       }
     }
 
@@ -84,6 +111,23 @@ const PuDashboard = (props) => {
         >
           {props.status ? "Processing" : "Update"}
         </button>
+      </div>
+      <div className="flex flex-row items-stretch w-full mb-6">
+        <select
+          onChange={handleFilterChange}
+          className="rounded-lg border-transparent mr-4 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+        >
+          <option value="">Status</option>
+          <option value="Error">Error</option>
+          <option value="Updated">Updated</option>
+          <option value="No changes">No changes</option>
+        </select>
+        <input
+          onChange={handleFilterChange}
+          className="rounded-lg border-transparent appearance-none border border-gray-300 w-full lg:w-72 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          type="text"
+          placeholder="search..."
+        />
       </div>
       <div className="inline-block min-w-full rounded-lg shadow">
         <table className="min-w-full leading-normal">
@@ -182,7 +226,7 @@ const PuDashboard = (props) => {
         <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">
           <div className="flex items-center">
             <button
-              onClick={() => handlePageClick("", props.currentPage - 1)}
+              onClick={() => handlePageClick("", props.currentPage - 1, statusFilter, searchFilter)}
               disabled={props.currentPage === 1 ? true : false}
               type="button"
               className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-l border-t border-b rounded-l-xl hover:bg-gray-100"
@@ -201,7 +245,7 @@ const PuDashboard = (props) => {
             <button
               type="button"
               disabled={props.currentPage === props.totalPages ? true : false}
-              onClick={() => handlePageClick("", props.currentPage + 1)}
+              onClick={() => handlePageClick("", props.currentPage + 1, statusFilter, searchFilter)}
               className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
             >
               <svg

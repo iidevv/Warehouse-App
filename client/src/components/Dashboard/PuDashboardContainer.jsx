@@ -18,8 +18,11 @@ class PuDashboardContainer extends React.Component {
     this.props.getProducts();
     this.props.getStatus();
   }
-  onPageChanged = (name, page) => {
-    this.props.getProducts(name, page);
+  onPageChanged = (name, page, status, search) => {
+    this.props.getProducts(name, page, status, search);
+  }
+  onFilterChanged = (name, page, status, search) => {
+    this.props.getProducts(name, page, status, search);
   }
   onDeleteProduct = (id) => {
     this.props.deleteProduct(id);
@@ -32,7 +35,7 @@ class PuDashboardContainer extends React.Component {
     return (
       <>
         {this.props.isFetching ? <Preloader /> : null}
-        <PuDashboard products={this.props.products} total={this.props.total} onDeleteProduct={this.onDeleteProduct} onUpdateProducts={this.onUpdateProducts} onPageChanged={this.onPageChanged} currentPage={this.props.currentPage} totalPages={this.props.totalPages} status={this.props.status} />
+        <PuDashboard products={this.props.products} total={this.props.total} onDeleteProduct={this.onDeleteProduct} onUpdateProducts={this.onUpdateProducts} onPageChanged={this.onPageChanged} onFilterChanged={this.onFilterChanged} currentPage={this.props.currentPage} totalPages={this.props.totalPages} status={this.props.status} />
       </>
     );
   }
