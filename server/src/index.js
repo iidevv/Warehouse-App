@@ -25,6 +25,7 @@ import {
 } from "./sync-products/pu-index.js";
 import { puExternalProductRouter } from "./routes/external/pu-product.js";
 import { puDropshipRouter } from "./routes/pu-dropship.js";
+import { puExternalOrderRouter } from "./routes/external/pu-dropship.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,6 +41,7 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 app.use(express.json());
 
 app.use("/external", puExternalProductRouter);
+app.use("/external", puExternalOrderRouter);
 
 app.use(
   cors({
@@ -49,7 +51,6 @@ app.use(
     credentials: true,
   })
 );
-app.use("/api/pu-dropship", puDropshipRouter);
 
 app.use("/api/auth", userRouter);
 
@@ -58,7 +59,7 @@ app.use("/api/inventory", inventoryRouter);
 app.use("/api/inventory", SyncProductsRouter);
 app.use("/api/pu-inventory", puInventoryRouter);
 app.use("/api/pu-inventory", SyncPuProductsRouter);
-// app.use("/api/pu-dropship", puDropshipRouter);
+app.use("/api/pu-dropship", puDropshipRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);
 app.use("/api/wps", WPSProductsRouter);
