@@ -23,8 +23,20 @@ export const bigCommerceInstance = new BigCommerce({
   callback: useHttps
     ? "https://localhost:3001/auth"
     : "http://localhost:3001/auth",
-  headers: { "Accept-Encoding": "*", "Content-Type": "application/json" },
+  headers: { "Accept-Encoding": "*", "Content-Type": "application/json", "Accept": "application/json" },
   apiVersion: "v3",
+});
+
+export const bigCommerceInstanceV2 = new BigCommerce({
+  clientId: clientId,
+  accessToken: accessToken,
+  storeHash: storeHash,
+  responseType: "json",
+  callback: useHttps
+    ? "https://localhost:3001/auth"
+    : "http://localhost:3001/auth",
+  headers: { "Accept-Encoding": "*", "Content-Type": "application/json", "Accept": "application/json" },
+  apiVersion: "v2",
 });
 
 export const gptInstance = new Configuration({
