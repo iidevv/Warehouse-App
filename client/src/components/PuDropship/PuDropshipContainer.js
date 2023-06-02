@@ -10,14 +10,18 @@ import {
 
 class PuDropshipContainer extends React.Component {
   componentDidMount() {
-    this.props.getOrders('', '', '');
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const from = urlParams.get("date-from") || '2022-01-01';
+    const to = urlParams.get("date-to") || '2033-01-01';
+    this.props.getOrders(from, to, 1);
   }
 
   render() {
     return (
       <>
         {this.props.isFetching ? <Preloader /> : null}
-        <PuDropship />
+        <PuDropship orders={this.props.orders} />
       </>
     );
   }

@@ -1,6 +1,9 @@
 import PuDropshipOrder from "./PuDropshipOrder";
 
 const PuDropship = (props) => {
+  const handleOnChange = (e) => {
+    console.log(e.target.value);
+  }
   return (
     <div className="m-5">
       <div className="mb-6">
@@ -11,6 +14,7 @@ const PuDropship = (props) => {
             <input
               type="date"
               name="date-from"
+              onChange={handleOnChange}
               className="mb-2 lg:mb-0 lg:mr-2 px-4 py-2 w-full text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
             />
           </div>
@@ -31,8 +35,8 @@ const PuDropship = (props) => {
         </form>
       </div>
       <div>
-        {props.data &&
-          props.data.orders.map((order, i) => {
+        {props.orders &&
+          props.orders.map((order, i) => {
             return <PuDropshipOrder key={i} order={order} />;
           })}
       </div>
