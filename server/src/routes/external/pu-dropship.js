@@ -117,6 +117,7 @@ const checkAndFormatPUOrderItems = async (orderItems) => {
 
 router.post("/pu-order/", async (req, res) => {
   const orderId = req.body.data.id;
+  console.log(req.body.data);
   try {
     const order = await bigCommerceInstanceV2.get(`/orders/${orderId}`);
     const orderItems = await bigCommerceInstanceV2.get(
