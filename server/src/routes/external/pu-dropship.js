@@ -163,7 +163,7 @@ router.post("/pu-order/", async (req, res) => {
           staff_notes: orderNotes,
         }
       );
-      console.log(bigCommerceOrder.data.staff_notes);
+      console.log(bigCommerceOrder.staff_notes);
       return res.json({ message: "Note created." });
     }
     return res.status(500).json({ message: "Not found." });
