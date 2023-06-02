@@ -117,7 +117,7 @@ const checkAndFormatPUOrderItems = async (orderItems) => {
 
 router.post("/pu-order/", async (req, res) => {
   const orderId = req.body.data.id;
-  console.log(req.body.data);
+  console.log(req.body.data.id);
   try {
     const order = await bigCommerceInstanceV2.get(`/orders/${orderId}`);
     const orderItems = await bigCommerceInstanceV2.get(
@@ -163,7 +163,7 @@ router.post("/pu-order/", async (req, res) => {
           staff_notes: orderNotes,
         }
       );
-      console.log(bigCommerceOrder.purchase_order_number);
+      console.log(bigCommerceOrder.data.staff_notes);
       return res.json({ message: "Note created." });
     }
     return res.status(500).json({ message: "Not found." });
