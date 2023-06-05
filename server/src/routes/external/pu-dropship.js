@@ -86,7 +86,7 @@ const checkAndFormatPUOrderItems = async (orderItems) => {
 
       if (puDbProduct == null) {
         let payload = {
-          queryString: "item.sku",
+          queryString: item.sku,
           pagination: {
             limit: 2,
           },
@@ -149,23 +149,25 @@ router.post("/pu-order/", async (req, res) => {
         leave_order_open: true,
       };
 
-      const createdDropShipOrder = await puDropshipInstance.post(
-        "/orders/dropship",
-        orderForPU
-      );
-      let orderNotes = `#${createdDropShipOrder.data.reference_number} (PU)\nStatus: ${createdDropShipOrder.data.status_message}\nItems:\n`;
-      orderNotes += createdDropShipOrder.data.line_items.map((item) => {
-        return `#${item.part_number}, qty: ${item.ordered.quantity}`
-      }).join('\n');
-      const bigCommerceOrder = await bigCommerceInstanceV2.put(
-        `/orders/${orderId}`,
-        {
-          staff_notes: orderNotes,
-        }
-      );
-      console.log(bigCommerceOrder.staff_notes);
+      // const createdDropShipOrder = await puDropshipInstance.post(
+      //   "/orders/dropship",
+      //   orderForPU
+      // );
+      // let orderNotes = `#${createdDropShipOrder.data.reference_number} (PU)\nStatus: ${createdDropShipOrder.data.status_message}\nItems:\n`;
+      // orderNotes += createdDropShipOrder.data.line_items.map((item) => {
+      //   return `#${item.part_number}, qty: ${item.ordered.quantity}`
+      // }).join('\n');
+      // const bigCommerceOrder = await bigCommerceInstanceV2.put(
+      //   `/orders/${orderId}`,
+      //   {
+      //     staff_notes: orderNotes,
+      //   }
+      // );
+      // console.log(bigCommerceOrder.staff_notes);
+      console.log(orderForPU);
       return res.json({ message: "Note created." });
     }
+    console.log(`#${order.id} Not found.`);
     return res.status(500).json({ message: "Not found." });
   } catch (error) {
     res.status(500).json({ error: error });
