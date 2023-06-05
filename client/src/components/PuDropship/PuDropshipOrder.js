@@ -20,9 +20,9 @@ const PuDropshipOrder = (props) => {
             </dd>
           </div>
           <div className="sm:col-span-1">
-            <dt className="text-sm font-bold text-gray-500">Order Total</dt>
+            <dt className="text-sm font-bold text-gray-500">Fee</dt>
             <dd className="mt-1 text-sm text-gray-900">
-              ${props.order.order_total}
+              ${props.order.drop_ship_fee}
             </dd>
           </div>
           <div className="sm:col-span-1">
@@ -32,9 +32,9 @@ const PuDropshipOrder = (props) => {
             </dd>
           </div>
           <div className="sm:col-span-1">
-            <dt className="text-sm font-bold text-gray-500">Fee</dt>
+            <dt className="text-sm font-bold text-gray-500">Order Total</dt>
             <dd className="mt-1 text-sm text-gray-900">
-              ${props.order.drop_ship_fee}
+              ${props.order.order_total}
             </dd>
           </div>
           <div className="sm:col-span-2">
@@ -91,10 +91,7 @@ const PuDropshipOrder = (props) => {
                   {props.order.line_items &&
                     props.order.line_items.map((item, i) => {
                       const link = `/pu-product/${item.part_number}`;
-                      const trackingLink =
-                        item.shipped[0].shipped_via == "ups_ground"
-                          ? `https://www.ups.com/track?track=yes&trackNums=${item.shipped[0].tracking_numbers}`
-                          : "#";
+                      const trackingLink = `https://www.ups.com/track?track=yes&trackNums=${item.shipped[0].tracking_numbers}`;
                       return (
                         <tr key={i} className="flex flex-col lg:table-row">
                           <td className="px-2 lg:px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">

@@ -153,7 +153,7 @@ router.post("/pu-order/", async (req, res) => {
         "/orders/dropship",
         orderForPU
       );
-      let orderNotes = `PU Status: ${createdDropShipOrder.data.status_message}\nItems:\n`;
+      let orderNotes = `#${createdDropShipOrder.data.reference_number} (PU)\nStatus: ${createdDropShipOrder.data.status_message}\nItems:\n`;
       orderNotes += createdDropShipOrder.data.line_items.map((item) => {
         return `#${item.part_number}, qty: ${item.ordered.quantity}`
       }).join('\n');

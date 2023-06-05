@@ -56,7 +56,7 @@ export const puInstance = axios.create({
 });
 
 export const puDropshipInstance = axios.create({
-  baseURL: "https://dealer.parts-unlimited.com/api/",
+  baseURL: "https://api.parts-unlimited.com/api/",
   headers: {
     'api-key': puAccessToken,
     'content-type': 'application/json;charset=UTF-8'
