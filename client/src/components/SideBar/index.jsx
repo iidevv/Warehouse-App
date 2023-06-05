@@ -80,7 +80,7 @@ const SideBar = (props) => {
                     isActive ? "active-menu-link" : "menu-link"
                   }
                 >
-                  <span className="mx-4 text-sm font-normal">Dropship PU (TEST API)</span>
+                  <span className="mx-4 text-sm font-normal">Dropship PU</span>
                 </NavLink>
               </li>
               <li>
