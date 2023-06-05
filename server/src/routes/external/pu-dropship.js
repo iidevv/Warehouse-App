@@ -130,6 +130,11 @@ router.post("/pu-order/", async (req, res) => {
         `/orders/${orderId}/shipping_addresses`
       );
 
+      if(orderShipping[0].shipping_method === 'In-Person Pickup') {
+        console.log('In-Person Pickup.');
+        return res.status(500).json({ message: "In-Person Pickup." });
+      }
+
       const orderForPU = {
         dealer_number: "DIS076",
         order_type: "DS",
@@ -149,22 +154,21 @@ router.post("/pu-order/", async (req, res) => {
         leave_order_open: true,
       };
 
-      // const createdDropShipOrder = await puDropshipInstance.post(
-      //   "/orders/dropship",
-      //   orderForPU
-      // );
-      // let orderNotes = `#${createdDropShipOrder.data.reference_number} (PU)\nStatus: ${createdDropShipOrder.data.status_message}\nItems:\n`;
-      // orderNotes += createdDropShipOrder.data.line_items.map((item) => {
-      //   return `#${item.part_number}, qty: ${item.ordered.quantity}`
-      // }).join('\n');
-      // const bigCommerceOrder = await bigCommerceInstanceV2.put(
-      //   `/orders/${orderId}`,
-      //   {
-      //     staff_notes: orderNotes,
-      //   }
-      // );
-      // console.log(bigCommerceOrder.staff_notes);
-      console.log(orderForPU);
+      const createdDropShipOrder = await puDropshipInstance.post(
+        "/orders/dropship",
+        orderForPU
+      );
+      let orderNotes = `#${createdDropShipOrder.data.reference_number} (PU)\nStatus: ${createdDropShipOrder.data.status_message}\nItems:\n`;
+      orderNotes += createdDropShipOrder.data.line_items.map((item) => {
+        return `#${item.part_number}, qty: ${item.ordered.quantity}`
+      }).join('\n');
+      const bigCommerceOrder = await bigCommerceInstanceV2.put(
+        `/orders/${orderId}`,
+        {
+          staff_notes: orderNotes,
+        }
+      );
+      console.log(bigCommerceOrder.staff_notes);
       return res.json({ message: "Note created." });
     }
     console.log(`#${order.id} Not found.`);
