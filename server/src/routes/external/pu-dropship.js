@@ -115,7 +115,7 @@ const checkAndFormatPUOrderItems = async (orderItems) => {
   return items.filter((item) => item !== null);
 };
 
-router.post("/pu-order/", async (req, res) => {
+router.post("/order/", async (req, res) => {
   const orderId = req.body.data.id;
   console.log(req.body.data.id);
   try {
