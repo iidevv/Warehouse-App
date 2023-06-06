@@ -115,6 +115,11 @@ const checkAndFormatPUOrderItems = async (orderItems) => {
   return items.filter((item) => item !== null);
 };
 
+router.post("/order-updated/", async (req, res) => {
+  const orderId = req.body.data.id;
+  console.log(`order #${orderId} updated!`);
+});
+
 router.post("/order/", async (req, res) => {
   const orderId = req.body.data.id;
   console.log(req.body.data.id);
@@ -130,8 +135,8 @@ router.post("/order/", async (req, res) => {
         `/orders/${orderId}/shipping_addresses`
       );
 
-      if(orderShipping[0].shipping_method === 'In-Person Pickup') {
-        console.log('In-Person Pickup.');
+      if (orderShipping[0].shipping_method === "In-Person Pickup") {
+        console.log("In-Person Pickup.");
         return res.status(500).json({ message: "In-Person Pickup." });
       }
 
@@ -159,9 +164,11 @@ router.post("/order/", async (req, res) => {
         orderForPU
       );
       let orderNotes = `#${createdDropShipOrder.data.reference_number} (PU)\nStatus: ${createdDropShipOrder.data.status_message}\nItems:\n`;
-      orderNotes += createdDropShipOrder.data.line_items.map((item) => {
-        return `#${item.part_number}, qty: ${item.ordered.quantity}`
-      }).join('\n');
+      orderNotes += createdDropShipOrder.data.line_items
+        .map((item) => {
+          return `#${item.part_number}, qty: ${item.ordered.quantity}`;
+        })
+        .join("\n");
       const bigCommerceOrder = await bigCommerceInstanceV2.put(
         `/orders/${orderId}`,
         {
