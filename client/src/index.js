@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import UPInventory from './routes/UPInventory';
 import Dropship from './routes/Dropship';
 import PuProductPageContainer from "./components/PuInventory/PuProductPageContainer";
+import ProductsPU from "./routes/ProductsPU";
+import ProductsWPS from "./routes/ProductsWPS";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = localStorage.getItem("userID") ? true : false;
@@ -65,6 +67,14 @@ const router = createBrowserRouter(
         {
           path: "/settings",
           element: <Settings />,
+        },
+        {
+          path: "/products-pu",
+          element: <ProductsPU />,
+        },
+        {
+          path: "/products-wps",
+          element: <ProductsWPS />,
         },
         {
           path: "/pu-product/:id",
