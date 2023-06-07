@@ -129,12 +129,14 @@ export const chatgptAPI = {
 };
 
 export const inventoryAPI = {
-  getProducts(name, page) {
+  getProducts(name, page, status, search) {
     return instance
       .get(`/inventory/products/`, {
         params: {
           name,
           page,
+          status,
+          search,
         },
       })
       .then((response) => {
@@ -150,10 +152,18 @@ export const inventoryAPI = {
         return response.data;
       });
   },
-  updateProducts() {
-    return instance.get(`/inventory/sync/`).then((response) => {
-      return response.data;
-    });
+  updateProducts(vendor_id, name, status) {
+    return instance
+      .get(`/inventory/sync/`, {
+        params: {
+          vendor_id,
+          name,
+          status,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
   },
   updateProductsStatus() {
     return instance.get(`/inventory/sync-status/`).then((response) => {
@@ -186,12 +196,13 @@ export const puInventoryAPI = {
         return response.data;
       });
   },
-  updateProducts(vendor_id, name) {
+  updateProducts(vendor_id, name, status) {
     return instance
       .get(`/pu-inventory/sync/`, {
         params: {
           vendor_id,
           name,
+          status,
         },
       })
       .then((response) => {
@@ -223,10 +234,8 @@ export const puDropshipAPI = {
 
 export const dashboardAPI = {
   getTotals() {
-    return instance
-      .get(`/dashboard/info`)
-      .then((response) => {
-        return response.data;
-      });
+    return instance.get(`/dashboard/info`).then((response) => {
+      return response.data;
+    });
   },
 };

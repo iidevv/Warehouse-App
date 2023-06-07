@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Dashboard = (props) => {
   const createNewDate = (current_date) => {
@@ -24,12 +24,33 @@ const Dashboard = (props) => {
     setActiveDropdownIndex(activeDropdownIndex === index ? null : index);
   };
 
-  const handleUpdateClick = () => {
-    props.onUpdateProducts();
+  const handlePageClick = (name, page, statusFilter, searchFilter) => {
+    props.onPageChanged(name, page, statusFilter, searchFilter);
   };
-  const handlePageClick = (name, page) => {
-    props.onPageChanged(name, page);
+
+  const [statusFilter, setStatusFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+  const [isInitialSearch, setIsInitialSearch] = useState(true);
+
+  const handleUpdateClick = (vendor_id, name) => {
+    props.onUpdateProducts(vendor_id, name, statusFilter);
   };
+
+  const handleFilterChange = (event) => {
+    const target = event.target;
+    if (isInitialSearch) setIsInitialSearch(false);
+    if (target.type === "select-one") {
+      setStatusFilter(target.value);
+    } else if (target.type === "text") {
+      setSearchFilter(target.value);
+    }
+  };
+
+  useEffect(() => {
+    if (isInitialSearch) return;
+    props.onFilterChanged("", "", statusFilter, searchFilter);
+  }, [statusFilter, searchFilter, isInitialSearch]);
+
   const renderPageNumbers = () => {
     const pageNumbers = [];
 
@@ -55,7 +76,7 @@ const Dashboard = (props) => {
           <button
             key={i}
             disabled={props.currentPage === i}
-            onClick={() => handlePageClick("", i)}
+            onClick={() => handlePageClick("", i, statusFilter, searchFilter)}
             type="button"
             className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black"
           >
@@ -63,7 +84,14 @@ const Dashboard = (props) => {
           </button>
         );
       } else if (i === leftSide - 1 || i === rightSide + 1) {
-        pageNumbers.push(<span key={i} className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black">...</span>);
+        pageNumbers.push(
+          <span
+            key={i}
+            className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black"
+          >
+            ...
+          </span>
+        );
       }
     }
 
@@ -76,12 +104,32 @@ const Dashboard = (props) => {
           WPS Products ({props.total})
         </h2>
         <button
-          onClick={handleUpdateClick}
+          onClick={() => {
+            handleUpdateClick();
+          }}
           disabled={props.status}
           className="py-2 px-4 disabled:opacity-50 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
         >
           {props.status ? "Processing" : "Update"}
         </button>
+      </div>
+      <div className="flex flex-row items-stretch w-full mb-6">
+        <select
+          onChange={handleFilterChange}
+          className="rounded-lg border-transparent mr-4 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+        >
+          <option value="">Status</option>
+          <option value="Error">Error</option>
+          <option value="Created">Created</option>
+          <option value="Updated">Updated</option>
+          <option value="No changes">No changes</option>
+        </select>
+        <input
+          onChange={handleFilterChange}
+          className="rounded-lg border-transparent appearance-none border border-gray-300 w-full lg:w-72 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          type="text"
+          placeholder="search..."
+        />
       </div>
       <div className="inline-block min-w-full rounded-lg shadow">
         <table className="min-w-full leading-normal">
@@ -135,6 +183,15 @@ const Dashboard = (props) => {
                         </p>
                       </td>
                       <td className="relative px-5 pb-4 lg:py-5 text-sm bg-white border-b-8 lg:border-b border-gray-100">
+                        <button
+                          className="text-blue-600 hover:text-indigo-900 mr-1 pr-1 border-r"
+                          data-product-id={m.bigcommerce_id}
+                          onClick={() => {
+                            handleUpdateClick(m.vendor_id, m.product_name);
+                          }}
+                        >
+                          Update
+                        </button>
                         <button
                           onClick={() => toggleDropdown(i)}
                           className="text-red-600 hover:text-indigo-900"

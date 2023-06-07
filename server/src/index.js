@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import https from "https";
-import fs from "fs";
 import url from "url";
 import path from "path";
 import { bigcommerceRouter } from "./routes/bigcommerce.js";

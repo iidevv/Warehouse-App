@@ -24,9 +24,6 @@ const PuDashboard = (props) => {
     setActiveDropdownIndex(activeDropdownIndex === index ? null : index);
   };
 
-  const handleUpdateClick = (vendor_id, name) => {
-    props.onUpdateProducts(vendor_id, name);
-  };
   const handlePageClick = (name, page, statusFilter, searchFilter) => {
     props.onPageChanged(name, page, statusFilter, searchFilter);
   };
@@ -35,9 +32,13 @@ const PuDashboard = (props) => {
   const [searchFilter, setSearchFilter] = useState("");
   const [isInitialSearch, setIsInitialSearch] = useState(true);
 
+  const handleUpdateClick = (vendor_id, name) => {
+    props.onUpdateProducts(vendor_id, name, statusFilter);
+  };
+
   const handleFilterChange = (event) => {
     const target = event.target;
-    if(isInitialSearch) setIsInitialSearch(false);
+    if (isInitialSearch) setIsInitialSearch(false);
     if (target.type === "select-one") {
       setStatusFilter(target.value);
     } else if (target.type === "text") {
@@ -46,7 +47,7 @@ const PuDashboard = (props) => {
   };
 
   useEffect(() => {
-    if(isInitialSearch) return;
+    if (isInitialSearch) return;
     props.onFilterChanged("", "", statusFilter, searchFilter);
   }, [statusFilter, searchFilter, isInitialSearch]);
 
@@ -119,6 +120,7 @@ const PuDashboard = (props) => {
         >
           <option value="">Status</option>
           <option value="Error">Error</option>
+          <option value="Created">Created</option>
           <option value="Updated">Updated</option>
           <option value="No changes">No changes</option>
         </select>
@@ -226,7 +228,14 @@ const PuDashboard = (props) => {
         <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">
           <div className="flex items-center">
             <button
-              onClick={() => handlePageClick("", props.currentPage - 1, statusFilter, searchFilter)}
+              onClick={() =>
+                handlePageClick(
+                  "",
+                  props.currentPage - 1,
+                  statusFilter,
+                  searchFilter
+                )
+              }
               disabled={props.currentPage === 1 ? true : false}
               type="button"
               className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-l border-t border-b rounded-l-xl hover:bg-gray-100"
@@ -245,7 +254,14 @@ const PuDashboard = (props) => {
             <button
               type="button"
               disabled={props.currentPage === props.totalPages ? true : false}
-              onClick={() => handlePageClick("", props.currentPage + 1, statusFilter, searchFilter)}
+              onClick={() =>
+                handlePageClick(
+                  "",
+                  props.currentPage + 1,
+                  statusFilter,
+                  searchFilter
+                )
+              }
               className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
             >
               <svg

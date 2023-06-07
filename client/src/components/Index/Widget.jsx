@@ -4,7 +4,7 @@ import { Pie } from "react-chartjs-2";
 
 const Widget = (props) => {
   const data = {
-    labels: ["No Changes", "Updated", "Created", "Error"],
+    labels: [`No Changes (${props.data.noChangesTotal})`, `Updated (${props.data.updatedTotal})`, `Created (${props.data.createdTotal})`, `Error (${props.data.errorTotal})`],
     datasets: [
       {
         data: [props.data.noChangesTotal, props.data.updatedTotal, props.data.createdTotal, props.data.errorTotal],

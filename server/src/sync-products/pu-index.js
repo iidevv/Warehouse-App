@@ -5,8 +5,8 @@ import {
 } from "../routes/pu-inventory.js";
 import { bigCommerceInstance, puInstance } from "../instances/index.js";
 
-const getSyncedProducts = async (vendor_id, name, page, pageSize) => {
-  return await getInventoryProducts(vendor_id, name, page, pageSize);
+const getSyncedProducts = async (vendor_id, name, page, pageSize, status) => {
+  return await getInventoryProducts(vendor_id, name, page, pageSize, status);
 };
 
 const getPuProduct = async (id, search) => {
@@ -137,7 +137,7 @@ async function asyncForEach(array, callback, concurrency = 5) {
 }
 
 // Helper function to execute a function with retries
-async function executeWithRetry(fn, maxRetries = 3, delay = 1000) {
+async function executeWithRetry(fn, maxRetries = 3, delay = 2000) {
   let retries = 0;
   while (retries < maxRetries) {
     try {
@@ -151,7 +151,7 @@ async function executeWithRetry(fn, maxRetries = 3, delay = 1000) {
   throw new Error("Max retries reached.");
 }
 
-export const updatePuProducts = (vendor_id, name) => {
+export const updatePuProducts = (vendor_id, name, status) => {
   return new Promise(async (resolve, reject) => {
     const pageSize = 5;
     let currentPage = 1;
@@ -160,7 +160,7 @@ export const updatePuProducts = (vendor_id, name) => {
     while (currentPage <= totalPages) {
       try {
         const response = await executeWithRetry(() =>
-          getSyncedProducts(vendor_id, name, currentPage, pageSize)
+          getSyncedProducts(vendor_id, name, currentPage, pageSize, status)
         );
 
         let productsToProcess = [];
@@ -284,8 +284,9 @@ router.get("/sync-status", async (req, res) => {
 router.get("/sync", async (req, res) => {
   const vendor_id = req.query.vendor_id;
   const name = req.query.name;
+  const status = req.query.status;
   try {
-    await updatePuProducts(vendor_id, name);
+    await updatePuProducts(vendor_id, name, status);
     res.send({ status: updateStatus });
   } catch (error) {
     res.status(500).json({ error: error });

@@ -10,7 +10,7 @@ import {
   setToggleIsFetching,
   deleteProduct,
   updateProducts,
-  getStatus
+  getStatus,
 } from "./../../redux/reducers/inventory-reducer";
 
 class DashboardContainer extends React.Component {
@@ -18,21 +18,34 @@ class DashboardContainer extends React.Component {
     this.props.getProducts();
     this.props.getStatus();
   }
-  onPageChanged = (name, page) => {
-    this.props.getProducts(name, page);
-  }
+  onPageChanged = (name, page, status, search) => {
+    this.props.getProducts(name, page, status, search);
+  };
+  onFilterChanged = (name, page, status, search) => {
+    this.props.getProducts(name, page, status, search);
+  };
   onDeleteProduct = (id) => {
     this.props.deleteProduct(id);
-  }
-  onUpdateProducts = () => {
-    this.props.updateProducts();
-  }
+  };
+  onUpdateProducts = (vendor_id, name, status) => {
+    this.props.updateProducts(vendor_id, name, status);
+  };
 
   render() {
     return (
       <>
         {this.props.isFetching ? <Preloader /> : null}
-        <Dashboard products={this.props.products} total={this.props.total} onDeleteProduct={this.onDeleteProduct} onUpdateProducts={this.onUpdateProducts} onPageChanged={this.onPageChanged} currentPage={this.props.currentPage} totalPages={this.props.totalPages} status={this.props.status} />
+        <Dashboard
+          products={this.props.products}
+          total={this.props.total}
+          onDeleteProduct={this.onDeleteProduct}
+          onUpdateProducts={this.onUpdateProducts}
+          onPageChanged={this.onPageChanged}
+          onFilterChanged={this.onFilterChanged}
+          currentPage={this.props.currentPage}
+          totalPages={this.props.totalPages}
+          status={this.props.status}
+        />
       </>
     );
   }
@@ -45,7 +58,7 @@ let mapStateToProps = (state) => {
     total: state.inventory.total,
     currentPage: state.inventory.currentPage,
     totalPages: state.inventory.totalPages,
-    status: state.inventory.status
+    status: state.inventory.status,
   };
 };
 
@@ -56,6 +69,6 @@ export default compose(
     setToggleIsFetching,
     deleteProduct,
     updateProducts,
-    getStatus
+    getStatus,
   })
 )(DashboardContainer);

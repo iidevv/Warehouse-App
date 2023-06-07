@@ -10,7 +10,7 @@ import {
   setToggleIsFetching,
   deleteProduct,
   updateProducts,
-  getStatus
+  getStatus,
 } from "./../../redux/reducers/pu-inventory-reducer";
 
 class PuDashboardContainer extends React.Component {
@@ -20,22 +20,32 @@ class PuDashboardContainer extends React.Component {
   }
   onPageChanged = (name, page, status, search) => {
     this.props.getProducts(name, page, status, search);
-  }
+  };
   onFilterChanged = (name, page, status, search) => {
     this.props.getProducts(name, page, status, search);
-  }
+  };
   onDeleteProduct = (id) => {
     this.props.deleteProduct(id);
-  }
-  onUpdateProducts = (vendor_id, name) => {
-    this.props.updateProducts(vendor_id, name);
-  }
+  };
+  onUpdateProducts = (vendor_id, name, status) => {
+    this.props.updateProducts(vendor_id, name, status);
+  };
 
   render() {
     return (
       <>
         {this.props.isFetching ? <Preloader /> : null}
-        <PuDashboard products={this.props.products} total={this.props.total} onDeleteProduct={this.onDeleteProduct} onUpdateProducts={this.onUpdateProducts} onPageChanged={this.onPageChanged} onFilterChanged={this.onFilterChanged} currentPage={this.props.currentPage} totalPages={this.props.totalPages} status={this.props.status} />
+        <PuDashboard
+          products={this.props.products}
+          total={this.props.total}
+          onDeleteProduct={this.onDeleteProduct}
+          onUpdateProducts={this.onUpdateProducts}
+          onPageChanged={this.onPageChanged}
+          onFilterChanged={this.onFilterChanged}
+          currentPage={this.props.currentPage}
+          totalPages={this.props.totalPages}
+          status={this.props.status}
+        />
       </>
     );
   }
@@ -48,7 +58,7 @@ let mapStateToProps = (state) => {
     total: state.puInventory.total,
     currentPage: state.puInventory.currentPage,
     totalPages: state.puInventory.totalPages,
-    status: state.puInventory.status
+    status: state.puInventory.status,
   };
 };
 
@@ -59,6 +69,6 @@ export default compose(
     setToggleIsFetching,
     deleteProduct,
     updateProducts,
-    getStatus
+    getStatus,
   })
 )(PuDashboardContainer);

@@ -136,10 +136,10 @@ export const getStatus = () => {
   };
 };
 
-export const updateProducts = (vendor_id, name) => {
+export const updateProducts = (vendor_id, name, status) => {
   return (dispatch) => {
     dispatch(setStatus(true));
-    puInventoryAPI.updateProducts(vendor_id, name).then((data) => {
+    puInventoryAPI.updateProducts(vendor_id, name, status).then((data) => {
       dispatch(getProducts());
       dispatch(setStatus(false));
     });

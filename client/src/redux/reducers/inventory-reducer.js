@@ -115,10 +115,10 @@ export const deleteProduct = (id) => {
   };
 };
 
-export const getProducts = (name, page) => {
+export const getProducts = (name, page, status, search) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    inventoryAPI.getProducts(name, page).then((data) => {
+    inventoryAPI.getProducts(name, page, status, search).then((data) => {
       dispatch(setProducts(data.products));
       dispatch(setProductsTotal(data.total));
       dispatch(setTotalPages(data.totalPages));
@@ -136,10 +136,10 @@ export const getStatus = () => {
   };
 };
 
-export const updateProducts = () => {
+export const updateProducts = (vendor_id, name, status) => {
   return (dispatch) => {
     dispatch(setStatus(true));
-    inventoryAPI.updateProducts().then((data) => {
+    inventoryAPI.updateProducts(vendor_id, name, status).then((data) => {
       dispatch(getProducts());
       dispatch(setStatus(false));
     });

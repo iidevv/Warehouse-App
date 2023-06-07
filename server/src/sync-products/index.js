@@ -3,14 +3,11 @@ import {
   getInventoryProducts,
   updateInventoryProduct,
 } from "../routes/inventory.js";
-import {
-  bigCommerceInstance,
-  wpsInstance,
-} from "../instances/index.js";
+import { bigCommerceInstance, wpsInstance } from "../instances/index.js";
 
 // Define the IDs of the products to update
-const getSyncedProducts = async (page, pageSize) => {
-  return await getInventoryProducts("", "", page, pageSize);
+const getSyncedProducts = async (vendor_id, name, page, pageSize, status) => {
+  return await getInventoryProducts(vendor_id, name, page, pageSize, status);
 };
 // response
 // [
@@ -221,9 +218,9 @@ const updateSyncedProduct = async (data) => {
 
 let updateStatus = false;
 
-export const updateWpsProducts = () => {
+export const updateWpsProducts = (vendor_id, name, status) => {
   return new Promise(async (resolve, reject) => {
-    const pageSize = 20;
+    const pageSize = 5;
     let currentPage = 1;
     let totalPages = 1;
     updateStatus = true;
@@ -232,7 +229,14 @@ export const updateWpsProducts = () => {
       try {
         // Get synced products
         const { products: syncedProducts, totalPages: totalPagesFromResponse } =
-          await getSyncedProducts(currentPage, pageSize);
+          await getSyncedProducts(
+            vendor_id,
+            name,
+            currentPage,
+            pageSize,
+            status
+          );
+
         totalPages = totalPagesFromResponse;
         // Loop through each synced product
         for (const syncedProduct of syncedProducts) {
@@ -240,9 +244,10 @@ export const updateWpsProducts = () => {
           const wpsProduct = await getWPSProduct(syncedProduct.vendor_id);
           // put product name for same products with different variations
           wpsProduct.product_name = syncedProduct.product_name;
-          
+
           const syncedProductData = await getSyncedProduct(
-            syncedProduct.vendor_id, syncedProduct.product_name
+            syncedProduct.vendor_id,
+            syncedProduct.product_name
           );
           // Check if an update is needed
           const isPriceUpdated = wpsProduct.price !== syncedProductData.price;
@@ -251,7 +256,7 @@ export const updateWpsProducts = () => {
             const syncedVariant = syncedProductData.variants.find(
               (v) => v.vendor_id === wpsVariant.id
             );
-      
+
             // Check if the inventory_level has changed
             return (
               syncedVariant &&
