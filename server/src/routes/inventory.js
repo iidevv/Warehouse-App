@@ -54,8 +54,7 @@ export const getInventoryProducts = async (
     const totalPages = Math.ceil(total / pageSize);
     const skip = (page - 1) * pageSize;
 
-    const Inventory = await InventoryModel
-      .find(query)
+    const Inventory = await InventoryModel.find(query)
       .sort({ last_updated: -1 })
       .skip(skip)
       .limit(pageSize);

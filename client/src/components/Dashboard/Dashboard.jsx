@@ -169,7 +169,8 @@ const Dashboard = (props) => {
                     <tr key={i} className="flex flex-col lg:table-row">
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                         <p className="text-xl font-bold lg:font-normal lg:text-sm lg:text-gray-900 whitespace-no-wrap">
-                          {m.product_name}
+                          {m.product_name}{" "}
+                          {m.create_type == "search" ? " (Combined)" : ""}
                         </p>
                       </td>
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">

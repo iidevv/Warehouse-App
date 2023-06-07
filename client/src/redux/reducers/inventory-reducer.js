@@ -140,7 +140,7 @@ export const updateProducts = (vendor_id, name, status) => {
   return (dispatch) => {
     dispatch(setStatus(true));
     inventoryAPI.updateProducts(vendor_id, name, status).then((data) => {
-      dispatch(getProducts());
+      dispatch(getProducts(vendor_id, name, status));
       dispatch(setStatus(false));
     });
   };

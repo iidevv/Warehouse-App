@@ -119,7 +119,7 @@ const getWPSProduct = async (id) => {
           id: item.id,
           sku: item.sku,
           price: +item.list_price,
-          inventory_level: item.inventory.data.total,
+          inventory_level: item.inventory.data ? item.inventory.data.total : 0,
         })),
       };
     })
@@ -218,37 +218,81 @@ const updateSyncedProduct = async (data) => {
 
 let updateStatus = false;
 
+// Helper function to process array items in parallel with a limited concurrency
+async function asyncForEach(array, callback, concurrency = 5) {
+  const queue = [...array];
+  const promises = [];
+  while (queue.length) {
+    while (promises.length < concurrency && queue.length) {
+      const item = queue.shift();
+      promises.push(callback(item));
+    }
+    await Promise.race(promises).then((completed) => {
+      promises.splice(promises.indexOf(completed), 1);
+    });
+  }
+  return Promise.all(promises);
+}
+
+// Helper function to execute a function with retries
+async function executeWithRetry(fn, maxRetries = 3, delay = 2000) {
+  let retries = 0;
+  while (retries < maxRetries) {
+    try {
+      return await fn();
+    } catch (error) {
+      retries++;
+      console.error(`Attempt ${retries} failed. Retrying...`, error);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Max retries reached.");
+}
+
 export const updateWpsProducts = (vendor_id, name, status) => {
   return new Promise(async (resolve, reject) => {
     const pageSize = 5;
     let currentPage = 1;
     let totalPages = 1;
-    updateStatus = true;
 
     while (currentPage <= totalPages) {
       try {
         // Get synced products
-        const { products: syncedProducts, totalPages: totalPagesFromResponse } =
-          await getSyncedProducts(
-            vendor_id,
-            name,
-            currentPage,
-            pageSize,
-            status
-          );
+        const response = await executeWithRetry(() =>
+          getSyncedProducts(vendor_id, name, currentPage, pageSize, status)
+        );
+
+        let productsToProcess = [];
+        let totalPagesFromResponse = 1;
+
+        if (Array.isArray(response.products)) {
+          totalPagesFromResponse = response.totalPages;
+          productsToProcess = response.products;
+        } else {
+          productsToProcess = [response];
+        }
 
         totalPages = totalPagesFromResponse;
-        // Loop through each synced product
-        for (const syncedProduct of syncedProducts) {
+
+        // Process products with limited concurrency
+        await asyncForEach(productsToProcess, async (syncedProduct) => {
+          // Add a delay between requests
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
           // Get WPS product data and compare it with the synced product data
-          const wpsProduct = await getWPSProduct(syncedProduct.vendor_id);
+          const wpsProduct = await executeWithRetry(() =>
+            getWPSProduct(syncedProduct.vendor_id)
+          );
           // put product name for same products with different variations
           wpsProduct.product_name = syncedProduct.product_name;
 
-          const syncedProductData = await getSyncedProduct(
-            syncedProduct.vendor_id,
-            syncedProduct.product_name
+          const syncedProductData = await executeWithRetry(() =>
+            getSyncedProduct(
+              syncedProduct.vendor_id,
+              syncedProduct.product_name
+            )
           );
+
           // Check if an update is needed
           const isPriceUpdated = wpsProduct.price !== syncedProductData.price;
           const isInventoryUpdated = wpsProduct.variants.some((wpsVariant) => {
@@ -268,9 +312,11 @@ export const updateWpsProducts = (vendor_id, name, status) => {
           if (isPriceUpdated || isInventoryUpdated) {
             try {
               // Update the product
-              await updateBigcommerceProduct(syncedProduct.bigcommerce_id, {
-                price: wpsProduct.price,
-              });
+              await executeWithRetry(() =>
+                updateBigcommerceProduct(syncedProduct.bigcommerce_id, {
+                  price: wpsProduct.price,
+                })
+              );
 
               // Loop through each variant in the synced product
               for (const syncedVariant of syncedProduct.variants) {
@@ -287,40 +333,42 @@ export const updateWpsProducts = (vendor_id, name, status) => {
 
                 if (isPriceUpdated || isInventoryUpdated) {
                   // Update the product variant
-                  await updateBigcommerceProductVariants(
-                    syncedProduct.bigcommerce_id,
-                    [
-                      {
-                        id: syncedVariant.bigcommerce_id,
-                        price: wpsVariant.price,
-                        inventory_level: wpsVariant.inventory_level,
-                      },
-                    ]
+                  await executeWithRetry(() =>
+                    updateBigcommerceProductVariants(
+                      syncedProduct.bigcommerce_id,
+                      [
+                        {
+                          id: syncedVariant.bigcommerce_id,
+                          price: wpsVariant.price,
+                          inventory_level: wpsVariant.inventory_level,
+                        },
+                      ]
+                    )
                   );
                 }
               }
 
               // Update the synced product status to 'Updated'
               wpsProduct.status = "Updated";
-              await updateSyncedProduct(wpsProduct);
+              await executeWithRetry(() => updateSyncedProduct(wpsProduct));
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'
               wpsProduct.status = "Error";
-              await updateSyncedProduct(wpsProduct);
+              await executeWithRetry(() => updateSyncedProduct(wpsProduct));
             }
           } else {
             // If there's no change, update the synced product status to 'No changes'
             wpsProduct.status = "No changes";
-            await updateSyncedProduct(wpsProduct);
+            await executeWithRetry(() => updateSyncedProduct(wpsProduct));
           }
-        }
+        });
+
         currentPage++;
       } catch (error) {
         console.error("Error updating products:", error);
         break;
       }
     }
-    updateStatus = false;
     resolve();
   });
 };
@@ -332,8 +380,11 @@ router.get("/sync-status", async (req, res) => {
 });
 
 router.get("/sync", async (req, res) => {
+  const vendor_id = req.query.vendor_id;
+  const name = req.query.name;
+  const status = req.query.status;
   try {
-    await updateWpsProducts();
+    await updateWpsProducts(vendor_id, name, status);
     res.send({ status: updateStatus });
   } catch (error) {
     res.status(500).json({ error: error });
