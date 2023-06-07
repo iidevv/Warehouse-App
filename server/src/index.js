@@ -53,9 +53,6 @@ app.use(
   })
 );
 
-app.use("/api/dashboard", dashboardRouter);
-
-
 app.use("/api/auth", userRouter);
 
 app.use(authenticate);
@@ -64,7 +61,7 @@ app.use("/api/inventory", SyncProductsRouter);
 app.use("/api/pu-inventory", puInventoryRouter);
 app.use("/api/pu-inventory", SyncPuProductsRouter);
 app.use("/api/pu-dropship", puDropshipRouter);
-// app.use("/api/dashboard", dashboardRouter);
+app.use("/api/dashboard", dashboardRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);
 app.use("/api/wps", WPSProductsRouter);

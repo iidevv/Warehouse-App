@@ -9,11 +9,11 @@ const Index = (props) => {
       </div>
       <div className="flex flex-col lg:flex-row">
         <div className="grid grid-cols-1 lg:grid-1/3 lg:grid-cols-2 gap-10 w-full mb-10">
-          <Widget title="Western Power Sports" link="/products-wps" />
-          <Widget title="Parts Unlimited" link="/products-pu" />
+          <Widget title="Western Power Sports" link="/products-wps" data={props.wpsData} />
+          <Widget title="Parts Unlimited" link="/products-pu" data={props.puData} />
         </div>
         <div className="w-full lg:w-2/6 lg:ml-10">
-          <WidgetTotal />
+          <WidgetTotal data={props.data} />
         </div>
       </div>
     </>

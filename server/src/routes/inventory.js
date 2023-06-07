@@ -141,7 +141,7 @@ export const updateInventoryProduct = async (updatedProductData) => {
         await product.save();
         return { Message: "updated!" };
       } else {
-        console.log("Product not found");
+        console.log(`Product not found: ${updatedProductData.product_name}`);
         return { Error: "Product not found" };
       }
     } catch (error) {

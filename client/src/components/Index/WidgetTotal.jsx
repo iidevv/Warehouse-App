@@ -7,12 +7,12 @@ const WidgetTotal = (props) => {
     <>
       <div className="relative w-full px-4 py-6 bg-white shadow-lg">
         <a className="block text-xl font-medium mb-6" href={props.link}>
-          Total Products (999)
+          Total Products ({props.data.total})
         </a>
-        <p>No Changes: <b>12</b></p>
-        <p>Updated: <b>12</b></p>
-        <p>Created: <b>12</b></p>
-        <p>Error: <b>12</b></p>
+        <p>No Changes: <b>{props.data.noChangesTotal}</b></p>
+        <p>Updated: <b>{props.data.updatedTotal}</b></p>
+        <p>Created: <b>{props.data.createdTotal}</b></p>
+        <p>Error: <b>{props.data.errorTotal}</b></p>
         <div></div>
       </div>
     </>

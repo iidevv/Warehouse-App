@@ -25,7 +25,6 @@ export const createPuInventoryProduct = async (
   };
   try {
     const res = await addInventoryProduct(inventoryProduct);
-    console.log("Product synced!");
     return "Product synced!";
   } catch (error) {
     console.log(error);

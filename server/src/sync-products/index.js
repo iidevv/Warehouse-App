@@ -316,7 +316,6 @@ export const updateWpsProducts = () => {
       }
     }
     updateStatus = false;
-    console.log("All Products Updated!");
     resolve();
   });
 };

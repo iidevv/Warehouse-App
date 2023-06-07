@@ -7,8 +7,10 @@ import puProductReducer from "./pu-product-reducer";
 import inventoryReducer from "./inventory-reducer";
 import PuInventoryReducer from "./pu-inventory-reducer";
 import PuDropshipReducer from "./pu-dropship-reducer";
+import dashboardReducer from "./dashboard-reducer";
 
 export default combineReducers({
+  dashboard: dashboardReducer,
   inventory: inventoryReducer,
   wpsProduct: wpsProductReducer,
   wpsProducts: wpsProductsReducer,

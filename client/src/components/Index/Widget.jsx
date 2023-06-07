@@ -7,7 +7,7 @@ const Widget = (props) => {
     labels: ["No Changes", "Updated", "Created", "Error"],
     datasets: [
       {
-        data: [12, 19, 3, 5],
+        data: [props.data.noChangesTotal, props.data.updatedTotal, props.data.createdTotal, props.data.errorTotal],
         backgroundColor: [
           "rgba(54, 162, 235, 0.6)",
           "rgba(255, 206, 86, 0.6)",
@@ -32,7 +32,7 @@ const Widget = (props) => {
           className="flex items-center justify-center text-xl font-medium mb-6 no-underline hover:underline"
           href={props.link}
         >
-          <span className="mr-2">{props.title} (999)</span>
+          <span className="mr-2">{props.title} ({props.data.total})</span>
           <svg
             width="18"
             height="18"

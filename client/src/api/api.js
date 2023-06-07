@@ -212,9 +212,19 @@ export const puDropshipAPI = {
         params: {
           from,
           to,
-          page
+          page,
         },
       })
+      .then((response) => {
+        return response.data;
+      });
+  },
+};
+
+export const dashboardAPI = {
+  getTotals() {
+    return instance
+      .get(`/dashboard/info`)
       .then((response) => {
         return response.data;
       });

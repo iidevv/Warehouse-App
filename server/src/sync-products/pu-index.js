@@ -271,7 +271,6 @@ export const updatePuProducts = (vendor_id, name) => {
         break;
       }
     }
-    console.log("All Products Updated!");
     resolve();
   });
 };
