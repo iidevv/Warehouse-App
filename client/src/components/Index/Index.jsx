@@ -5,7 +5,7 @@ const Index = (props) => {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-2xl leading-tight">Dashboard</h2>
+        <h1 className="text-2xl leading-tight">Dashboard</h1>
       </div>
       <div className="flex flex-col lg:flex-row">
         <div className="grid grid-cols-1 lg:grid-1/3 lg:grid-cols-2 gap-10 w-full mb-10">
