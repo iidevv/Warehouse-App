@@ -23,7 +23,7 @@ import {
 } from "./sync-products/pu-index.js";
 import { puExternalProductRouter } from "./routes/external/pu-product.js";
 import { puDropshipRouter } from "./routes/pu-dropship.js";
-import { puExternalOrderRouter } from "./routes/external/pu-dropship.js";
+import { puExternalOrderRouter } from "./routes/external/dropship.js";
 import { dashboardRouter } from "./routes/dashboard.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
