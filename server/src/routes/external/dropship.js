@@ -163,16 +163,15 @@ const checkAndFormatWPSOrderItems = async (orderItems) => {
   const itemsPromises = orderItems.map(async (item) => {
     try {
       const wpsDbProduct = await InventoryModel.findOne({
-        variants: { $elemMatch: { bigcommerce_id: item.id } },
+        variants: { $elemMatch: { bigcommerce_id: item.variant_id } },
       });
       let wpsProduct;
-
       if (wpsDbProduct == null) {
         wpsProduct = await wpsInstance.get(`/items?filter[sku]=${item.sku}`);
       }
       if (
         wpsDbProduct !== null ||
-        (wpsProduct && wpsProduct.data.meta.count === 1)
+        (wpsProduct && wpsProduct.data.data.length === 1)
       ) {
         return {
           item_sku: item.sku,
