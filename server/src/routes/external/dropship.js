@@ -125,7 +125,7 @@ const createPUOrder = async (id, shipping, items) => {
   const order = {
     dealer_number: "DIS076",
     order_type: "DS",
-    purchase_order_number: id,
+    purchase_order_number: id.toString(),
     shipping_method: "ground",
     cancellation_policy: "back_order",
     ship_to_address: {
@@ -189,8 +189,9 @@ const checkAndFormatWPSOrderItems = async (orderItems) => {
 };
 
 const createWPSOrder = async (id, shipping, items) => {
+  const orderId = id.toString();
   const cart = {
-    po_number: id,
+    po_number: orderId,
     ship_name: `${shipping.first_name} ${shipping.last_name}`,
     ship_address1: shipping.street_1,
     ship_address2: shipping.street_2,
@@ -202,15 +203,15 @@ const createWPSOrder = async (id, shipping, items) => {
   };
   const cartItems = items;
   const order = {
-    po_number: id,
+    po_number: orderId,
   };
   try {
     await wpsInstance.post("/carts/", cart);
 
     const itemsPromises = cartItems.map(async (item) => {
       try {
-        const puDbProduct = await wpsInstance.post(`/carts/${id}/items`, item);
-        console.log(`id - ${id}(${puDbProduct.data.data.status})`);
+        const puDbProduct = await wpsInstance.post(`/carts/${orderId}/items`, item);
+        console.log(`orderId - ${orderId}(${puDbProduct.data.data.status})`);
       } catch (error) {
         console.error(`Error adding item to cart: ${error}`);
       }
@@ -218,7 +219,7 @@ const createWPSOrder = async (id, shipping, items) => {
 
     await Promise.all(itemsPromises);
 
-    const orderItems = await wpsInstance.get(`/carts/${id}`);
+    const orderItems = await wpsInstance.get(`/carts/${orderId}`);
     const createdDropShipOrder = await wpsInstance.post("/orders/", order);
 
     let orderNotes = `\n#${createdDropShipOrder.data.data.order_number} (WPS)\nStatus: ${createdDropShipOrder.data.data.status}\nItems:\n`;
