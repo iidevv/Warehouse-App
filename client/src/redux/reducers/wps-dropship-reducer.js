@@ -1,6 +1,6 @@
-import { puDropshipAPI } from "../../api/api";
+import { wpsDropshipAPI } from "../../api/api";
 
-const SET_ORDERS_PU = "SET_ORDERS_PU";
+const SET_ORDERS_WPS = "SET_ORDERS_WPS";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 
 let initialState = {
@@ -10,9 +10,9 @@ let initialState = {
   isFetching: true,
 };
 
-const PuDropshipReducer = (state = initialState, action) => {
+const WpsDropshipReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_ORDERS_PU:
+    case SET_ORDERS_WPS:
       return {
         ...state,
         orders: [...action.orders],
@@ -29,7 +29,7 @@ const PuDropshipReducer = (state = initialState, action) => {
 
 export const setOrders = (orders) => {
   return {
-    type: SET_ORDERS_PU,
+    type: SET_ORDERS_WPS,
     orders,
   };
 };
@@ -44,11 +44,11 @@ export const setToggleIsFetching = (isFetching) => {
 export const getOrders = (from, to, page) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    puDropshipAPI.getOrders(from, to, page).then((data) => {
-      dispatch(setOrders(data.orders));
+    wpsDropshipAPI.getOrders(from, to, page).then((data) => {
+      dispatch(setOrders(data.data));
       dispatch(setToggleIsFetching(false));
     });
   };
 };
 
-export default PuDropshipReducer;
+export default WpsDropshipReducer;

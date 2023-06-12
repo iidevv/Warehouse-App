@@ -1,6 +1,6 @@
 import PuProductsContainer from "../components/PuInventory/PuProductsContainer";
 
-const UPInventory = (props) => {
+const PUInventory = (props) => {
   return (
     <>
       <PuProductsContainer/>
@@ -8,4 +8,4 @@ const UPInventory = (props) => {
   );
 };
 
-export default UPInventory;
+export default PUInventory;

@@ -1,10 +1,10 @@
-import PuDropshipOrder from "./PuDropshipOrder";
+import WpsDropshipOrder from "./WpsDropshipOrder";
 
-const PuDropship = (props) => {
+const WpsDropship = (props) => {
   return (
     <div className="m-5">
       <div className="mb-6">
-        <h1 className="text-2xl leading-tight">Parts Unlimited Dropshipping</h1>
+        <h1 className="text-2xl leading-tight">Western Power Sports Dropshipping</h1>
         <form className="flex lg:flex-row flex-col lg:items-end py-5 my-5">
           <div className="lg:mr-6">
             <span className="font-bold text-sm mr-2 w-full block">From</span>
@@ -33,7 +33,7 @@ const PuDropship = (props) => {
       <div>
         {props.orders &&
           props.orders.map((order, i) => {
-            return <PuDropshipOrder key={i} order={order} />;
+            return <WpsDropshipOrder key={i} order={order} />;
           })}
       </div>
       <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">
@@ -74,4 +74,4 @@ const PuDropship = (props) => {
   );
 };
 
-export default PuDropship;
+export default WpsDropship;

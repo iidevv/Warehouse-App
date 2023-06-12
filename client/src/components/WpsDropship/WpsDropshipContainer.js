@@ -3,18 +3,20 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import withRouter from "../../hoc/withRouter";
 import Preloader from "../common/preloader/Preloader";
-import PuDropship from "./PuDropship";
+import WpsDropship from "./WpsDropship";
 import { getFormattedDate } from "../../common/index.js";
-import {
-  getOrders,
-} from "./../../redux/reducers/pu-dropship-reducer";
+import { getOrders } from "../../redux/reducers/wps-dropship-reducer";
 
-class PuDropshipContainer extends React.Component {
+class WpsDropshipContainer extends React.Component {
   componentDidMount() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const from = urlParams.get("date-from") || '2022-01-01';
-    const to = urlParams.get("date-to") || getFormattedDate();
+    const from = urlParams.get("date-from")
+      ? urlParams.get("date-from").replace(/-/g, "")
+      : "20220101";
+    const to = urlParams.get("date-to")
+      ? urlParams.get("date-to").replace(/-/g, "")
+      : getFormattedDate("", "non-dashed");
     this.props.getOrders(from, to, 1);
   }
 
@@ -22,7 +24,7 @@ class PuDropshipContainer extends React.Component {
     return (
       <>
         {this.props.isFetching ? <Preloader /> : null}
-        <PuDropship orders={this.props.orders} />
+        <WpsDropship orders={this.props.orders} />
       </>
     );
   }
@@ -30,16 +32,15 @@ class PuDropshipContainer extends React.Component {
 
 let mapStateToProps = (state) => {
   return {
-    orders: state.puDropship.orders,
-    currentPage: state.puDropship.currentPages,
-    totalPages: state.puDropship.totalPages,
-    isFetching: state.puDropship.isFetching
+    orders: state.wpsDropship.orders,
+    currentPage: state.wpsDropship.currentPages,
+    totalPages: state.wpsDropship.totalPages,
   };
 };
 
 export default compose(
   connect(mapStateToProps, {
-    getOrders
+    getOrders,
   }),
   withRouter
-)(PuDropshipContainer);
+)(WpsDropshipContainer);

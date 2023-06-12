@@ -14,11 +14,12 @@ import WpsProductPageContainer from "./components/WpsInventory/WpsProductPageCon
 import { Auth } from "./routes/Auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import UPInventory from './routes/UPInventory';
-import Dropship from './routes/Dropship';
+import PUInventory from './routes/PUInventory';
+import PuDropship from './routes/PuDropship';
 import PuProductPageContainer from "./components/PuInventory/PuProductPageContainer";
 import ProductsPU from "./routes/ProductsPU";
 import ProductsWPS from "./routes/ProductsWPS";
+import WpsDropship from './routes/WpsDropship';
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = localStorage.getItem("userID") ? true : false;
@@ -58,11 +59,15 @@ const router = createBrowserRouter(
         },
         {
           path: "/pu-catalog",
-          element: <UPInventory />,
+          element: <PUInventory />,
         },
         {
-          path: "/dropship",
-          element: <Dropship />,
+          path: "/dropship-pu",
+          element: <PuDropship />,
+        },
+        {
+          path: "/dropship-wps",
+          element: <WpsDropship />,
         },
         {
           path: "/settings",

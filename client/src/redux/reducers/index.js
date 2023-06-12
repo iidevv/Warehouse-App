@@ -8,6 +8,7 @@ import inventoryReducer from "./inventory-reducer";
 import PuInventoryReducer from "./pu-inventory-reducer";
 import PuDropshipReducer from "./pu-dropship-reducer";
 import dashboardReducer from "./dashboard-reducer";
+import WpsDropshipReducer from "./wps-dropship-reducer";
 
 export default combineReducers({
   dashboard: dashboardReducer,
@@ -18,5 +19,6 @@ export default combineReducers({
   puInventory: PuInventoryReducer,
   puProduct: puProductReducer,
   puDropship: PuDropshipReducer,
+  wpsDropship: WpsDropshipReducer,
   dmgInventory: dmgInventoryReducer,
 });

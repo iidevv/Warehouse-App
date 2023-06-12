@@ -1,6 +1,6 @@
 import PuDropshipContainer from "../components/PuDropship/PuDropshipContainer";
 
-const Dropship = (props) => {
+const PuDropship = (props) => {
   return (
     <div className="container">
       <div className="">
@@ -10,4 +10,4 @@ const Dropship = (props) => {
   );
 };
 
-export default Dropship;
+export default PuDropship;

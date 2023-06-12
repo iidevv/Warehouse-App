@@ -25,6 +25,7 @@ import { puExternalProductRouter } from "./routes/external/pu-product.js";
 import { puDropshipRouter } from "./routes/pu-dropship.js";
 import { puExternalOrderRouter } from "./routes/external/dropship.js";
 import { dashboardRouter } from "./routes/dashboard.js";
+import { wpsDropshipRouter } from "./routes/wps-dropship.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,13 +60,14 @@ app.use("/api/inventory", SyncProductsRouter);
 app.use("/api/pu-inventory", puInventoryRouter);
 app.use("/api/pu-inventory", SyncPuProductsRouter);
 app.use("/api/pu-dropship", puDropshipRouter);
+app.use("/api/pu", puProductsRouter);
+app.use("/api/pu", puProductRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);
 app.use("/api/wps", WPSProductsRouter);
 app.use("/api/wps", WPSProductRouter);
-app.use("/api/pu", puProductsRouter);
-app.use("/api/pu", puProductRouter);
+app.use("/api/wps-dropship", wpsDropshipRouter);
 
 mongoose.connect(
   `mongodb+srv://${dbUsername}:${dbPassword}@dmg.eqxtdze.mongodb.net/${dbname}?retryWrites=true&w=majority`

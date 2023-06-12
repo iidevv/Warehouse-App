@@ -232,6 +232,22 @@ export const puDropshipAPI = {
   },
 };
 
+export const wpsDropshipAPI = {
+  getOrders(from, to, page) {
+    return instance
+      .get(`/wps-dropship/orders/`, {
+        params: {
+          from,
+          to,
+          page,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      }).catch(err => console.log(err));
+  },
+};
+
 export const dashboardAPI = {
   getTotals() {
     return instance.get(`/dashboard/info`).then((response) => {
