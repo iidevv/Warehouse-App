@@ -35,6 +35,7 @@ let mapStateToProps = (state) => {
     orders: state.wpsDropship.orders,
     currentPage: state.wpsDropship.currentPages,
     totalPages: state.wpsDropship.totalPages,
+    isFetching: state.wpsDropship.isFetching
   };
 };
 

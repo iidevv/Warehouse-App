@@ -115,12 +115,16 @@ const getWPSProduct = async (id) => {
       return {
         id: product.id,
         price: +product.items.data[0].list_price,
-        variants: product.items.data.map((item) => ({
-          id: item.id,
-          sku: item.sku,
-          price: +item.list_price,
-          inventory_level: item.inventory.data ? item.inventory.data.total : 0,
-        })),
+        variants: product.items.data.map((item) => {
+          return {
+            id: item.id,
+            sku: item.sku,
+            price: +item.list_price,
+            inventory_level: item.inventory.data
+              ? item.inventory.data.total
+              : 0,
+          };
+        }),
       };
     })
     .catch((error) => {
@@ -297,10 +301,10 @@ export const updateWpsProducts = (vendor_id, name, status) => {
           const isPriceUpdated = wpsProduct.price !== syncedProductData.price;
           const isInventoryUpdated = wpsProduct.variants.some((wpsVariant) => {
             // Find the corresponding synced variant using the vendor_id
-            const syncedVariant = syncedProductData.variants.find(
-              (v) => v.vendor_id === wpsVariant.id
-            );
 
+            const syncedVariant = syncedProductData.variants.find(
+              (v) => v.vendor_id == wpsVariant.id
+            );
             // Check if the inventory_level has changed
             return (
               syncedVariant &&
@@ -317,12 +321,11 @@ export const updateWpsProducts = (vendor_id, name, status) => {
                   price: wpsProduct.price,
                 })
               );
-
               // Loop through each variant in the synced product
               for (const syncedVariant of syncedProduct.variants) {
                 // Find the corresponding WPS variant using the vendor_id
                 const wpsVariant = wpsProduct.variants.find(
-                  (v) => v.id === syncedVariant.vendor_id
+                  (v) => v.id == syncedVariant.vendor_id
                 );
 
                 // Check if the variant price or inventory_level has changed
