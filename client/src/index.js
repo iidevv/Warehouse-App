@@ -20,9 +20,10 @@ import PuProductPageContainer from "./components/PuInventory/PuProductPageContai
 import ProductsPU from "./routes/ProductsPU";
 import ProductsWPS from "./routes/ProductsWPS";
 import WpsDropship from './routes/WpsDropship';
+import Cookies from 'js-cookie';
 
 function AuthRoute({ component: Component, ...rest }) {
-  const isAuthenticated = localStorage.getItem("userID") ? true : false;
+  const isAuthenticated = Cookies.get('userID') ? true : false;
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 const LogoutButton = () => {
   const handleLogout = () => {
     Cookies.remove("access_token");
-    localStorage.removeItem("userID");
+    Cookies.remove("userID");
     window.location.reload();
   };
 

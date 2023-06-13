@@ -8,9 +8,6 @@ const clientId = process.env.BIGCOMMERCE_CLIENT_ID;
 const accessToken = process.env.BIGCOMMERCE_ACCESS_TOKEN;
 const storeHash = process.env.BIGCOMMERCE_STORE_HASH;
 const WPSToken = process.env.WPS_TOKEN;
-const UPuserId = process.env.PU_USER_ID;
-const UPpassword = process.env.PU_PASSWORD;
-const UPdealerNumber = process.env.PU_DEALER_NUMBER;
 const puAccessToken = process.env.PU_ACCESS_TOKEN;
 
 const useHttps = process.env.USE_HTTPS === "true";
