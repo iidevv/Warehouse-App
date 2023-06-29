@@ -23,7 +23,7 @@ import {
 } from "./sync-products/pu-index.js";
 import { puExternalProductRouter } from "./routes/external/pu-product.js";
 import { puDropshipRouter } from "./routes/pu-dropship.js";
-import { puExternalOrderRouter } from "./routes/external/dropship.js";
+import { dropshipOrderRouter } from "./routes/dropship.js";
 import { dashboardRouter } from "./routes/dashboard.js";
 import { wpsDropshipRouter } from "./routes/wps-dropship.js";
 
@@ -41,7 +41,6 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 app.use(express.json());
 
 app.use("/external", puExternalProductRouter);
-app.use("/external", puExternalOrderRouter);
 
 app.use(
   cors({
@@ -68,6 +67,7 @@ app.use("/api/products", bigcommerceRouter);
 app.use("/api/wps", WPSProductsRouter);
 app.use("/api/wps", WPSProductRouter);
 app.use("/api/wps-dropship", wpsDropshipRouter);
+app.use("/api/dropship", dropshipOrderRouter);
 
 mongoose.connect(
   `mongodb+srv://${dbUsername}:${dbPassword}@dmg.eqxtdze.mongodb.net/${dbname}?retryWrites=true&w=majority`

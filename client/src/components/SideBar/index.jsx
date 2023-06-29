@@ -76,6 +76,17 @@ const SideBar = (props) => {
               </li>
               <li>
                 <NavLink
+                  to="/orders"
+                  onClick={handleSetMenuActive}
+                  className={({ isPending, isActive }) =>
+                    isActive ? "active-menu-link" : "menu-link"
+                  }
+                >
+                  <span className="mx-4 text-sm font-normal">Orders</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
                   to="/dropship-pu"
                   onClick={handleSetMenuActive}
                   className={({ isPending, isActive }) =>

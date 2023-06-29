@@ -244,7 +244,8 @@ export const wpsDropshipAPI = {
       })
       .then((response) => {
         return response.data;
-      }).catch(err => console.log(err));
+      })
+      .catch((err) => console.log(err));
   },
 };
 
@@ -253,5 +254,26 @@ export const dashboardAPI = {
     return instance.get(`/dashboard/info`).then((response) => {
       return response.data;
     });
+  },
+};
+
+export const ordersAPI = {
+  getOrders(page) {
+    return instance
+      .get(`/dropship/orders/`, {
+        params: {
+          page,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+  createOrder(id) {
+    return instance
+      .post(`/dropship/order/`, { id })
+      .then((response) => {
+        return response.data;
+      });
   },
 };

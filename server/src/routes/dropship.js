@@ -1,12 +1,12 @@
 import express from "express";
 import {
   bigCommerceInstanceV2,
-  puDropshipInstance,
   puInstance,
   wpsInstance,
-} from "../../instances/index.js";
-import { puInventoryModel } from "../../models/puInventory.js";
-import { InventoryModel } from "../../models/Inventory.js";
+} from "../instances/index.js";
+import { puInventoryModel } from "../models/puInventory.js";
+import { InventoryModel } from "../models/Inventory.js";
+import { OrdersModel } from "../models/Orders.js";
 
 const router = express.Router();
 
@@ -238,9 +238,18 @@ const createWPSOrder = async (id, shipping, items) => {
 };
 
 router.post("/order/", async (req, res) => {
-  const orderId = req.body.data.id;
+  console.log(req.body.id);
+  const orderId = req.body.id;
   let orderNotes = "";
-  console.log(req.body.data.id);
+  const is_exist = await OrdersModel.findOne({order_number: orderId});
+  
+  if(is_exist) return res.json({ message: "Order already exists!" });
+
+  const newOrder = new OrdersModel({
+    order_number: orderId
+  });
+  await newOrder.save();
+
   try {
     // global order info
     const order = await bigCommerceInstanceV2.get(`/orders/${orderId}`);
@@ -287,8 +296,29 @@ router.post("/order/", async (req, res) => {
     });
     res.json({ message: orderNotes });
   } catch (error) {
-    res.status(500).json({ error: error });
+    res.status(500).json({ message: error });
   }
 });
 
-export { router as puExternalOrderRouter };
+router.get("/orders/", async (req, res) => {
+  const page = req.query.page || 1;
+  try {
+    let orders = await bigCommerceInstanceV2.get(
+      `/orders?limit=10&page=${page}&sort=date_created:desc`
+    );
+    orders = await Promise.all(
+      orders.map(async (order) => {
+        let shippingMethod = await bigCommerceInstanceV2.get(
+          `/orders/${order.id}/shipping_addresses`
+        );
+        order.shipping_method = shippingMethod[0].shipping_method;
+        return order;
+      })
+    );
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+export { router as dropshipOrderRouter };

@@ -21,6 +21,7 @@ import ProductsPU from "./routes/ProductsPU";
 import ProductsWPS from "./routes/ProductsWPS";
 import WpsDropship from './routes/WpsDropship';
 import Cookies from 'js-cookie';
+import Orders from "./routes/Orders";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = Cookies.get('userID') ? true : false;
@@ -53,6 +54,10 @@ const router = createBrowserRouter(
         {
           index: true,
           element: <Index />,
+        },
+        {
+          path: "/orders",
+          element: <Orders />,
         },
         {
           path: "/wps-catalog",
