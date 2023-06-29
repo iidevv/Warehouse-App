@@ -140,21 +140,22 @@ const createPUOrder = async (id, shipping, items) => {
     line_items: items,
     leave_order_open: true,
   };
-  try {
-    const createdDropShipOrder = await puDropshipInstance.post(
-      "/orders/dropship",
-      order
-    );
-    let orderNotes = `\n#${createdDropShipOrder.data.reference_number} (PU)\nStatus: ${createdDropShipOrder.data.status_message}\nItems:\n`;
-    orderNotes += createdDropShipOrder.data.line_items
-      .map((item) => {
-        return `#${item.part_number}, qty: ${item.ordered.quantity}`;
-      })
-      .join("\n");
-    return orderNotes;
-  } catch (error) {
-    return error;
-  }
+  console.log(order);
+  // try {
+  //   const createdDropShipOrder = await puDropshipInstance.post(
+  //     "/orders/dropship",
+  //     order
+  //   );
+  //   let orderNotes = `\n#${createdDropShipOrder.data.reference_number} (PU)\nStatus: ${createdDropShipOrder.data.status_message}\nItems:\n`;
+  //   orderNotes += createdDropShipOrder.data.line_items
+  //     .map((item) => {
+  //       return `#${item.part_number}, qty: ${item.ordered.quantity}`;
+  //     })
+  //     .join("\n");
+  //   return orderNotes;
+  // } catch (error) {
+  //   return error;
+  // }
 };
 
 // WPS
@@ -205,34 +206,35 @@ const createWPSOrder = async (id, shipping, items) => {
   const order = {
     po_number: orderId,
   };
-  try {
-    await wpsInstance.post("/carts/", cart);
+  console.log(cart);
+  // try {
+  //   await wpsInstance.post("/carts/", cart);
 
-    const itemsPromises = cartItems.map(async (item) => {
-      try {
-        const puDbProduct = await wpsInstance.post(`/carts/${orderId}/items`, item).catch(err => console.log(err));
-        console.log(`orderId - ${orderId}(${puDbProduct.data.data.status})`);
-      } catch (error) {
-        console.error(`Error adding item to cart: ${error}`);
-      }
-    });
+  //   const itemsPromises = cartItems.map(async (item) => {
+  //     try {
+  //       const puDbProduct = await wpsInstance.post(`/carts/${orderId}/items`, item).catch(err => console.log(err));
+  //       console.log(`orderId - ${orderId}(${puDbProduct.data.data.status})`);
+  //     } catch (error) {
+  //       console.error(`Error adding item to cart: ${error}`);
+  //     }
+  //   });
 
-    await Promise.all(itemsPromises).catch(err => console.log(err));
+  //   await Promise.all(itemsPromises).catch(err => console.log(err));
 
-    const orderItems = await wpsInstance.get(`/carts/${orderId}`);
-    const createdDropShipOrder = await wpsInstance.post("/orders/", order);
+  //   const orderItems = await wpsInstance.get(`/carts/${orderId}`);
+  //   const createdDropShipOrder = await wpsInstance.post("/orders/", order);
 
-    let orderNotes = `\n#${createdDropShipOrder.data.data.order_number} (WPS)\nStatus: ${createdDropShipOrder.data.data.status}\nItems:\n`;
+  //   let orderNotes = `\n#${createdDropShipOrder.data.data.order_number} (WPS)\nStatus: ${createdDropShipOrder.data.data.status}\nItems:\n`;
 
-    orderNotes += orderItems.data.data.items
-      .map((item) => `#${item.item}, qty: ${item.quantity}`)
-      .join("\n");
+  //   orderNotes += orderItems.data.data.items
+  //     .map((item) => `#${item.item}, qty: ${item.quantity}`)
+  //     .join("\n");
 
-    return orderNotes;
-  } catch (error) {
-    console.error(`Error creating WPS order: ${error}`);
-    throw error;
-  }
+  //   return orderNotes;
+  // } catch (error) {
+  //   console.error(`Error creating WPS order: ${error}`);
+  //   throw error;
+  // }
 };
 
 router.post("/order/", async (req, res) => {
