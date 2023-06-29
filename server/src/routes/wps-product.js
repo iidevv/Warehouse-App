@@ -90,6 +90,11 @@ const createProduct = (obj) => {
         : false;
       i++;
       const is_default = i === 1 ? true : false;
+      let is_available = false;
+      if(item.inventory.data && +item.list_price !== 0) {
+        is_available = true;
+      }
+
       if (imageUrl) {
         return {
           id: item.id,
@@ -101,7 +106,7 @@ const createProduct = (obj) => {
             },
           ],
           price: item.list_price,
-          inventory_level: item.inventory.data ? item.inventory.data.total : 0,
+          inventory_level: is_available ? item.inventory.data.total : 0,
           image_url: imageUrl,
           is_default: is_default,
         };
@@ -116,7 +121,7 @@ const createProduct = (obj) => {
             },
           ],
           price: item.list_price,
-          inventory_level: item.inventory.data ? item.inventory.data.total : 0,
+          inventory_level: is_available ? item.inventory.data.total : 0,
           is_default: is_default,
         };
       }

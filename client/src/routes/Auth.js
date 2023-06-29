@@ -48,7 +48,6 @@ const Login = () => {
       setRecaptchaValue(null);
     } catch (error) {
       setResponse(error.response.data.message);
-
       recaptchaRef.current.reset();
       setRecaptchaValue(null);
     }

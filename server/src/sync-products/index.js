@@ -116,13 +116,15 @@ const getWPSProduct = async (id) => {
         id: product.id,
         price: +product.items.data[0].list_price,
         variants: product.items.data.map((item) => {
+          let is_available = false;
+          if (item.inventory.data && +item.list_price !== 0) {
+            is_available = true;
+          }
           return {
             id: item.id,
             sku: item.sku,
             price: +item.list_price,
-            inventory_level: item.inventory.data
-              ? item.inventory.data.total
-              : 0,
+            inventory_level: is_available ? item.inventory.data.total : 0,
           };
         }),
       };
