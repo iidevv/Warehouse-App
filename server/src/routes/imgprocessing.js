@@ -37,9 +37,9 @@ router.get("/processing/:productId", async (req, res) => {
           });
 
           const optimizedBuffer = await sharp(buffer)
-            .resize(850)
+            .resize(800)
             .flatten({ background: { r: 255, g: 255, b: 255 } })
-            .jpeg({ quality: 95 })
+            .jpeg({ quality: 90 })
             .toBuffer();
 
           const optimizedImagePath = `${productName}_${index}.jpg`;
