@@ -26,6 +26,7 @@ import { puDropshipRouter } from "./routes/pu-dropship.js";
 import { dropshipOrderRouter } from "./routes/dropship.js";
 import { dashboardRouter } from "./routes/dashboard.js";
 import { wpsDropshipRouter } from "./routes/wps-dropship.js";
+import { imgProcessingRouter } from "./routes/imgprocessing.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,6 +42,8 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 app.use(express.json());
 
 app.use("/external", puExternalProductRouter);
+
+app.use("/api/imgs", imgProcessingRouter);
 
 app.use(
   cors({
