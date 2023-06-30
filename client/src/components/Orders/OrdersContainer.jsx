@@ -9,7 +9,7 @@ import {
   createOrder,
 } from "../../redux/reducers/orders-reducer";
 import Orders from "./Orders";
-import Notifications from '../common/notifications/Notifications';
+import Notifications from "./OrderNotifications";
 
 class OrdersContainer extends React.Component {
   componentDidMount() {

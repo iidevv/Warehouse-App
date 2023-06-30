@@ -3,10 +3,12 @@ import { ordersAPI } from "../../api/api";
 const SET_ORDERS = "SET_ORDERS";
 const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
+const SET_INFO_ALERT = "SET_INFO_ALERT";
 
 let initialState = {
   orders: [],
   currentPage: 1,
+  info: "",
   isFetching: true,
 };
 
@@ -22,6 +24,11 @@ const ordersReducer = (state = initialState, action) => {
         ...state,
         currentPage: action.page,
       };
+    case SET_INFO_ALERT:
+      return {
+        ...state,
+        info: action.message,
+      };
 
     case TOGGLE_IS_FETCHING:
       return {
@@ -32,6 +39,13 @@ const ordersReducer = (state = initialState, action) => {
     default:
       return state;
   }
+};
+
+export const setAlert = (message) => {
+  return {
+    type: SET_INFO_ALERT,
+    message,
+  };
 };
 
 export const setOrders = (data) => {
@@ -70,8 +84,11 @@ export const createOrder = (id) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
     ordersAPI.createOrder(id).then((data) => {
-      console.log(data);
-      // dispatch(setOrders(data));
+      dispatch(setAlert(data));
+      dispatch(getOrders());
+      setTimeout(() => {
+        dispatch(setAlert(""));
+      }, 3000);
       dispatch(setToggleIsFetching(false));
     });
   };
