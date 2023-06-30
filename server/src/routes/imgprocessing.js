@@ -47,23 +47,20 @@ router.get("/processing/:productId", async (req, res) => {
       })
     );
 
-    // Удаляем старые изображения
+    // Обновляем существующие изображения на BigCommerce
     for (let i = 0; i < images.length; i++) {
-      await bigCommerceInstance.delete(`/catalog/products/${req.params.productId}/images/${images[i].id}`);
-    }
-
-    // Загружаем оптимизированные изображения на BigCommerce
-    for (let i = 0; i < optimizedImages.length; i++) {
+      const image = images[i];
       const imagePath = optimizedImages[i];
-      const imageUrl = `https://warehouse.discountmotogear.com/api/images/${imagePath}`;
-      console.log(imageUrl);
+      const imageUrl = `https://your-server-url.com/api/images/${imagePath}`;
+
       const formData = new FormData();
+      formData.append("image_file",imagePath);
       formData.append("image_url", imageUrl);
       formData.append("is_thumbnail", i === 0);
       formData.append("sort_order", i);
 
-      await bigCommerceInstance.post(
-        `/catalog/products/${req.params.productId}/images`,
+      await bigCommerceInstance.put(
+        `/catalog/products/${req.params.productId}/images/${image.id}`,
         formData,
         {
           headers: {
@@ -71,7 +68,7 @@ router.get("/processing/:productId", async (req, res) => {
           },
         }
       );
-      // Удаляем оптимизированное изображение с сервера
+
       // await unlink(imagePath);
     }
 
