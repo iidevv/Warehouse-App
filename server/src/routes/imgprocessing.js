@@ -4,19 +4,27 @@ import sharp from "sharp";
 import fs from "fs";
 import { promisify } from "util";
 import { bigCommerceInstance } from "../instances/index.js";
-import FormData from "form-data";
+import { ProcessedProduct } from "../models/ImgProccessing.js";
 
 const router = express.Router();
 const writeFile = promisify(fs.writeFile);
 const unlink = promisify(fs.unlink);
 
-router.get("/processing/:productId", async (req, res) => {
-  try {
-    const { data: product } = await bigCommerceInstance.get(
-      `/catalog/products/${req.params.productId}`
-    );
+router.get("/processing/", async (req, res) => {
+  const PAGE_SIZE = 5;
+  const DELAY = 5000;
+  const MAX_RETRIES = 3;
+
+  async function processProduct(product) {
+    const processedProduct = await ProcessedProduct.findOne({
+      productId: product.id,
+    });
+    if (processedProduct) {
+      console.log(`Product with ID ${product.id} has already been processed.`);
+      return;
+    }
     const { data: images } = await bigCommerceInstance.get(
-      `/catalog/products/${req.params.productId}/images`
+      `/catalog/products/${product.id}/images`
     );
 
     if (!fs.existsSync("optimized")) {
@@ -31,23 +39,30 @@ router.get("/processing/:productId", async (req, res) => {
     // Оптимизируем изображения
     const optimizedImages = await Promise.all(
       images.map(async (image, index) => {
-        try {
-          const { data: buffer } = await axios.get(image.url_zoom, {
-            responseType: "arraybuffer",
-          });
+        for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+          try {
+            const { data: buffer } = await axios.get(image.url_zoom, {
+              responseType: "arraybuffer",
+            });
 
-          const optimizedBuffer = await sharp(buffer)
-            .resize(800)
-            .flatten({ background: { r: 255, g: 255, b: 255 } })
-            .jpeg({ quality: 90 })
-            .toBuffer();
+            const optimizedBuffer = await sharp(buffer)
+              .resize(800)
+              .flatten({ background: { r: 255, g: 255, b: 255 } })
+              .jpeg({ quality: 90 })
+              .toBuffer();
 
-          const optimizedImagePath = `${productName}_${index}.jpg`;
+            const optimizedImagePath = `${productName}_${index}.jpg`;
 
-          await fs.promises.writeFile(`./optimized/${optimizedImagePath}`, optimizedBuffer);
-          return optimizedImagePath;
-        } catch (error) {
-          console.error(`Error: ${index}:`, error);
+            await fs.promises.writeFile(
+              `./optimized/${optimizedImagePath}`,
+              optimizedBuffer
+            );
+            return optimizedImagePath;
+          } catch (error) {
+            if (attempt === MAX_RETRIES - 1) throw error;
+            console.error(`Error: ${index}, retrying...`, error);
+            await new Promise((resolve) => setTimeout(resolve, DELAY));
+          }
         }
       })
     );
@@ -59,23 +74,56 @@ router.get("/processing/:productId", async (req, res) => {
       const imageUrl = `https://warehouse.discountmotogear.com/api/images/${imagePath}`;
 
       await bigCommerceInstance.put(
-        `/catalog/products/${req.params.productId}/images/${image.id}`,
+        `/catalog/products/${product.id}/images/${image.id}`,
         {
           image_url: imageUrl,
         }
       );
-      setTimeout( async () => {
-        await unlink(`./optimized/${imagePath}`);
+      setTimeout(() => {
+        try {
+          fs.unlinkSync(`./optimized/${imagePath}`);
+        } catch (error) {
+          console.error(`Failed to delete file: ${imagePath}`, error);
+        }
       }, 2000);
     }
-
-    res
-      .status(200)
-      .json({ message: "Images have been optimized and updated." });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "An error occurred" });
+    const newProcessedProduct = new ProcessedProduct({ productId: product.id });
+    await newProcessedProduct.save();
   }
+
+  async function processAllProducts() {
+    let page = 1;
+    while (true) {
+      try {
+        const { data: products, meta } = await bigCommerceInstance.get(
+          `/catalog/products`,
+          {
+            params: {
+              limit: PAGE_SIZE,
+              page,
+            },
+          }
+        );
+
+        for (const product of products) {
+          await processProduct(product);
+        }
+
+        if (page >= meta.pagination.total_pages) break;
+        break;
+        // page += 1;
+        // await new Promise((resolve) => setTimeout(resolve, DELAY));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  processAllProducts()
+    .then(() =>
+      console.log("Images for all products have been optimized and updated.")
+    )
+    .catch((error) => console.error(error));
 });
 
 export { router as imgProcessingRouter };
