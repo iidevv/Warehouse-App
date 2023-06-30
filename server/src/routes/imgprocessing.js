@@ -64,7 +64,9 @@ router.get("/processing/:productId", async (req, res) => {
           image_url: imageUrl,
         }
       );
-      await unlink(imagePath);
+      setTimeout( async () => {
+        await unlink(`./optimized/${imagePath}`);
+      }, 2000);
     }
 
     res
