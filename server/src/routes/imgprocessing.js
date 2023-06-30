@@ -31,19 +31,24 @@ router.get("/processing/:productId", async (req, res) => {
     // Оптимизируем изображения
     const optimizedImages = await Promise.all(
       images.map(async (image, index) => {
-        const { data: buffer } = await axios.get(image.url_zoom, {
-          responseType: "arraybuffer",
-        });
+        try {
+          const { data: buffer } = await axios.get(image.url_zoom, {
+            responseType: "arraybuffer",
+          });
 
-        const optimizedBuffer = await sharp(buffer)
-          .resize(850)
-          .flatten({ background: { r: 255, g: 255, b: 255 } })
-          .jpeg({ quality: 95 })
-          .toBuffer();
+          const optimizedBuffer = await sharp(buffer)
+            .resize(850)
+            .flatten({ background: { r: 255, g: 255, b: 255 } })
+            .jpeg({ quality: 95 })
+            .toBuffer();
 
-        const optimizedImagePath = `${productName}_${index}.jpg`;
-        await writeFile(optimizedImagePath, optimizedBuffer);
-        return optimizedImagePath;
+          const optimizedImagePath = `${productName}_${index}.jpg`;
+
+          await fs.promises.writeFile(`./optimized/${optimizedImagePath}`, optimizedBuffer);
+          return optimizedImagePath;
+        } catch (error) {
+          console.error(`Error: ${index}:`, error);
+        }
       })
     );
 
@@ -52,14 +57,13 @@ router.get("/processing/:productId", async (req, res) => {
       const image = images[i];
       const imagePath = optimizedImages[i];
       const imageUrl = `https://warehouse.discountmotogear.com/api/images/${imagePath}`;
-      
-      await bigCommerceInstance.put(
-        `/catalog/products/${req.params.productId}/images/${image.id}`,
-        {
-          image_url: imageUrl,
-        }
-      );
-      console.log(imageUrl);
+
+      // await bigCommerceInstance.put(
+      //   `/catalog/products/${req.params.productId}/images/${image.id}`,
+      //   {
+      //     image_url: imageUrl,
+      //   }
+      // );
       // await unlink(imagePath);
     }
 
