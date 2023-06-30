@@ -55,13 +55,12 @@ router.get("/processing/:productId", async (req, res) => {
     // Загружаем оптимизированные изображения на BigCommerce
     for (let i = 0; i < optimizedImages.length; i++) {
       const imagePath = optimizedImages[i];
-      const imageFile = fs.createReadStream(imagePath);
-      // Создаем экземпляр FormData
-      const formData = new FormData();
-      formData.append("image_file", imageFile, `${productName}_${i}.jpg`);
-      formData.append("is_thumbnail", i === 0); // Первое изображение делаем главным
-      formData.append("sort_order", i);
+      const imageUrl = `https://warehouse.discountmotogear.com/api/images/${imagePath}`;
 
+      const formData = new FormData();
+      formData.append("image_url", imageUrl);
+      formData.append("is_thumbnail", i === 0);
+      formData.append("sort_order", i);
 
       await bigCommerceInstance.post(
         `/catalog/products/${req.params.productId}/images`,
