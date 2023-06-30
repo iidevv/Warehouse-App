@@ -36,12 +36,12 @@ router.get("/processing/:productId", async (req, res) => {
         });
 
         const optimizedBuffer = await sharp(buffer)
-          .resize(850) // Измените размер в соответствии с вашими потребностями
+          .resize(850)
           .flatten({ background: { r: 255, g: 255, b: 255 } })
-          .jpeg({ quality: 95 }) // Сжимаем изображение
+          .jpeg({ quality: 95 })
           .toBuffer();
 
-        const optimizedImagePath = `optimized/${productName}_${index}.jpg`;
+        const optimizedImagePath = `${productName}_${index}.jpg`;
         await writeFile(optimizedImagePath, optimizedBuffer);
         return optimizedImagePath;
       })
@@ -53,23 +53,14 @@ router.get("/processing/:productId", async (req, res) => {
       const imagePath = optimizedImages[i];
       const imageUrl = `https://warehouse.discountmotogear.com/api/images/${imagePath}`;
 
-      const formData = new FormData();
-      formData.append("image_file",imagePath);
-      formData.append("image_url", imageUrl);
-      formData.append("is_thumbnail", i === 0);
-      formData.append("sort_order", i);
-
       await bigCommerceInstance.put(
         `/catalog/products/${req.params.productId}/images/${image.id}`,
-        formData,
         {
-          headers: {
-            ...formData.getHeaders(),
-          },
+          image_url: imageUrl,
         }
       );
 
-      // await unlink(imagePath);
+      await unlink(imagePath);
     }
 
     res
