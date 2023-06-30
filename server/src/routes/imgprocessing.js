@@ -11,8 +11,8 @@ const writeFile = promisify(fs.writeFile);
 const unlink = promisify(fs.unlink);
 
 router.get("/processing/", async (req, res) => {
-  const PAGE_SIZE = 5;
-  const DELAY = 5000;
+  const PAGE_SIZE = 10;
+  const DELAY = 2000;
   const MAX_RETRIES = 3;
 
   async function processProduct(product) {
@@ -96,13 +96,7 @@ router.get("/processing/", async (req, res) => {
     while (true) {
       try {
         const { data: products, meta } = await bigCommerceInstance.get(
-          `/catalog/products`,
-          {
-            params: {
-              limit: PAGE_SIZE,
-              page,
-            },
-          }
+          `/catalog/products?limit=${PAGE_SIZE}&page=${page}`
         );
 
         for (const product of products) {
@@ -110,9 +104,9 @@ router.get("/processing/", async (req, res) => {
         }
 
         if (page >= meta.pagination.total_pages) break;
-        break;
-        // page += 1;
-        // await new Promise((resolve) => setTimeout(resolve, DELAY));
+        page += 1;
+        console.log(`Page: ${page}/${meta.pagination.total_pages}`);
+        await new Promise((resolve) => setTimeout(resolve, DELAY));
       } catch (error) {
         console.error(error);
       }
