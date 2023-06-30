@@ -51,7 +51,7 @@ router.get("/processing/:productId", async (req, res) => {
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
       const imagePath = optimizedImages[i];
-      const imageUrl = `https://your-server-url.com/api/images/${imagePath}`;
+      const imageUrl = `https://warehouse.discountmotogear.com/api/images/${imagePath}`;
 
       const formData = new FormData();
       formData.append("image_file",imagePath);
