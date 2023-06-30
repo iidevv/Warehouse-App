@@ -60,7 +60,7 @@ router.get("/processing/:productId", async (req, res) => {
         }
       );
 
-      await unlink(imagePath);
+      // await unlink(imagePath);
     }
 
     res
