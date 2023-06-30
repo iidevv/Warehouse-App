@@ -56,7 +56,7 @@ router.get("/processing/:productId", async (req, res) => {
     for (let i = 0; i < optimizedImages.length; i++) {
       const imagePath = optimizedImages[i];
       const imageUrl = `https://warehouse.discountmotogear.com/api/images/${imagePath}`;
-
+      console.log(imageUrl);
       const formData = new FormData();
       formData.append("image_url", imageUrl);
       formData.append("is_thumbnail", i === 0);
@@ -72,7 +72,7 @@ router.get("/processing/:productId", async (req, res) => {
         }
       );
       // Удаляем оптимизированное изображение с сервера
-      await unlink(imagePath);
+      // await unlink(imagePath);
     }
 
     res
