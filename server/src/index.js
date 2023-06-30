@@ -39,12 +39,12 @@ const useHttps = process.env.USE_HTTPS === "true";
 const app = express();
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../client/build")));
-app.use('/api/images', express.static(path.join(__dirname, "../server/optimized")));
 app.use(express.json());
 
 app.use("/external", puExternalProductRouter);
 
 app.use("/api/imgs", imgProcessingRouter);
+app.use('/api/images', express.static(path.join(__dirname, "server/optimized")));
 
 app.use(
   cors({
