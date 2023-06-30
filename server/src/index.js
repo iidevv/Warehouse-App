@@ -44,7 +44,6 @@ app.use(express.json());
 app.use("/external", puExternalProductRouter);
 
 app.use("/api/imgs", imgProcessingRouter);
-app.use('/api/images', express.static(path.join(__dirname, "server/optimized")));
 
 app.use(
   cors({
@@ -59,6 +58,9 @@ app.use("/api/auth", userRouter);
 
 app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
+app.use('/api/images', express.static(path.join(__dirname, "server/optimized")));
+
+
 app.use("/api/inventory", SyncProductsRouter);
 app.use("/api/pu-inventory", puInventoryRouter);
 app.use("/api/pu-inventory", SyncPuProductsRouter);
