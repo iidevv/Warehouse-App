@@ -52,14 +52,14 @@ router.get("/processing/:productId", async (req, res) => {
       const image = images[i];
       const imagePath = optimizedImages[i];
       const imageUrl = `https://warehouse.discountmotogear.com/api/images/${imagePath}`;
-
+      
       await bigCommerceInstance.put(
         `/catalog/products/${req.params.productId}/images/${image.id}`,
         {
           image_url: imageUrl,
         }
       );
-
+      console.log(imageUrl);
       // await unlink(imagePath);
     }
 
