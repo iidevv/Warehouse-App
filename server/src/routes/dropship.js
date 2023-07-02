@@ -1,6 +1,7 @@
 import express from "express";
 import {
   bigCommerceInstanceV2,
+  puDropshipInstance,
   puInstance,
   wpsInstance,
 } from "../instances/index.js";
