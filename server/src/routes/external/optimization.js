@@ -84,7 +84,9 @@ router.post("/optimization/", async (req, res) => {
   }
   try {
     await processProduct(product);
+    res.json({ message: `${product.name} optimized` });
   } catch (error) {
+    res.status(500).json({ error: error });
     console.error(`Failed to process product ${productId}: `, error);
   }
 
