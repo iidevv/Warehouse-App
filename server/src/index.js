@@ -26,7 +26,7 @@ import { puDropshipRouter } from "./routes/pu-dropship.js";
 import { dropshipOrderRouter } from "./routes/dropship.js";
 import { dashboardRouter } from "./routes/dashboard.js";
 import { wpsDropshipRouter } from "./routes/wps-dropship.js";
-import { imgProcessingRouter } from "./routes/imgprocessing.js";
+import { externalOptimizationRouter } from "./routes/external/optimization.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,7 +43,7 @@ app.use(express.json());
 
 app.use("/external", puExternalProductRouter);
 
-app.use("/api/imgs", imgProcessingRouter);
+app.use("/external", externalOptimizationRouter);
 app.use('/api/images', express.static(path.join(__dirname, '../optimized')));
 
 app.use(
