@@ -7,6 +7,9 @@ import { bigCommerceInstance } from "../../instances/index.js";
 const router = express.Router();
 
 async function processProduct(product) {
+  const DELAY = 2000;
+  const MAX_RETRIES = 3;
+
   const { data: images } = await bigCommerceInstance.get(
     `/catalog/products/${product.id}/images`
   );
@@ -75,7 +78,7 @@ async function processProduct(product) {
 
 router.post("/optimization/", async (req, res) => {
   const productId = req.body.data.id;
-  if(!productId) return res.status(500).json({ error: "ID is not provided" });
+  if (!productId) return res.status(500).json({ error: "ID is not provided" });
 
   const { data: product } = await bigCommerceInstance.get(
     `/catalog/products/${productId}`
