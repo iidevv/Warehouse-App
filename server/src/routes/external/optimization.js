@@ -74,12 +74,13 @@ async function processProduct(product) {
 }
 
 router.post("/optimization/", async (req, res) => {
-    const productId = req.body.data.id;
-    res.json({ message: `productId` });
-    return
+  const productId = req.body.data.id;
+  if(!productId) return res.status(500).json({ error: "ID is not provided" });
+
   const { data: product } = await bigCommerceInstance.get(
     `/catalog/products/${productId}`
   );
+
   if (!product.id) {
     console.log(`${productId} not found! (optimization)`);
     return;
@@ -91,7 +92,6 @@ router.post("/optimization/", async (req, res) => {
     res.status(500).json({ error: error });
     console.error(`Failed to process product ${productId}: `, error);
   }
-
 });
 
 export { router as externalOptimizationRouter };
