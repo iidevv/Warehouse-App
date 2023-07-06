@@ -75,6 +75,8 @@ async function processProduct(product) {
 
 router.post("/optimization/", async (req, res) => {
     const productId = req.body.data.id;
+    res.json({ message: `productId` });
+    return
   const { data: product } = await bigCommerceInstance.get(
     `/catalog/products/${productId}`
   );
