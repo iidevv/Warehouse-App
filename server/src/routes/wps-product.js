@@ -101,7 +101,7 @@ const createProduct = (obj) => {
           sku: item.sku,
           option_values: [
             {
-              option_display_name: "Options",
+              option_display_name: `${variants[0].brand.data.name} options`,
               label: option,
             },
           ],
@@ -116,7 +116,7 @@ const createProduct = (obj) => {
           sku: item.sku,
           option_values: [
             {
-              option_display_name: "Options",
+              option_display_name: `${variants[0].brand.data.name} options`,
               label: option,
             },
           ],
