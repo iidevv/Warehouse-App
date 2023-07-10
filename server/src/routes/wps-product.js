@@ -1,5 +1,6 @@
 import express from "express";
 import { wpsInstance } from "../instances/index.js";
+import { generateProductName } from "../common/index.js";
 
 const router = express.Router();
 
@@ -75,7 +76,7 @@ const createProduct = (obj) => {
   const product = {
     vendor: "WPS",
     vendor_id: data.id,
-    name: data.name,
+    name: generateProductName(variants[0].brand.data.name, data.name),
     type: "physical",
     weight: variants[0].weight,
     price: variants[0].list_price,

@@ -10,3 +10,19 @@ export const createNewDate = () => {
 
   return dateString;
 };
+
+export const generateProductName = (brand, name) => {
+  // Remove duplicate brand name
+  name = name.replace(new RegExp(brand, 'gi'), '');
+  
+  // combine name
+  name = `${brand} ${name}`;
+
+  // Remove double spaces
+  name = name.replace(/\s{2,}/g, " ");
+
+  // Trim any leading/trailing white spaces
+  name = name.trim();
+
+  return name;
+};

@@ -1,5 +1,6 @@
 import express from "express";
 import { puInstance } from "../instances/index.js";
+import { generateProductName } from "../common/index.js";
 
 const router = express.Router();
 
@@ -124,7 +125,7 @@ const createProduct = (obj) => {
   const product = {
     vendor: "PU",
     vendor_id: data.product.id,
-    name: data.productName,
+    name: generateProductName(data.brandName, data.productName),
     type: "physical",
     weight: obj.info.physicalDimensions.weight,
     price: price,
