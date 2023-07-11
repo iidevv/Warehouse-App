@@ -195,7 +195,7 @@ const createWPSOrder = async (id, shipping, items) => {
     po_number: orderId,
     ship_name: `${shipping.first_name} ${shipping.last_name}`,
     ship_address1: shipping.street_1,
-    ship_address2: shipping.street_2,
+    ship_address2: shipping.street_2 || "-",
     ship_city: shipping.city,
     ship_state: convertStateNameToAbbreviation(shipping.state),
     ship_zip: shipping.zip,
@@ -206,9 +206,8 @@ const createWPSOrder = async (id, shipping, items) => {
   const order = {
     po_number: orderId,
   };
-  console.log(cart);
   try {
-    await wpsInstance.post("/carts/", cart);
+    await wpsInstance.post("/carts/", cart).catch(err => console.log('Error creating cart: ', err));
 
     const itemsPromises = cartItems.map(async (item) => {
       try {
