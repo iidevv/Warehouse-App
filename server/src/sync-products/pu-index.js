@@ -157,6 +157,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
     const pageSize = 5;
     let currentPage = 1;
     let totalPages = 1;
+    let errors = []; // Add this to keep track of errors
 
     while (currentPage <= totalPages) {
       try {
@@ -269,12 +270,19 @@ export const updatePuProducts = (vendor_id, name, status) => {
         currentPage++;
       } catch (error) {
         console.error("Error updating products:", error);
-        break;
+        errors.push(error); // Push the error to the array and keep going
+        currentPage++; // Increment the currentPage to continue to the next page
       }
     }
-    resolve();
+
+    if(errors.length > 0) {
+      reject(errors); // If there were any errors, reject the promise with the errors
+    } else {
+      resolve(); // If no errors, resolve the promise
+    }
   });
 };
+
 
 const router = express.Router();
 
