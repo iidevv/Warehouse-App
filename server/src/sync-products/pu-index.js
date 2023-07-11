@@ -138,7 +138,7 @@ async function asyncForEach(array, callback, concurrency = 5) {
 }
 
 // Helper function to execute a function with retries
-async function executeWithRetry(fn, maxRetries = 3, delay = 2000) {
+async function executeWithRetry(fn, maxRetries = 3, delay = 10000) {
   let retries = 0;
   while (retries < maxRetries) {
     try {
@@ -180,7 +180,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
         // Process products with limited concurrency
         await asyncForEach(productsToProcess, async (syncedProduct) => {
           // Add a delay between requests
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 3000));
 
           // Get WPS product data and compare it with the synced product data
           const puProduct = await executeWithRetry(() =>
