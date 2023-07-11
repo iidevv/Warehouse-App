@@ -47,7 +47,7 @@ export const getInventoryProducts = async (
       query.status = status;
     }
     if (search) {
-      query.product_name = { $regex: search, $options: 'i' };
+      query.product_name = { $regex: search, $options: "i" };
     }
 
     const total = await puInventoryModel.countDocuments(query);

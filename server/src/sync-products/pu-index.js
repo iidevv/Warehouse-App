@@ -49,6 +49,7 @@ const getPuProduct = async (id, search) => {
             operator: "OR",
           },
         ],
+        partActiveScope: 'ALL'
       };
       response = await puInstance.post(`parts/search/`, payload);
     }

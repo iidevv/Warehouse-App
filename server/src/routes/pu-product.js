@@ -181,6 +181,7 @@ const fetchData = async (id, search) => {
             operator: "OR",
           },
         ],
+        partActiveScope: 'ALL'
       };
       puVariationItemsResponse = await puInstance.post(
         `parts/search/`,
