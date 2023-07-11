@@ -24,7 +24,9 @@ const getPuProduct = async (id, search) => {
     } else {
       // get all variants sku's
       const puInventory = await puInventoryModel.findOne({ vendor_id: id });
-      const incorporatingPartNumbers = puInventory.variants.map(v => v.vendor_id);
+      const incorporatingPartNumbers = puInventory.variants.map(
+        (v) => v.vendor_id
+      );
       // get all variants
       let payload = {
         filters: [
@@ -46,7 +48,7 @@ const getPuProduct = async (id, search) => {
         partActiveScope: "ALL",
       };
       response = await puInstance.post(`parts/search/`, payload);
-      if(incorporatingPartNumbers.length < response.data.result.hits.length) {
+      if (incorporatingPartNumbers.length < response.data.result.hits.length) {
         console.log(`vendor_id: ${vendor_id} ERROR length not match`);
       }
     }
@@ -181,10 +183,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
 
           // Get WPS product data and compare it with the synced product data
           const puProduct = await executeWithRetry(() =>
-            getPuProduct(
-              syncedProduct.vendor_id,
-              syncedProduct.create_value
-            )
+            getPuProduct(syncedProduct.vendor_id, syncedProduct.create_value)
           );
           // put product name for same products with different variations
           puProduct.product_name = syncedProduct.product_name;
