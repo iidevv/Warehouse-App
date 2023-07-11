@@ -18,7 +18,7 @@ const WpsProductPage = (props) => {
     const productTitle = `Product ${props.product.name} create`;
     const search_keywords = `${productTitle}  comma-separated list of 4 search keywords`;
     const meta_keywords = `${productTitle}  comma-separated list of 4 meta keywords use DMG`;
-    const meta_description = `${productTitle} meta description use Discount Moto Gear (show only result)`;
+    const meta_description = `${productTitle} meta description use Discount Moto Gear (show only text result remove)`;
     const description = `${productTitle} description use Discount Moto Gear`;
     props.onGetChatgptContent("search_keywords", search_keywords);
     props.onGetChatgptContent("meta_keywords", meta_keywords);
