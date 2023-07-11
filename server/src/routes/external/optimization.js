@@ -33,7 +33,7 @@ async function processProduct(product) {
           });
 
           const optimizedBuffer = await sharp(buffer)
-            .resize(800)
+            .resize(1000, 1000, { fit: "contain", background: { r: 255, g: 255, b: 255 } })
             .flatten({ background: { r: 255, g: 255, b: 255 } })
             .jpeg({ quality: 90 })
             .toBuffer();

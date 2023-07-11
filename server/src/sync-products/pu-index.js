@@ -4,6 +4,7 @@ import {
   updateInventoryProduct,
 } from "../routes/pu-inventory.js";
 import { bigCommerceInstance, puInstance } from "../instances/index.js";
+import { puInventoryModel } from "../models/puInventory.js";
 
 const getSyncedProducts = async (vendor_id, name, page, pageSize, status) => {
   return await getInventoryProducts(vendor_id, name, page, pageSize, status);
@@ -22,15 +23,8 @@ const getPuProduct = async (id, search) => {
       response = await puInstance.post("parts/search/", payload);
     } else {
       // get all variants sku's
-      const puVariationsResponse = await puInstance.get(
-        `parts/${id}/style-variations`
-      );
-      const styleVariationsOptions =
-        puVariationsResponse.data.styleVariationsOptions;
-
-      const incorporatingPartNumbers = styleVariationsOptions.flatMap(
-        (option) => option.incorporatingPartNumbers
-      );
+      const puInventory = await puInventoryModel.findOne({ vendor_id: id });
+      const incorporatingPartNumbers = puInventory.variants.map(v => v.vendor_id);
       // get all variants
       let payload = {
         filters: [
@@ -49,9 +43,12 @@ const getPuProduct = async (id, search) => {
             operator: "OR",
           },
         ],
-        partActiveScope: 'ALL'
+        partActiveScope: "ALL",
       };
       response = await puInstance.post(`parts/search/`, payload);
+      if(incorporatingPartNumbers.length < response.data.result.hits.length) {
+        console.log(`vendor_id: ${vendor_id} ERROR length not match`);
+      }
     }
     const items = response.data.result.hits;
     const data = items[0];
@@ -185,7 +182,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
           // Get WPS product data and compare it with the synced product data
           const puProduct = await executeWithRetry(() =>
             getPuProduct(
-              syncedProduct.variants[0].vendor_id,
+              syncedProduct.vendor_id,
               syncedProduct.create_value
             )
           );
@@ -275,14 +272,13 @@ export const updatePuProducts = (vendor_id, name, status) => {
       }
     }
 
-    if(errors.length > 0) {
+    if (errors.length > 0) {
       reject(errors); // If there were any errors, reject the promise with the errors
     } else {
       resolve(); // If no errors, resolve the promise
     }
   });
 };
-
 
 const router = express.Router();
 

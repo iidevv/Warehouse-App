@@ -127,7 +127,6 @@ export const updateInventoryProduct = async (updatedProductData) => {
   const findAndUpdateProduct = async (updatedProductData) => {
     try {
       const product = await puInventoryModel.findOne({
-        vendor_id: updatedProductData.id,
         product_name: updatedProductData.product_name,
       });
       if (product) {
