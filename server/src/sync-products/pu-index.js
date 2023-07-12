@@ -239,20 +239,19 @@ export const updatePuProducts = (vendor_id, name, status) => {
 
                 if (isPriceUpdated || isInventoryUpdated) {
                   // Update the product variant
-                  console.log('price or inventory updated');
+                  await executeWithRetry(() =>
+                    updateBigcommerceProductVariants(
+                      syncedProduct.bigcommerce_id,
+                      [
+                        {
+                          id: syncedVariant.bigcommerce_id,
+                          price: puVariant.price,
+                          inventory_level: puVariant.inventory_level,
+                        },
+                      ]
+                    )
+                  );
                 }
-                await executeWithRetry(() =>
-                  updateBigcommerceProductVariants(
-                    syncedProduct.bigcommerce_id,
-                    [
-                      {
-                        id: syncedVariant.bigcommerce_id,
-                        price: puVariant.price,
-                        inventory_level: puVariant.inventory_level,
-                      },
-                    ]
-                  )
-                );
               }
 
               // Update the synced product status to 'Updated'
