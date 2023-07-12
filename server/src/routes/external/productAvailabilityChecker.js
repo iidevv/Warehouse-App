@@ -10,6 +10,7 @@ import { sendNotification } from "../tg-notifications.js";
 const router = express.Router();
 
 router.post("/availability/", async (req, res) => {
+  if (!req.body.data.cartId) res.json({ message: "Token not provided" });
   const { data: cart } = await bigCommerceInstance.get(
     `/carts/${req.body.data.cartId}`
   );
