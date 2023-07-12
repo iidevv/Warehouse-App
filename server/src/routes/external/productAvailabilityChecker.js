@@ -4,7 +4,7 @@ import { bigCommerceInstance } from "../../instances/index.js";
 
 const router = express.Router();
 
-router.get("/availability/", async (req, res) => {
+router.post("/availability/", async (req, res) => {
     let body = req.body;
     console.log(body);
     res.json({ message: body });
