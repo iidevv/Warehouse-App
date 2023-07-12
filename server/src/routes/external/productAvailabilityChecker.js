@@ -5,7 +5,7 @@ import { updateWpsProducts } from "../../sync-products/index.js";
 import { updatePuProducts } from "../../sync-products/pu-index.js";
 import { puInventoryModel } from "../../models/puInventory.js";
 import { InventoryModel } from "../../models/Inventory.js";
-import tgBot from "../tg-notifications.js";
+import { sendNotification } from "../tg-notifications.js";
 
 const router = express.Router();
 
@@ -32,7 +32,7 @@ router.post("/availability/", async (req, res) => {
   });
 
   await Promise.all(updatePromises);
-  //   tgBot.sendMessage(chatId, "Availability checked!");
+  sendNotification("Availability checked!");
 
   res.json({ message: "Operation completed" });
 });
