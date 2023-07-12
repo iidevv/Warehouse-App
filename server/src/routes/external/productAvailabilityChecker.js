@@ -6,7 +6,8 @@ const router = express.Router();
 
 router.get("/availability/", async (req, res) => {
     let body = req.body;
-    res.status(500).json({ message: body });
+    console.log(body);
+    res.json({ message: body });
 });
 
 export { router as ProductAvailabilityRouter };
