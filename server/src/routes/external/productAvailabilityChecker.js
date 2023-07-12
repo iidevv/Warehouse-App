@@ -32,10 +32,8 @@ router.post("/availability/", async (req, res) => {
   });
 
   await Promise.all(updatePromises);
-  tgBot.on("message", (msg) => {
-    const chatId = msg.chat.id;
-    tgBot.sendMessage(chatId, "Availability checked!");
-  });
+  //   tgBot.sendMessage(chatId, "Availability checked!");
+
   res.json({ message: "Operation completed" });
 });
 
