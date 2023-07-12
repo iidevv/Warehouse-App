@@ -19,7 +19,7 @@ let tgBot;
 
 export const sendNotification = (message = "", bot = tgBot, ids = chatIds) => {
   if (!bot) return;
-  ids.forEach((id) => {
-    tgBot.sendMessage(id, message);
-  });
+//   ids.forEach((id) => {
+//     tgBot.sendMessage(id, message);
+//   });
 };
