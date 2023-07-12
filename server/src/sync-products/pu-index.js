@@ -13,6 +13,12 @@ const getSyncedProducts = async (vendor_id, name, page, pageSize, status) => {
 const getPuProduct = async (id, search) => {
   try {
     let response;
+    // get all variants sku's
+    const puInventory = await puInventoryModel.findOne({ vendor_id: id });
+    const incorporatingPartNumbers = puInventory.variants.map(
+      (v) => v.vendor_id
+    );
+
     if (search) {
       let payload = {
         queryString: search,
@@ -22,11 +28,6 @@ const getPuProduct = async (id, search) => {
       };
       response = await puInstance.post("parts/search/", payload);
     } else {
-      // get all variants sku's
-      const puInventory = await puInventoryModel.findOne({ vendor_id: id });
-      const incorporatingPartNumbers = puInventory.variants.map(
-        (v) => v.vendor_id
-      );
       // get all variants
       let payload = {
         filters: [
@@ -48,35 +49,40 @@ const getPuProduct = async (id, search) => {
         partActiveScope: "ALL",
       };
       response = await puInstance.post(`parts/search/`, payload);
-      if (incorporatingPartNumbers.length < response.data.result.hits.length) {
-        console.log(`vendor_id: ${vendor_id} ERROR length not match`);
-      }
     }
+
     const items = response.data.result.hits;
     const data = items[0];
     const price =
       data.prices.retail ||
       data.prices.originalRetail ||
       data.prices.originalBase + data.prices.originalBase * 0.35;
+
+    const variants = incorporatingPartNumbers.map((partNumber) => {
+      const item = items.find((item) => item.partNumber === partNumber);
+      const price =
+        item?.prices.retail ||
+        item?.prices.originalRetail ||
+        item?.prices.originalBase + item?.prices.originalBase * 0.35 ||
+        0;
+      const inventoryLevel = item
+        ? item.inventory.locales.reduce(
+            (total, local) => total + (local.quantity || 0),
+            0
+          )
+        : 0;
+      return {
+        id: partNumber,
+        sku: partNumber,
+        price: price,
+        inventory_level: inventoryLevel,
+      };
+    });
+
     return {
       id: data.product.id,
       price: price,
-      variants: items.map((item) => {
-        const price =
-          item.prices.retail ||
-          item.prices.originalRetail ||
-          item.prices.originalBase + item.prices.originalBase * 0.35;
-        const inventoryLevel = item.inventory.locales.reduce(
-          (total, local) => total + (local.quantity || 0),
-          0
-        );
-        return {
-          id: item.partNumber,
-          sku: item.partNumber,
-          price: price,
-          inventory_level: inventoryLevel,
-        };
-      }),
+      variants: variants,
     };
   } catch (error) {
     throw error;
@@ -233,19 +239,20 @@ export const updatePuProducts = (vendor_id, name, status) => {
 
                 if (isPriceUpdated || isInventoryUpdated) {
                   // Update the product variant
-                  await executeWithRetry(() =>
-                    updateBigcommerceProductVariants(
-                      syncedProduct.bigcommerce_id,
-                      [
-                        {
-                          id: syncedVariant.bigcommerce_id,
-                          price: puVariant.price,
-                          inventory_level: puVariant.inventory_level,
-                        },
-                      ]
-                    )
-                  );
+                  console.log('price or inventory updated');
                 }
+                await executeWithRetry(() =>
+                  updateBigcommerceProductVariants(
+                    syncedProduct.bigcommerce_id,
+                    [
+                      {
+                        id: syncedVariant.bigcommerce_id,
+                        price: puVariant.price,
+                        inventory_level: puVariant.inventory_level,
+                      },
+                    ]
+                  )
+                );
               }
 
               // Update the synced product status to 'Updated'
