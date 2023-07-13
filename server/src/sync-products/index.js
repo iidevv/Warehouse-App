@@ -331,26 +331,25 @@ export const updateWpsProducts = (vendor_id, name, status) => {
                 );
 
                 // Check if the variant price or inventory_level has changed
-                const isPriceUpdated =
-                  wpsVariant.price !== syncedVariant.variant_price;
-                const isInventoryUpdated =
-                  wpsVariant.inventory_level !== syncedVariant.inventory_level;
+                // const isPriceUpdated =
+                //   wpsVariant.price !== syncedVariant.variant_price;
+                // const isInventoryUpdated =
+                //   wpsVariant.inventory_level !== syncedVariant.inventory_level;
 
-                if (isPriceUpdated || isInventoryUpdated) {
-                  // Update the product variant
-                  await executeWithRetry(() =>
-                    updateBigcommerceProductVariants(
-                      syncedProduct.bigcommerce_id,
-                      [
-                        {
-                          id: syncedVariant.bigcommerce_id,
-                          price: wpsVariant.price,
-                          inventory_level: wpsVariant.inventory_level,
-                        },
-                      ]
-                    )
-                  );
-                }
+                // if (isPriceUpdated || isInventoryUpdated) {
+                // }
+                await executeWithRetry(() =>
+                  updateBigcommerceProductVariants(
+                    syncedProduct.bigcommerce_id,
+                    [
+                      {
+                        id: syncedVariant.bigcommerce_id,
+                        price: wpsVariant.price,
+                        inventory_level: wpsVariant.inventory_level,
+                      },
+                    ]
+                  )
+                );
               }
 
               // Update the synced product status to 'Updated'

@@ -13,7 +13,7 @@ router.post("/availability/", async (req, res) => {
   if (!req.body.data.cartId) res.json({ message: "Token not provided" });
   const { data: cart } = await bigCommerceInstance.get(
     `/carts/${req.body.data.cartId}`
-  );
+  ).catch(err => console.log(err));
   const cartItemIds = cart.line_items.physical_items;
 
   const updatePromises = cartItemIds.map(async (item) => {

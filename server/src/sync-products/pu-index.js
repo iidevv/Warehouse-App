@@ -232,26 +232,26 @@ export const updatePuProducts = (vendor_id, name, status) => {
                   (v) => v.id === syncedVariant.vendor_id
                 );
                 // Check if the variant price or inventory_level has changed
-                const isPriceUpdated =
-                  puVariant.price !== syncedVariant.variant_price;
-                const isInventoryUpdated =
-                  puVariant.inventory_level !== syncedVariant.inventory_level;
+                // const isPriceUpdated =
+                //   puVariant.price !== syncedVariant.variant_price;
+                // const isInventoryUpdated =
+                //   puVariant.inventory_level !== syncedVariant.inventory_level;
 
-                if (isPriceUpdated || isInventoryUpdated) {
-                  // Update the product variant
-                  await executeWithRetry(() =>
-                    updateBigcommerceProductVariants(
-                      syncedProduct.bigcommerce_id,
-                      [
-                        {
-                          id: syncedVariant.bigcommerce_id,
-                          price: puVariant.price,
-                          inventory_level: puVariant.inventory_level,
-                        },
-                      ]
-                    )
-                  );
-                }
+                // if (isPriceUpdated || isInventoryUpdated) {
+                //   // Update the product variant
+                // }
+                await executeWithRetry(() =>
+                  updateBigcommerceProductVariants(
+                    syncedProduct.bigcommerce_id,
+                    [
+                      {
+                        id: syncedVariant.bigcommerce_id,
+                        price: puVariant.price,
+                        inventory_level: puVariant.inventory_level,
+                      },
+                    ]
+                  )
+                );
               }
 
               // Update the synced product status to 'Updated'
