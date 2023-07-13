@@ -42,10 +42,9 @@ const createProduct = (obj) => {
         item.description
       );
       const option = cleanName ? cleanName : item.description.toLowerCase();
-      const imageUrl = item.primaryMedia
-        ? item.primaryMedia.absoluteUrl
-        : false;
+      let imageUrl = item.primaryMedia ? item.primaryMedia.absoluteUrl : false;
       i++;
+      if (imageUrl) imageUrl = imageUrl.replace("http:", "https:");
       const inventoryLevel = item.inventory.locales.reduce(
         (total, local) => total + (local.quantity || 0),
         0
@@ -92,10 +91,9 @@ const createProduct = (obj) => {
     });
   const mainImages = variants
     .map((item, i) => {
-      const imageUrl = item.primaryMedia
-        ? item.primaryMedia.absoluteUrl
-        : false;
+      let imageUrl = item.primaryMedia ? item.primaryMedia.absoluteUrl : false;
       i++;
+      if (imageUrl) imageUrl = imageUrl.replace("http:", "https:");
       const is_thumbnail = i === 1;
       if (imageUrl) {
         return {
@@ -181,7 +179,7 @@ const fetchData = async (id, search) => {
             operator: "OR",
           },
         ],
-        partActiveScope: 'ALL'
+        partActiveScope: "ALL",
       };
       puVariationItemsResponse = await puInstance.post(
         `parts/search/`,
@@ -196,7 +194,8 @@ const fetchData = async (id, search) => {
       .flatMap((image) => image.absoluteUrl)
       .filter((imageUrl) =>
         imageExtensions.some((extension) => imageUrl.endsWith(extension))
-      );
+      )
+      .map((imageUrl) => imageUrl.replace("http:", "https:"));
     const productInfo = {
       physicalDimensions: productData.data.physicalDimensions,
       features: productData.data.product.features,
