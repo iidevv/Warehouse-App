@@ -276,7 +276,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
         currentPage++; // Increment the currentPage to continue to the next page
       }
     }
-
+    console.log("PU products updated.");
     if (errors.length > 0) {
       reject(errors); // If there were any errors, reject the promise with the errors
     } else {

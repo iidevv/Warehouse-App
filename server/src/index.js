@@ -87,10 +87,8 @@ const job = new CronJob({
   onTick: async () => {
     try {
       await updateWpsProducts();
-      console.log("WPS products updated.");
 
       await updatePuProducts();
-      console.log("PU products updated.");
 
       console.log("Updating complete.");
     } catch (error) {

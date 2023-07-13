@@ -373,6 +373,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
         break;
       }
     }
+    console.log("WPS products updated.");
     resolve();
   });
 };
