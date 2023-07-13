@@ -57,7 +57,6 @@ router.get("/bulk-action/", async (req, res) => {
         console.error("Invalid response: products is not an array");
         break;
       }
-      console.log(productsToProcess);
       await asyncForEach(productsToProcess, async (syncedProduct) => {
         // Add a delay between requests
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -72,7 +71,6 @@ router.get("/bulk-action/", async (req, res) => {
           const variantId = syncedVariant.bigcommerce_id;
           const upcCode = puProduct.data.upc;
           const gtinCode = puProduct.data.gtin;
-          console.log(puProduct.data);
           if (upcCode) {
             await bigCommerceInstance
               .put(`/catalog/products/${productId}/variants/${variantId}`, {
