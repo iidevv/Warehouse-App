@@ -1,11 +1,11 @@
 import express from "express";
 import axios from "axios";
-import { bigCommerceInstance, wpsInstance } from "../../instances/index.js";
-import { InventoryModel } from "../../models/Inventory.js";
+import { bigCommerceInstance, puInstance } from "../../instances/index.js";
+import { puInventoryModel } from "../../models/puInventory.js";
 
 const router = express.Router();
 
-async function executeWithRetry(fn, maxRetries = 3, delay = 2000) {
+async function executeWithRetry(fn, maxRetries = 3, delay = 10000) {
   let retries = 0;
   while (retries < maxRetries) {
     try {
@@ -45,9 +45,9 @@ router.get("/bulk-action/", async (req, res) => {
       // Get synced products
       const response = await executeWithRetry(async () => {
         const skip = (currentPage - 1) * pageSize;
-        const total = await InventoryModel.countDocuments();
+        const total = await puInventoryModel.countDocuments();
         totalPages = Math.ceil(total / pageSize);
-        return await InventoryModel.find().skip(skip).limit(pageSize);
+        return await puInventoryModel.find().skip(skip).limit(pageSize);
       });
       let productsToProcess = [];
 
@@ -57,23 +57,27 @@ router.get("/bulk-action/", async (req, res) => {
         console.error("Invalid response: products is not an array");
         break;
       }
-
+      console.log(productsToProcess);
       await asyncForEach(productsToProcess, async (syncedProduct) => {
         // Add a delay between requests
         await new Promise((resolve) => setTimeout(resolve, 1000));
         const productId = syncedProduct.bigcommerce_id;
         console.log(productId);
         for (const syncedVariant of syncedProduct.variants) {
-          const { data: wpsProduct } = await wpsInstance
-            .get(`/items/${syncedVariant.vendor_id}`)
-            .catch((err) => console.log("Get vendor product error: ", err));
+          const puProduct = await executeWithRetry(async () => {
+            return await puInstance
+              .get(`/parts/${syncedVariant.vendor_id}`)
+              .catch((err) => console.log("Get vendor product error: ", err));
+          });
           const variantId = syncedVariant.bigcommerce_id;
-          const upcCode = wpsProduct.data.upc;
+          const upcCode = puProduct.data.upc;
+          const gtinCode = puProduct.data.gtin;
+          console.log(puProduct.data);
           if (upcCode) {
             await bigCommerceInstance
               .put(`/catalog/products/${productId}/variants/${variantId}`, {
                 upc: upcCode,
-                gtin: upcCode,
+                gtin: gtinCode || upcCode,
               })
               .then(() => {
                 totalUpcAdded++;
