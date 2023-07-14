@@ -244,18 +244,21 @@ export const updatePuProducts = (vendor_id, name, status) => {
                 // if (isPriceUpdated || isInventoryUpdated) {
                 //   // Update the product variant
                 // }
-                await executeWithRetry(() =>
+                await executeWithRetry(() => {
                   updateBigcommerceProductVariants(
                     syncedProduct.bigcommerce_id,
                     [
                       {
                         id: syncedVariant.bigcommerce_id,
-                        price: puVariant.price,
-                        inventory_level: puVariant.inventory_level,
+                        price: puVariant.price || 0,
+                        inventory_level: puVariant.inventory_level || 0,
                       },
                     ]
-                  )
-                );
+                  );
+                  if(puVariant.price || puVariant.inventory_level) {
+                    console.log(`PU Product: ${syncedProduct.bigcommerce_id} (price/stock error)`);
+                  }
+                });
               }
 
               // Update the synced product status to 'Updated'

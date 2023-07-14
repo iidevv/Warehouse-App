@@ -202,18 +202,29 @@ const updateBigcommerceProduct = async (id, data) => {
 
 // Define update productVariants (id = bigcommerce product id, data = updated data)
 const updateBigcommerceProductVariants = async (id, variants) => {
-  const promises = variants.map((variant) => {
-    return bigCommerceInstance
-      .put(`/catalog/products/${id}/variants/${variant.id}`, variant)
-      .then(() => {
-        return `${variant.id} - updated;`;
-      })
-      .catch(() => {
-        return `${variant.id} - error;`;
-      });
-  });
+  let messages = [];
 
-  const messages = await Promise.all(promises);
+  for (let variant of variants) {
+    try {
+      await executeWithRetry(
+        async () => {
+          await bigCommerceInstance.put(
+            `/catalog/products/${id}/variants/${variant.id}`,
+            variant
+          );
+        },
+        3,
+        2000
+      );
+      messages.push(`${variant.id} - updated;`);
+
+      // Add delay
+      await new Promise((resolve) => setTimeout(resolve, 200)); // Delay of 1 second
+    } catch (error) {
+      console.log(`${variant.id} - error; (wps)`);
+    }
+  }
+
   return { message: messages.join(" ") };
 };
 
@@ -338,18 +349,23 @@ export const updateWpsProducts = (vendor_id, name, status) => {
 
                 // if (isPriceUpdated || isInventoryUpdated) {
                 // }
-                await executeWithRetry(() =>
+                await executeWithRetry(() => {
                   updateBigcommerceProductVariants(
                     syncedProduct.bigcommerce_id,
                     [
                       {
                         id: syncedVariant.bigcommerce_id,
-                        price: wpsVariant.price,
-                        inventory_level: wpsVariant.inventory_level,
+                        price: wpsVariant.price || 0,
+                        inventory_level: wpsVariant.inventory_level || 0,
                       },
                     ]
-                  )
-                );
+                  );
+                  if (wpsVariant.price || wpsVariant.inventory_level) {
+                    console.log(
+                      `WPS Product: ${syncedProduct.bigcommerce_id} (price/stock error)`
+                    );
+                  }
+                });
               }
 
               // Update the synced product status to 'Updated'
