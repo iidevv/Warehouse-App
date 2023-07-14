@@ -4,6 +4,7 @@ import {
   updateInventoryProduct,
 } from "../routes/inventory.js";
 import { bigCommerceInstance, wpsInstance } from "../instances/index.js";
+import { sendNotification } from "../routes/tg-notifications.js";
 
 // Define the IDs of the products to update
 const getSyncedProducts = async (vendor_id, name, page, pageSize, status) => {
