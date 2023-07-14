@@ -119,6 +119,9 @@ const updateBigcommerceProductVariants = async (id, variants) => {
       await new Promise((resolve) => setTimeout(resolve, 200)); // Delay of 1 second
     } catch (error) {
       console.log(`${variant.id} - error;`);
+      sendNotification(
+        `PU Product: ${id}, variant: ${variant.id} (error BC)`
+      );
     }
   }
 
