@@ -55,7 +55,7 @@ export const getInventoryProducts = async (
     const skip = (page - 1) * pageSize;
 
     const Inventory = await InventoryModel.find(query)
-      .sort({ last_updated: -1 })
+      .sort({ last_updated: 1 })
       .skip(skip)
       .limit(pageSize);
     return {

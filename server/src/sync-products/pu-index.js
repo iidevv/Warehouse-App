@@ -5,6 +5,7 @@ import {
 } from "../routes/pu-inventory.js";
 import { bigCommerceInstance, puInstance } from "../instances/index.js";
 import { puInventoryModel } from "../models/puInventory.js";
+import { sendNotification } from "../routes/tg-notifications.js";
 
 const getSyncedProducts = async (vendor_id, name, page, pageSize, status) => {
   return await getInventoryProducts(vendor_id, name, page, pageSize, status);
@@ -255,8 +256,21 @@ export const updatePuProducts = (vendor_id, name, status) => {
                       },
                     ]
                   );
-                  if(puVariant.price || puVariant.inventory_level) {
-                    console.log(`PU Product: ${syncedProduct.bigcommerce_id} (price/stock error)`);
+                  if (!puVariant.inventory_level) {
+                    sendNotification(
+                      `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (inventory_level error)`
+                    );
+                    console.log(
+                      `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (inventory_level error)`
+                    );
+                  }
+                  if (!puVariant.price) {
+                    sendNotification(
+                      `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (price error)`
+                    );
+                    console.log(
+                      `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (price error)`
+                    );
                   }
                 });
               }

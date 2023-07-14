@@ -284,6 +284,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
 
         if (Array.isArray(response.products)) {
           totalPagesFromResponse = response.totalPages;
+          console.log(totalPagesFromResponse);
           productsToProcess = response.products;
         } else {
           productsToProcess = [response];
@@ -360,9 +361,20 @@ export const updateWpsProducts = (vendor_id, name, status) => {
                       },
                     ]
                   );
-                  if (wpsVariant.price || wpsVariant.inventory_level) {
+                  if (!wpsVariant.inventory_level) {
+                    sendNotification(
+                      `WPS Product: ${syncedProduct.bigcommerce_id}, variant: ${wpsVariant.id} (inventory_level error)`
+                    );
                     console.log(
-                      `WPS Product: ${syncedProduct.bigcommerce_id} (price/stock error)`
+                      `WPS Product: ${syncedProduct.bigcommerce_id}, variant: ${wpsVariant.id} (inventory_level error)`
+                    );
+                  }
+                  if (!wpsVariant.price) {
+                    sendNotification(
+                      `WPS Product: ${syncedProduct.bigcommerce_id}, variant: ${wpsVariant.id} (price error)`
+                    );
+                    console.log(
+                      `WPS Product: ${syncedProduct.bigcommerce_id}, variant: ${wpsVariant.id} (price error)`
                     );
                   }
                 });
