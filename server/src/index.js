@@ -88,6 +88,7 @@ const job = new CronJob({
   cronTime: "0 7,14,18 * * *",
   onTick: async () => {
     try {
+      console.log("scheduled update started");
       await updateWpsProducts();
 
       await updatePuProducts();
