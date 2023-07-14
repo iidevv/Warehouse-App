@@ -2,6 +2,7 @@ import express from "express";
 import axios from "axios";
 import { bigCommerceInstance, puInstance } from "../../instances/index.js";
 import { puInventoryModel } from "../../models/puInventory.js";
+import { sendNotification } from "../tg-notifications.js";
 
 const router = express.Router();
 
@@ -80,12 +81,14 @@ router.get("/bulk-action/", async (req, res) => {
               .then(() => {
                 totalUpcAdded++;
               })
-              .catch((err) =>
+              .catch((err) => {
+                sendNotification(
+                  `Error updating product(${productId}) variant id: ${variantId}`
+                );
                 console.log(
-                  `Error updating product variant id: ${variantId}`,
-                  err
-                )
-              );
+                  `Error updating product variant id: ${variantId} ${err}`
+                );
+              });
           }
         }
       });
@@ -97,8 +100,9 @@ router.get("/bulk-action/", async (req, res) => {
       break;
     }
   }
+  sendNotification(`Total UPC added: ${totalUpcAdded}`);
   console.log("Total UPC added: ", totalUpcAdded);
-  res.json({ status: "WPS products updated." });
+  res.json({ status: "PU products updated." });
 });
 
 export { router as bulkActionRouter };
