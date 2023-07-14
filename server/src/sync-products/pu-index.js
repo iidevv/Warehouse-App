@@ -256,7 +256,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
                       },
                     ]
                   );
-                  if (!puVariant.inventory_level) {
+                  if (puVariant.inventory_level == undefined) {
                     sendNotification(
                       `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (inventory_level error)`
                     );
@@ -264,7 +264,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
                       `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (inventory_level error)`
                     );
                   }
-                  if (!puVariant.price) {
+                  if (puVariant.price == undefined) {
                     sendNotification(
                       `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (price error)`
                     );

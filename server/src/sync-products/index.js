@@ -285,7 +285,6 @@ export const updateWpsProducts = (vendor_id, name, status) => {
 
         if (Array.isArray(response.products)) {
           totalPagesFromResponse = response.totalPages;
-          console.log(totalPagesFromResponse);
           productsToProcess = response.products;
         } else {
           productsToProcess = [response];
@@ -362,7 +361,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
                       },
                     ]
                   );
-                  if (!wpsVariant.inventory_level) {
+                  if (wpsVariant.inventory_level == undefined) {
                     sendNotification(
                       `WPS Product: ${syncedProduct.bigcommerce_id}, variant: ${wpsVariant.id} (inventory_level error)`
                     );
@@ -370,7 +369,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
                       `WPS Product: ${syncedProduct.bigcommerce_id}, variant: ${wpsVariant.id} (inventory_level error)`
                     );
                   }
-                  if (!wpsVariant.price) {
+                  if (wpsVariant.price == undefined) {
                     sendNotification(
                       `WPS Product: ${syncedProduct.bigcommerce_id}, variant: ${wpsVariant.id} (price error)`
                     );
