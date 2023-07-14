@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api";
 
 const useHttps = process.env.USE_HTTPS === "true";
 const token = process.env.TG_BOT_TOKEN;
-const chatIds = process.env.TG_CHAT_IDS.split(",").map(Number);
+// const chatIds = process.env.TG_CHAT_IDS.split(",").map(Number);
 
 let tgBot;
 

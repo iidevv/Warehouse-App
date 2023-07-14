@@ -18,40 +18,33 @@ const getPuProduct = async (id, search) => {
     const incorporatingPartNumbers = puInventory.variants.map(
       (v) => v.vendor_id
     );
-
-    if (search) {
-      let payload = {
-        queryString: search,
-        pagination: {
-          limit: 50,
+    // get all variants
+    let payload = {
+      filters: [
+        {
+          matches: [
+            {
+              matches: [
+                {
+                  path: "partNumber.verbatim",
+                  values: incorporatingPartNumbers,
+                },
+              ],
+              operator: "OR",
+            },
+          ],
+          operator: "OR",
         },
-      };
-      response = await puInstance.post("parts/search/", payload);
-    } else {
-      // get all variants
-      let payload = {
-        filters: [
-          {
-            matches: [
-              {
-                matches: [
-                  {
-                    path: "partNumber.verbatim",
-                    values: incorporatingPartNumbers,
-                  },
-                ],
-                operator: "OR",
-              },
-            ],
-            operator: "OR",
-          },
-        ],
-        partActiveScope: "ALL",
-      };
-      response = await puInstance.post(`parts/search/`, payload);
-    }
+      ],
+      pagination: {
+        limit: 50,
+      },
+      partActiveScope: "ALL",
+    };
+    response = await puInstance.post(`parts/search/`, payload);
 
     const items = response.data.result.hits;
+
     const data = items[0];
     const price =
       data.prices.retail ||
@@ -105,18 +98,29 @@ const updateBigcommerceProduct = async (id, data) => {
 };
 
 const updateBigcommerceProductVariants = async (id, variants) => {
-  const promises = variants.map((variant) => {
-    return bigCommerceInstance
-      .put(`/catalog/products/${id}/variants/${variant.id}`, variant)
-      .then(() => {
-        return `${variant.id} - updated;`;
-      })
-      .catch(() => {
-        return `${variant.id} - error;`;
-      });
-  });
+  let messages = [];
 
-  const messages = await Promise.all(promises);
+  for (let variant of variants) {
+    try {
+      await executeWithRetry(
+        async () => {
+          await bigCommerceInstance.put(
+            `/catalog/products/${id}/variants/${variant.id}`,
+            variant
+          );
+        },
+        3,
+        2000
+      );
+      messages.push(`${variant.id} - updated;`);
+
+      // Add delay
+      await new Promise((resolve) => setTimeout(resolve, 200)); // Delay of 1 second
+    } catch (error) {
+      console.log(`${variant.id} - error;`);
+    }
+  }
+
   return { message: messages.join(" ") };
 };
 
