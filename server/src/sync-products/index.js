@@ -223,9 +223,7 @@ const updateBigcommerceProductVariants = async (id, variants) => {
       await new Promise((resolve) => setTimeout(resolve, 200)); // Delay of 1 second
     } catch (error) {
       console.log(`${variant.id} - error; (wps)`);
-      sendNotification(
-        `WPS Product: ${id}, variant: ${variant.id} (error BC)`
-      );
+      sendNotification(`WPS Product: ${id}, variant: ${variant.id} (error BC)`);
     }
   }
 
@@ -275,7 +273,8 @@ export const updateWpsProducts = (vendor_id, name, status) => {
     const pageSize = 5;
     let currentPage = 1;
     let totalPages = 1;
-
+    let productsToUpdate = 0;
+    let productsUpdated = 0;
     while (currentPage <= totalPages) {
       try {
         // Get synced products
@@ -289,6 +288,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
         if (Array.isArray(response.products)) {
           totalPagesFromResponse = response.totalPages;
           productsToProcess = response.products;
+          productsToUpdate += productsToProcess.length;
         } else {
           productsToProcess = [response];
         }
@@ -396,6 +396,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
             wpsProduct.status = "No changes";
             await executeWithRetry(() => updateSyncedProduct(wpsProduct));
           }
+          productsUpdated++;
         });
 
         currentPage++;
@@ -405,6 +406,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
       }
     }
     console.log("WPS products updated.");
+    sendNotification(`WPS products ${productsUpdated} / ${productsToUpdate}. Total pages: ${totalPages}`);
     resolve();
   });
 };

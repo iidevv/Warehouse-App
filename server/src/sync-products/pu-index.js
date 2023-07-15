@@ -119,9 +119,7 @@ const updateBigcommerceProductVariants = async (id, variants) => {
       await new Promise((resolve) => setTimeout(resolve, 200)); // Delay of 1 second
     } catch (error) {
       console.log(`${variant.id} - error;`);
-      sendNotification(
-        `PU Product: ${id}, variant: ${variant.id} (error BC)`
-      );
+      sendNotification(`PU Product: ${id}, variant: ${variant.id} (error BC)`);
     }
   }
 
@@ -170,6 +168,8 @@ export const updatePuProducts = (vendor_id, name, status) => {
     const pageSize = 5;
     let currentPage = 1;
     let totalPages = 1;
+    let productsToUpdate = 0;
+    let productsUpdated = 0;
     let errors = []; // Add this to keep track of errors
 
     while (currentPage <= totalPages) {
@@ -184,6 +184,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
         if (Array.isArray(response.products)) {
           totalPagesFromResponse = response.totalPages;
           productsToProcess = response.products;
+          productsToUpdate += productsToProcess.length;
         } else {
           productsToProcess = [response];
         }
@@ -291,6 +292,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
             puProduct.status = "No changes";
             await executeWithRetry(() => updateSyncedProduct(puProduct));
           }
+          productsUpdated++;
         });
 
         currentPage++;
@@ -301,6 +303,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
       }
     }
     console.log("PU products updated.");
+    sendNotification(`PU products ${productsUpdated} / ${productsToUpdate}. Total pages: ${totalPages}`);
     if (errors.length > 0) {
       reject(errors); // If there were any errors, reject the promise with the errors
     } else {
