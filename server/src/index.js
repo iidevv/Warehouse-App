@@ -30,6 +30,7 @@ import { externalOptimizationRouter } from "./routes/external/optimization.js";
 import { processingRouter } from "./routes/external/processing.js";
 import { ProductAvailabilityRouter } from "./routes/external/productAvailabilityChecker.js";
 import { bulkActionRouter } from "./routes/external/bulk-actions.js";
+import { sendNotification } from "./routes/tg-notifications.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -88,12 +89,12 @@ const job = new CronJob({
   cronTime: "0 7,14,18 * * *",
   onTick: async () => {
     try {
-      console.log("scheduled update started");
+      sendNotification("scheduled update started");
+
       await updateWpsProducts();
-
       await updatePuProducts();
-
-      console.log("Updating complete.");
+      
+      sendNotification("scheduled update complete");
     } catch (error) {
       console.error("Error during updating:", error);
     }
