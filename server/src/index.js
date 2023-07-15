@@ -96,7 +96,7 @@ const job = new CronJob({
       
       sendNotification("scheduled update complete");
     } catch (error) {
-      console.error("Error during updating:", error);
+      sendNotification(`Error during updating: ${error}`);
     }
   },
   timeZone: "America/Los_Angeles",
