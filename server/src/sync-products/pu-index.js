@@ -184,10 +184,10 @@ export const updatePuProducts = (vendor_id, name, status) => {
         if (Array.isArray(response.products)) {
           totalPagesFromResponse = response.totalPages;
           productsToProcess = response.products;
-          productsToUpdate += productsToProcess.length;
         } else {
           productsToProcess = [response];
         }
+        productsToUpdate += productsToProcess.length;
 
         totalPages = totalPagesFromResponse;
 
@@ -302,8 +302,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
         currentPage++; // Increment the currentPage to continue to the next page
       }
     }
-    console.log("PU products updated.");
-    sendNotification(`PU products ${productsUpdated} / ${productsToUpdate}. Total pages: ${totalPages}`);
+    sendNotification(`PU products updated. ${productsUpdated}/${productsToUpdate}. Total pages: ${totalPages}`);
     if (errors.length > 0) {
       reject(errors); // If there were any errors, reject the promise with the errors
     } else {

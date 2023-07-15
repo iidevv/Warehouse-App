@@ -18,8 +18,10 @@ if (useHttps) {
 }
 
 export const sendNotification = (message = "", bot = tgBot, ids = chatIds) => {
-  if (!bot) return;
-  ids.forEach((id) => {
-    tgBot.sendMessage(id, message);
-  });
+  if (bot) {
+    ids.forEach((id) => {
+      tgBot.sendMessage(id, message);
+    });
+  }
+  console.log(message);
 };

@@ -288,10 +288,10 @@ export const updateWpsProducts = (vendor_id, name, status) => {
         if (Array.isArray(response.products)) {
           totalPagesFromResponse = response.totalPages;
           productsToProcess = response.products;
-          productsToUpdate += productsToProcess.length;
         } else {
           productsToProcess = [response];
         }
+        productsToUpdate += productsToProcess.length;
 
         totalPages = totalPagesFromResponse;
 
@@ -405,8 +405,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
         break;
       }
     }
-    console.log("WPS products updated.");
-    sendNotification(`WPS products ${productsUpdated} / ${productsToUpdate}. Total pages: ${totalPages}`);
+    sendNotification(`WPS products updated. ${productsUpdated}/${productsToUpdate}. Total pages: ${totalPages}`);
     resolve();
   });
 };
