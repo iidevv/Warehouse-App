@@ -2,7 +2,6 @@ import express from "express";
 import axios from "axios";
 import { bigCommerceInstance, puInstance } from "../../instances/index.js";
 import { puInventoryModel } from "../../models/puInventory.js";
-import { sendNotification } from "../tg-notifications.js";
 
 const router = express.Router();
 
@@ -38,8 +37,8 @@ async function asyncForEach(array, callback, concurrency = 5) {
 
 router.get("/bulk-action/", async (req, res) => {
   const pageSize = 5;
-  let currentPage = 39;
-  let totalPages = 39;
+  let currentPage = 13;
+  let totalPages = 1;
   let totalUpcAdded = 0;
   while (currentPage <= totalPages) {
     try {
@@ -65,7 +64,6 @@ router.get("/bulk-action/", async (req, res) => {
         console.log(productId);
         for (const syncedVariant of syncedProduct.variants) {
           const puProduct = await executeWithRetry(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay of 1 second
             return await puInstance
               .get(`/parts/${syncedVariant.vendor_id}`)
               .catch((err) => console.log("Get vendor product error: ", err));
@@ -82,28 +80,25 @@ router.get("/bulk-action/", async (req, res) => {
               .then(() => {
                 totalUpcAdded++;
               })
-              .catch((err) => {
-                sendNotification(
-                  `Error updating product(${productId}) variant id: ${variantId}`
-                );
+              .catch((err) =>
                 console.log(
-                  `Error updating product variant id: ${variantId} ${err}`
-                );
-              });
+                  `Error updating product variant id: ${variantId}`,
+                  err
+                )
+              );
           }
         }
       });
 
       currentPage++;
-      console.log(`UPC(${totalUpcAdded}) Update ${currentPage}/${totalPages}`);
+      console.log(`UPC Update ${currentPage}/${totalPages} ()`);
     } catch (error) {
       console.error("Error updating products:", error);
       break;
     }
   }
-  sendNotification(`Total UPC added: ${totalUpcAdded}`);
   console.log("Total UPC added: ", totalUpcAdded);
-  res.json({ status: "PU products updated." });
+  res.json({ status: "WPS products updated." });
 });
 
 export { router as bulkActionRouter };

@@ -1,5 +1,5 @@
 import express from "express";
-import { puInstance } from "../instances/index.js";
+import { puInstance, puLogin } from "../instances/index.js";
 import { generateProductName } from "../common/index.js";
 
 const router = express.Router();
@@ -139,6 +139,7 @@ const createProduct = (obj) => {
 const fetchData = async (id, search) => {
   try {
     let puVariationItemsResponse;
+    await puLogin();
     if (search) {
       let payload = {
         queryString: search,

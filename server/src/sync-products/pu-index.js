@@ -54,6 +54,7 @@ const getPuProduct = async (id, search) => {
 
     const variants = incorporatingPartNumbers.map((partNumber) => {
       const item = items.find((item) => item.partNumber === partNumber);
+      
       const price =
         item?.prices.retail ||
         item?.prices.originalRetail ||
@@ -264,15 +265,9 @@ export const updatePuProducts = (vendor_id, name, status) => {
                     sendNotification(
                       `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (inventory_level error)`
                     );
-                    console.log(
-                      `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (inventory_level error)`
-                    );
                   }
                   if (puVariant.price == undefined) {
                     sendNotification(
-                      `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (price error)`
-                    );
-                    console.log(
                       `PU Product: ${syncedProduct.bigcommerce_id}, variant: ${puVariant.id} (price error)`
                     );
                   }

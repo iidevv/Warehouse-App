@@ -76,7 +76,7 @@ const getProduct = async (sku) => {
         link: `/cart.php?action=add&product_id=${id}&qty=1`,
       };
     }
-    
+
     const response = await createProduct(sku);
     if (typeof response === "number") {
       return { link: `/cart.php?action=add&product_id=${response}&qty=1` };

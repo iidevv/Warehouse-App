@@ -1,9 +1,9 @@
 import TelegramBot from "node-telegram-bot-api";
-
+import { config } from "dotenv";
+config();
 const useHttps = process.env.USE_HTTPS === "true";
 const token = process.env.TG_BOT_TOKEN;
 const chatIds = process.env.TG_CHAT_IDS.split(",").map(Number);
-
 let tgBot;
 
 if (useHttps) {

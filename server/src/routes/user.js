@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { config } from "dotenv";
 import { UserModel } from "../models/users.js";
+import { sendNotification } from "./tg-notifications.js";
 config();
 
 const secret = process.env.JWT_SECRET;
@@ -31,6 +32,11 @@ export const authenticate = (req, res, next) => {
 router.post("/login", async (req, res) => {
   const { username, password, recaptcha: clientRecaptcha } = req.body;
 
+  let ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  if (ip.substr(0, 7) == "::ffff:") {
+    ip = ip.substr(7);
+  }
+
   if (!username || !password || !clientRecaptcha) {
     return res
       .status(400)
@@ -52,18 +58,19 @@ router.post("/login", async (req, res) => {
     if (response.data.success) {
       const user = await UserModel.findOne({ username });
       const errorMsg = "Username or password is incorrect";
-
       if (!user) {
+        sendNotification(`${ip} / ${username} (${errorMsg})`);
         return res.status(400).json({ message: errorMsg });
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
+        sendNotification(`${ip} / ${username} (${errorMsg})`);
         return res.status(400).json({ message: errorMsg });
       }
 
       const token = jwt.sign({ id: user._id }, secret);
-
+      sendNotification(`${ip} / ${username} (logged in)`);
       // Set httpOnly cookie
       res.cookie("access_token", token, {
         httpOnly: true,
@@ -72,6 +79,7 @@ router.post("/login", async (req, res) => {
 
       res.json({ token, userID: user._id });
     } else {
+      sendNotification(`${ip} / ${username} (Invalid reCAPTCHA).`);
       res.status(400).json({ message: "Invalid reCAPTCHA." });
     }
   } catch (err) {
