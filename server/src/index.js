@@ -31,7 +31,6 @@ import { processingRouter } from "./routes/external/processing.js";
 import { ProductAvailabilityRouter } from "./routes/external/productAvailabilityChecker.js";
 import { bulkActionRouter } from "./routes/external/bulk-actions.js";
 import { sendNotification } from "./routes/tg-notifications.js";
-import { puSearchRouter } from "./routes/external/pu-test.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,7 +50,6 @@ app.use("/external", externalOptimizationRouter);
 app.use("/external", processingRouter);
 app.use("/external", ProductAvailabilityRouter);
 app.use("/external", bulkActionRouter);
-app.use("/external", puSearchRouter);
 
 app.use('/api/images', express.static(path.join(__dirname, '../optimized')));
 
