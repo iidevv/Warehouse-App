@@ -1,5 +1,6 @@
 import express from "express";
-import { bigCommerceInstance, puInstance } from "../../instances/index.js";
+import { bigCommerceInstance } from "../../instances/index.js";
+import { puSearchInstance } from "../pu-search.js";
 
 const router = express.Router();
 
@@ -8,10 +9,14 @@ const createbigCommerceProduct = async (data) => {
     data.prices.retail ||
     data.prices.originalRetail ||
     data.prices.originalBase + data.prices.originalBase * 0.35;
-  const inventoryLevel = data.inventory.locales.reduce(
+  let inventoryLevel = data.inventory.locales.reduce(
     (total, local) => total + (local.quantity || 0),
     0
   );
+  if (data.access.notForSale || data.access.unavailableForPurchase) {
+    inventoryLevel = 0;
+  }
+
   const product = {
     sku: data.partNumber,
     name: data.description,
@@ -44,7 +49,8 @@ const createProduct = async (sku) => {
         limit: 50,
       },
     };
-    const puProduct = await puInstance.post("parts/search/", payload);
+    // const puProduct = await puInstance.post("parts/search/", payload);
+    const puProduct = await puSearchInstance(payload);
     let product = puProduct.data.result.hits.find(
       (product) => product.partNumber === sku
     );

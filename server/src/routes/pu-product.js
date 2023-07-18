@@ -1,6 +1,7 @@
 import express from "express";
-import { puInstance, puLogin } from "../instances/index.js";
+import { puInstance } from "../instances/index.js";
 import { generateProductName } from "../common/index.js";
+import { puSearchInstance } from "./pu-search.js";
 
 const router = express.Router();
 
@@ -31,6 +32,7 @@ const createProduct = (obj) => {
       .join("");
     description += "</ul>";
   }
+
   const price =
     data.prices.retail ||
     data.prices.originalRetail ||
@@ -45,10 +47,15 @@ const createProduct = (obj) => {
       let imageUrl = item.primaryMedia ? item.primaryMedia.absoluteUrl : false;
       i++;
       if (imageUrl) imageUrl = imageUrl.replace("http:", "https:");
-      const inventoryLevel = item.inventory.locales.reduce(
+      let inventoryLevel = item.inventory.locales.reduce(
         (total, local) => total + (local.quantity || 0),
         0
       );
+
+      if (data.access.notForSale || data.access.unavailableForPurchase) {
+        inventoryLevel = 0;
+      }
+
       const is_default = i === 1 ? true : false;
       const price =
         item.prices.retail ||
@@ -139,7 +146,6 @@ const createProduct = (obj) => {
 const fetchData = async (id, search) => {
   try {
     let puVariationItemsResponse;
-    await puLogin();
     if (search) {
       let payload = {
         queryString: search,
@@ -147,10 +153,11 @@ const fetchData = async (id, search) => {
           limit: 50,
         },
       };
-      puVariationItemsResponse = await puInstance.post(
-        "parts/search/",
-        payload
-      );
+      // puVariationItemsResponse = await puInstance.post(
+      //   "parts/search/",
+      //   payload
+      // );
+      puVariationItemsResponse = await puSearchInstance(payload);
     } else {
       // get all variants sku's
       const puVariationsResponse = await puInstance.get(
@@ -182,10 +189,11 @@ const fetchData = async (id, search) => {
         ],
         partActiveScope: "ALL",
       };
-      puVariationItemsResponse = await puInstance.post(
-        `parts/search/`,
-        payload
-      );
+      // puVariationItemsResponse = await puInstance.post(
+      //   `parts/search/`,
+      //   payload
+      // );
+      puVariationItemsResponse = await puSearchInstance(payload);
     }
 
     const productData = await puInstance.get(`parts/${id}/`);

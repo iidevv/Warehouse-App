@@ -6,6 +6,7 @@ import {
 import { bigCommerceInstance, puInstance } from "../instances/index.js";
 import { puInventoryModel } from "../models/puInventory.js";
 import { sendNotification } from "../routes/tg-notifications.js";
+import { puSearchInstance } from "../routes/pu-search.js";
 
 const getSyncedProducts = async (vendor_id, name, page, pageSize, status) => {
   return await getInventoryProducts(vendor_id, name, page, pageSize, status);
@@ -42,7 +43,8 @@ const getPuProduct = async (id, search) => {
       },
       partActiveScope: "ALL",
     };
-    response = await puInstance.post(`parts/search/`, payload);
+    // response = await puInstance.post(`parts/search/`, payload);
+    response = await puSearchInstance(payload);
 
     const items = response.data.result.hits;
 
@@ -54,18 +56,21 @@ const getPuProduct = async (id, search) => {
 
     const variants = incorporatingPartNumbers.map((partNumber) => {
       const item = items.find((item) => item.partNumber === partNumber);
-      
+
       const price =
         item?.prices.retail ||
         item?.prices.originalRetail ||
         item?.prices.originalBase + item?.prices.originalBase * 0.35 ||
         0;
-      const inventoryLevel = item
+      let inventoryLevel = item
         ? item.inventory.locales.reduce(
             (total, local) => total + (local.quantity || 0),
             0
           )
         : 0;
+      if (data.access.notForSale || data.access.unavailableForPurchase) {
+        inventoryLevel = 0;
+      }
       return {
         id: partNumber,
         sku: partNumber,
@@ -297,7 +302,9 @@ export const updatePuProducts = (vendor_id, name, status) => {
         currentPage++; // Increment the currentPage to continue to the next page
       }
     }
-    sendNotification(`PU products updated. ${productsUpdated}/${productsToUpdate}. Total pages: ${totalPages}`);
+    sendNotification(
+      `PU products updated. ${productsUpdated}/${productsToUpdate}. Total pages: ${totalPages}`
+    );
     if (errors.length > 0) {
       reject(errors); // If there were any errors, reject the promise with the errors
     } else {
