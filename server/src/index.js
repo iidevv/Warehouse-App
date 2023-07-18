@@ -37,6 +37,8 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const port = process.env.PORT || 3001;
+const dbHost = process.env.DB_HOST;
+const dbPort = process.env.DB_PORT;
 const dbname = process.env.DB_NAME;
 const dbUsername = process.env.DB_USERNAME;
 const dbPassword = process.env.DB_PASSWORD;
@@ -84,8 +86,8 @@ app.use("/api/wps-dropship", wpsDropshipRouter);
 app.use("/api/dropship", dropshipOrderRouter);
 
 mongoose.connect(
-  `mongodb+srv://${dbUsername}:${dbPassword}@dmg.eqxtdze.mongodb.net/${dbname}?retryWrites=true&w=majority`
-);
+  `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}/${dbname}?authMechanism=DEFAULT&authSource=${dbname}&ssl=true&sslValidate=false`
+);  
 
 const job = new CronJob({
   cronTime: "0 7,14,18 * * *",
