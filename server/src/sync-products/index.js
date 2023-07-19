@@ -127,8 +127,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
     let totalPages = 1;
     let productsToUpdate = 0;
     let productsUpdated = 0;
-    let productsSynced = 0;
-    let productsWPS = 0;
+    let dbUpdatedProducts = 0;
     while (currentPage <= totalPages) {
       try {
         // Get synced products
@@ -167,12 +166,6 @@ export const updateWpsProducts = (vendor_id, name, status) => {
               syncedProduct.product_name
             )
           );
-          if (syncedProductData.bigcommerce_id) {
-            productsSynced++;
-          }
-          if (wpsProduct.id) {
-            productsWPS++;
-          }
 
           // Check if an update is needed
           const isPriceUpdated = wpsProduct.price !== syncedProductData.price;
@@ -240,15 +233,18 @@ export const updateWpsProducts = (vendor_id, name, status) => {
               // Update the synced product status to 'Updated'
               wpsProduct.status = "Updated";
               await executeWithRetry(() => updateSyncedProduct(wpsProduct));
+              dbUpdatedProducts++;
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'
               wpsProduct.status = "Error";
               await executeWithRetry(() => updateSyncedProduct(wpsProduct));
+              dbUpdatedProducts++;
             }
           } else {
             // If there's no change, update the synced product status to 'No changes'
             wpsProduct.status = "No changes";
             await executeWithRetry(() => updateSyncedProduct(wpsProduct));
+            dbUpdatedProducts++;
           }
           productsUpdated++;
         });
@@ -260,7 +256,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
       }
     }
     sendNotification(
-      `WPS products updated. ${productsUpdated}/${productsToUpdate}. (Synced: ${productsSynced}. WPS: ${productsWPS}) Total pages: ${totalPages}`
+      `WPS products updated. ${productsUpdated}/${productsToUpdate}. (DB updated: ${dbUpdatedProducts}.) Total pages: ${totalPages}`
     );
     resolve();
   });
