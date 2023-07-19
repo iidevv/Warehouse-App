@@ -125,7 +125,6 @@ export const updateWpsProducts = (vendor_id, name, status) => {
     let totalPages = 1;
     let productsToUpdate = 0;
     let productsUpdated = 0;
-    let dbUpdatedProducts = 0;
     while (currentPage <= totalPages) {
       try {
         // Get synced products
@@ -235,18 +234,15 @@ export const updateWpsProducts = (vendor_id, name, status) => {
                 wpsProduct.status = "Updated";
               }
               await updateSyncedProduct(wpsProduct);
-              dbUpdatedProducts++;
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'
               wpsProduct.status = "Error";
               await updateSyncedProduct(wpsProduct);
-              dbUpdatedProducts++;
             }
           } else {
             // If there's no change, update the synced product status to 'No changes'
             wpsProduct.status = "No changes";
             await updateSyncedProduct(wpsProduct);
-            dbUpdatedProducts++;
           }
           productsUpdated++;
         });
@@ -258,7 +254,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
       }
     }
     sendNotification(
-      `WPS products updated. ${productsUpdated}/${productsToUpdate}. (DB updated: ${dbUpdatedProducts}.) Total pages: ${totalPages}`
+      `WPS products updated. ${productsUpdated}/${productsToUpdate}. Total pages: ${totalPages}`
     );
     resolve();
   });

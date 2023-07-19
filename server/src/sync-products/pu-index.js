@@ -105,7 +105,7 @@ const updateBigcommerceProduct = async (id, data) => {
 };
 
 const updateBigcommerceProductVariants = async (id, variants) => {
-  let messages = [];
+  let message = "";
 
   for (let variant of variants) {
     try {
@@ -119,17 +119,16 @@ const updateBigcommerceProductVariants = async (id, variants) => {
         3,
         2000
       );
-      messages.push(`${variant.id} - updated;`);
-
       // Add delay
       await new Promise((resolve) => setTimeout(resolve, 200)); // Delay of 1 second
     } catch (error) {
       console.log(`${variant.id} - error;`);
+      message = "Error";
       sendNotification(`PU Product: ${id}, variant: ${variant.id} (error BC)`);
     }
   }
 
-  return { message: messages.join(" ") };
+  return message;
 };
 
 const updateSyncedProduct = async (data) => {
@@ -255,7 +254,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
                 // if (isPriceUpdated || isInventoryUpdated) {
                 //   // Update the product variant
                 // }
-                await executeWithRetry(() => {
+                const updatedVariants = await executeWithRetry(() => {
                   updateBigcommerceProductVariants(
                     syncedProduct.bigcommerce_id,
                     [
@@ -280,7 +279,11 @@ export const updatePuProducts = (vendor_id, name, status) => {
               }
 
               // Update the synced product status to 'Updated'
-              puProduct.status = "Updated";
+              if (updatedVariants == "Error") {
+                puProduct.status = "Error";
+              } else {
+                puProduct.status = "Updated";
+              }
               await executeWithRetry(() => updateSyncedProduct(puProduct));
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'

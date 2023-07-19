@@ -56,7 +56,7 @@ export const getInventoryProducts = async (
 
     const Inventory = await puInventoryModel
       .find(query)
-      .sort({ last_updated: 1 })
+      // .sort({ last_updated: 1 })
       .skip(skip)
       .limit(pageSize);
     return {
