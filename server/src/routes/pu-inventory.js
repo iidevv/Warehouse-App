@@ -141,7 +141,7 @@ export const updateInventoryProduct = async (updatedProductData) => {
         for (const updatedVariant of updatedProductData.variants) {
           // Find the matching variant in the product
           const productVariantIndex = product.variants.findIndex(
-            (variant) => variant.vendor_id === updatedVariant.id
+            (variant) => variant.vendor_id == updatedVariant.id
           );
 
           if (productVariantIndex !== -1) {
