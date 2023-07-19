@@ -55,7 +55,7 @@ const updateBigcommerceProduct = async (id, data) => {
 
 // Define update productVariants (id = bigcommerce product id, data = updated data)
 const updateBigcommerceProductVariants = async (id, variants) => {
-  let messages = [];
+  let message = "";
 
   for (let variant of variants) {
     try {
@@ -69,17 +69,15 @@ const updateBigcommerceProductVariants = async (id, variants) => {
         3,
         2000
       );
-      messages.push(`${variant.id} - updated;`);
-
       // Add delay
       await new Promise((resolve) => setTimeout(resolve, 200)); // Delay of 1 second
     } catch (error) {
       console.log(`${variant.id} - error; (wps)`);
+      message = "Error";
       sendNotification(`WPS Product: ${id}, variant: ${variant.id} (error BC)`);
     }
   }
-
-  return { message: messages.join(" ") };
+  return message;
 };
 
 // Define update product, when sync completed (id = vendor id, data)
@@ -206,7 +204,7 @@ export const updateWpsProducts = (vendor_id, name, status) => {
 
                 // if (isPriceUpdated || isInventoryUpdated) {
                 // }
-                await executeWithRetry(() => {
+                const updatedVariants = await executeWithRetry(() => {
                   updateBigcommerceProductVariants(
                     syncedProduct.bigcommerce_id,
                     [
@@ -231,19 +229,23 @@ export const updateWpsProducts = (vendor_id, name, status) => {
               }
 
               // Update the synced product status to 'Updated'
-              wpsProduct.status = "Updated";
-              await executeWithRetry(() => updateSyncedProduct(wpsProduct));
+              if (updatedVariants == "Error") {
+                wpsProduct.status = "Error";
+              } else {
+                wpsProduct.status = "Updated";
+              }
+              await updateSyncedProduct(wpsProduct);
               dbUpdatedProducts++;
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'
               wpsProduct.status = "Error";
-              await executeWithRetry(() => updateSyncedProduct(wpsProduct));
+              await updateSyncedProduct(wpsProduct);
               dbUpdatedProducts++;
             }
           } else {
             // If there's no change, update the synced product status to 'No changes'
             wpsProduct.status = "No changes";
-            await executeWithRetry(() => updateSyncedProduct(wpsProduct));
+            await updateSyncedProduct(wpsProduct);
             dbUpdatedProducts++;
           }
           productsUpdated++;
