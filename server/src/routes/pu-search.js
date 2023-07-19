@@ -48,11 +48,12 @@ export const puSearchInstance = async (payload) => {
   }
 
   try {
-    const response = await axios.post(searchUrl, payload, {
-      jar: cookieJar,
-      withCredentials: true,
-    });
-
+    const response = await axios
+      .post(searchUrl, payload, {
+        jar: cookieJar,
+        withCredentials: true,
+      })
+      .catch((err) => console.log(err));
     if (response.data.hits && !response.data.hits.every((hit) => hit.access)) {
       isLogged = false;
       await login();
