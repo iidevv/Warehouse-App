@@ -127,6 +127,8 @@ export const updateWpsProducts = (vendor_id, name, status) => {
     let totalPages = 1;
     let productsToUpdate = 0;
     let productsUpdated = 0;
+    let productsSynced = 0;
+    let productsWPS = 0;
     while (currentPage <= totalPages) {
       try {
         // Get synced products
@@ -165,6 +167,12 @@ export const updateWpsProducts = (vendor_id, name, status) => {
               syncedProduct.product_name
             )
           );
+          if (syncedProductData.bigcommerce_id) {
+            productsSynced++;
+          }
+          if (wpsProduct.id) {
+            productsWPS++;
+          }
 
           // Check if an update is needed
           const isPriceUpdated = wpsProduct.price !== syncedProductData.price;
@@ -251,7 +259,9 @@ export const updateWpsProducts = (vendor_id, name, status) => {
         break;
       }
     }
-    sendNotification(`WPS products updated. ${productsUpdated}/${productsToUpdate}. Total pages: ${totalPages}`);
+    sendNotification(
+      `WPS products updated. ${productsUpdated}/${productsToUpdate}. (Synced: ${productsSynced}. WPS: ${productsWPS}) Total pages: ${totalPages}`
+    );
     resolve();
   });
 };
