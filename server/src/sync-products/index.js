@@ -72,9 +72,9 @@ export const updateProducts = (vendor_id, name, status, vendor) => {
           );
 
           if (product.variants.length != syncedProductData.variants.length) {
-            sendNotification(
-              `${product.product_name} variants length not match. ${product.variants.length}/${syncedProductData.variants.length}`
-            );
+            // sendNotification(
+            //   `${product.product_name} variants length not match. ${product.variants.length}/${syncedProductData.variants.length}`
+            // );
           }
 
           // Check if an update is needed
