@@ -228,11 +228,11 @@ export const updateWpsProducts = (vendor_id, name, status) => {
               }
 
               // Update the synced product status to 'Updated'
-              if (updatedVariants == "Error") {
-                wpsProduct.status = "Error";
-              } else {
-                wpsProduct.status = "Updated";
-              }
+              // if (updatedVariants == "Error") {
+              //   wpsProduct.status = "Error";
+              // } else {
+              // }
+              wpsProduct.status = "Updated";
               await updateSyncedProduct(wpsProduct);
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'

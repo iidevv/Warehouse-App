@@ -279,11 +279,11 @@ export const updatePuProducts = (vendor_id, name, status) => {
               }
 
               // Update the synced product status to 'Updated'
-              if (updatedVariants == "Error") {
-                puProduct.status = "Error";
-              } else {
-                puProduct.status = "Updated";
-              }
+              // if (updatedVariants == "Error") {
+              //   puProduct.status = "Error";
+              // } else {
+              // }
+              puProduct.status = "Updated";
               await executeWithRetry(() => updateSyncedProduct(puProduct));
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'
