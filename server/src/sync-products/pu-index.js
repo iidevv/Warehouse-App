@@ -12,11 +12,11 @@ const getSyncedProducts = async (vendor_id, name, page, pageSize, status) => {
   return await getInventoryProducts(vendor_id, name, page, pageSize, status);
 };
 
-const getPuProduct = async (id, search) => {
+const getPuProduct = async (id, name) => {
   try {
     let response;
     // get all variants sku's
-    const puInventory = await puInventoryModel.findOne({ vendor_id: id });
+    const puInventory = await puInventoryModel.findOne({ vendor_id: id, product_name: name});
     const incorporatingPartNumbers = puInventory.variants.map(
       (v) => v.vendor_id
     );
@@ -203,7 +203,7 @@ export const updatePuProducts = (vendor_id, name, status) => {
 
           // Get WPS product data and compare it with the synced product data
           const puProduct = await executeWithRetry(() =>
-            getPuProduct(syncedProduct.vendor_id, syncedProduct.create_value)
+            getPuProduct(syncedProduct.vendor_id, syncedProduct.product_name)
           );
           // put product name for same products with different variations
           puProduct.product_name = syncedProduct.product_name;
