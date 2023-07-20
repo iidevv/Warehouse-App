@@ -19,7 +19,8 @@ router.get("/products", async (req, res) => {
       page,
       pageSize,
       status,
-      search
+      search,
+      true
     );
     res.json(products);
   } catch (error) {
@@ -33,7 +34,8 @@ export const getInventoryProducts = async (
   page,
   pageSize,
   status,
-  search
+  search,
+  isUserRequest = false
 ) => {
   if ((vendor_id, name)) {
     const product = await InventoryModel.findOne({
@@ -54,8 +56,10 @@ export const getInventoryProducts = async (
     const totalPages = Math.ceil(total / pageSize);
     const skip = (page - 1) * pageSize;
 
+    const sort = isUserRequest ? { last_updated: -1 } : { inserted_at: 1 };
+
     const Inventory = await InventoryModel.find(query)
-      // .sort({ last_updated: 1 })
+      .sort(sort)
       .skip(skip)
       .limit(pageSize);
     return {
