@@ -1,6 +1,6 @@
 import express from "express";
 import { bigCommerceInstance } from "../../instances/index.js";
-import { puSearchInstance } from "../pu-search.js";
+import { puSearchInstance } from '../../instances/pu-search.js';
 
 const router = express.Router();
 

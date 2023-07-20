@@ -2,7 +2,7 @@ import { CookieJar } from "tough-cookie";
 import axiosOrig from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { config } from "dotenv";
-import { sendNotification } from "./tg-notifications.js";
+import { sendNotification } from "../routes/tg-notifications.js";
 config();
 
 const cookieJar = new CookieJar();

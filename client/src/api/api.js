@@ -159,6 +159,7 @@ export const inventoryAPI = {
           vendor_id,
           name,
           status,
+          vendor: "WPS",
         },
       })
       .then((response) => {
@@ -198,11 +199,12 @@ export const puInventoryAPI = {
   },
   updateProducts(vendor_id, name, status) {
     return instance
-      .get(`/pu-inventory/sync/`, {
+      .get(`/inventory/sync/`, {
         params: {
           vendor_id,
           name,
           status,
+          vendor: "PU",
         },
       })
       .then((response) => {
@@ -210,7 +212,7 @@ export const puInventoryAPI = {
       });
   },
   updateProductsStatus() {
-    return instance.get(`/pu-inventory/sync-status/`).then((response) => {
+    return instance.get(`/inventory/sync-status/`).then((response) => {
       return response.data;
     });
   },
@@ -270,10 +272,8 @@ export const ordersAPI = {
       });
   },
   createOrder(id) {
-    return instance
-      .post(`/dropship/order/`, { id })
-      .then((response) => {
-        return response.data;
-      });
+    return instance.post(`/dropship/order/`, { id }).then((response) => {
+      return response.data;
+    });
   },
 };

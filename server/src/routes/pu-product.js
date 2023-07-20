@@ -1,7 +1,7 @@
 import express from "express";
 import { puInstance } from "../instances/index.js";
 import { generateProductName } from "../common/index.js";
-import { puSearchInstance } from "./pu-search.js";
+import { puSearchInstance } from '../instances/pu-search.js';
 
 const router = express.Router();
 

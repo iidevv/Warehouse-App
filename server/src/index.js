@@ -7,20 +7,15 @@ import { bigcommerceRouter } from "./routes/bigcommerce.js";
 import { WPSProductsRouter } from "./routes/wps-products.js";
 import { WPSProductRouter } from "./routes/wps-product.js";
 import { inventoryRouter } from "./routes/inventory.js";
-import { SyncProductsRouter } from "./sync-products/index.js";
+import { SyncProductsRouter, updateProducts } from "./sync-products/index.js";
 import { userRouter } from "./routes/user.js";
 import { chatgptRouter } from "./routes/chatgpt.js";
 import { CronJob } from "cron";
-import { updateWpsProducts } from "./sync-products/index.js";
 import { authenticate } from "./routes/user.js";
 import cookieParser from "cookie-parser";
 import { puProductsRouter } from "./routes/pu-products.js";
 import { puProductRouter } from "./routes/pu-product.js";
 import { puInventoryRouter } from "./routes/pu-inventory.js";
-import {
-  SyncPuProductsRouter,
-  updatePuProducts,
-} from "./sync-products/pu-index.js";
 import { puExternalProductRouter } from "./routes/external/pu-product.js";
 import { puDropshipRouter } from "./routes/pu-dropship.js";
 import { dropshipOrderRouter } from "./routes/dropship.js";
@@ -55,7 +50,7 @@ app.use("/external", ProductAvailabilityRouter);
 app.use("/external", bulkActionRouter);
 app.use("/external", testActionRouter);
 
-app.use('/api/images', express.static(path.join(__dirname, '../optimized')));
+app.use("/api/images", express.static(path.join(__dirname, "../optimized")));
 
 app.use(
   cors({
@@ -73,7 +68,6 @@ app.use("/api/inventory", inventoryRouter);
 
 app.use("/api/inventory", SyncProductsRouter);
 app.use("/api/pu-inventory", puInventoryRouter);
-app.use("/api/pu-inventory", SyncPuProductsRouter);
 app.use("/api/pu-dropship", puDropshipRouter);
 app.use("/api/pu", puProductsRouter);
 app.use("/api/pu", puProductRouter);
@@ -87,7 +81,7 @@ app.use("/api/dropship", dropshipOrderRouter);
 
 mongoose.connect(
   `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}/${dbname}?authMechanism=DEFAULT&authSource=${dbname}&ssl=true&sslValidate=false`
-);  
+);
 
 const job = new CronJob({
   cronTime: "0 7,14,18 * * *",
@@ -95,9 +89,9 @@ const job = new CronJob({
     try {
       sendNotification("scheduled update started");
 
-      await updateWpsProducts();
-      await updatePuProducts();
-      
+      await updateProducts("", "", "", "WPS");
+      await updateProducts("", "", "", "PU");
+
       sendNotification("scheduled update complete");
     } catch (error) {
       sendNotification(`Error during updating: ${error}`);

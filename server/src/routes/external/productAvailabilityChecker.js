@@ -1,8 +1,6 @@
 import express from "express";
 import axios from "axios";
 import { bigCommerceInstance } from "../../instances/index.js";
-import { updateWpsProducts } from "../../sync-products/index.js";
-import { updatePuProducts } from "../../sync-products/pu-index.js";
 import { puInventoryModel } from "../../models/puInventory.js";
 import { InventoryModel } from "../../models/Inventory.js";
 import { sendNotification } from "../tg-notifications.js";
@@ -30,7 +28,6 @@ router.post("/availability/", async (req, res) => {
 //       vendor_id,
 //       product_name: name,
 //     });
-//     if (wpsProduct) await updateWpsProducts(vendor_id, name);
 //   });
 
 //   await Promise.all(updatePromises);
