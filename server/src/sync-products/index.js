@@ -60,6 +60,11 @@ export const updateProducts = (vendor_id, name, status, vendor) => {
               vendor
             )
           );
+          if (!product) {
+            syncedProduct.status = "Error";
+            await updateSyncedProduct(syncedProduct, vendor);
+            return;
+          }
           // put product name for same products with different variations
           product.product_name = syncedProduct.product_name;
 
