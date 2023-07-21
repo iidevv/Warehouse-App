@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get("/test-action/", async (req, res) => {
   let payload = {
-    queryString: "ICON",
+    queryString: "010115064",
     pagination: {
       limit: 50,
     },
