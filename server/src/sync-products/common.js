@@ -237,7 +237,7 @@ export const getSyncedProducts = async (
 export const getSyncedProduct = async (vendor_id, name, vendor) => {
   let model = getModel(vendor);
   const product = await model.findOne({
-    vendor_id,
+    // vendor_id,
     product_name: name,
   });
   return product;
@@ -247,7 +247,7 @@ export const updateSyncedProduct = async (updatedProductData, vendor) => {
   let model = getModel(vendor);
   try {
     const product = await model.findOne({
-      vendor_id: updatedProductData.id,
+      // vendor_id: updatedProductData.id,
       product_name: updatedProductData.product_name,
     });
     if (product) {
