@@ -130,7 +130,9 @@ const getPuProduct = async (id, name) => {
     response = await puSearchInstance(payload);
 
     const items = response.data.result.hits;
-
+    if (items.length === 0) {
+      return;
+    }
     const data = items[0];
     const price =
       data?.prices?.retail ||
@@ -175,7 +177,6 @@ const getPuProduct = async (id, name) => {
         inventory_level: inventoryLevel,
       };
     });
-
     return {
       id: data.product.id,
       price: price,
