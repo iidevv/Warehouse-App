@@ -154,11 +154,14 @@ const getPuProduct = async (id, name) => {
           )
         : 0;
       if (
-        data.access.notForSale ||
-        data.access.unavailableForPurchase ||
+        data?.access?.notForSale ||
+        data?.access?.unavailableForPurchase ||
         price == 0
       ) {
         inventoryLevel = 0;
+      }
+      if (!data?.access?.notForSale) {
+        sendNotification(`sku: ${partNumber}. No notForSale value`);
       }
       return {
         id: partNumber,
