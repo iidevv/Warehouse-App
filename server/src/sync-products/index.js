@@ -78,19 +78,25 @@ export const updateProducts = (vendor_id, name, status, vendor) => {
           }
 
           // Check if an update is needed
-          const isPriceUpdated = product.price !== syncedProductData.price;
-          const isInventoryUpdated = product.variants.some((variant) => {
-            // Find the corresponding synced variant using the vendor_id
-
-            const syncedVariant = syncedProductData.variants.find(
-              (v) => v.vendor_id == variant.id
+          const isPriceUpdated = syncedProductData.variants.some((variant) => {
+            const syncedVariant = product.variants.find(
+              (v) => v.id == variant.vendor_id
             );
-            // Check if the inventory_level has changed
             return (
-              syncedVariant &&
-              variant.inventory_level !== syncedVariant.inventory_level
+              syncedVariant && variant.price !== syncedVariant.variant_price
             );
           });
+          const isInventoryUpdated = syncedProductData.variants.some(
+            (variant) => {
+              const syncedVariant = product.variants.find(
+                (v) => v.id == variant.vendor_id
+              );
+              return (
+                syncedVariant &&
+                variant.inventory_level !== syncedVariant.inventory_level
+              );
+            }
+          );
 
           // If an update is needed, update the product and its variants
           if (isPriceUpdated || isInventoryUpdated) {
@@ -116,7 +122,7 @@ export const updateProducts = (vendor_id, name, status, vendor) => {
 
                 // if (isPriceUpdated || isInventoryUpdated) {
                 // }
-                const updatedVariants = await executeWithRetry(() => {
+                await executeWithRetry(() => {
                   updateBigcommerceProductVariants(
                     syncedProduct.bigcommerce_id,
                     [
@@ -127,16 +133,6 @@ export const updateProducts = (vendor_id, name, status, vendor) => {
                       },
                     ]
                   );
-                  if (variant.inventory_level == undefined) {
-                    sendNotification(
-                      `${vendor} Product: ${syncedProduct.bigcommerce_id}, variant: ${variant.id} (inventory_level error)`
-                    );
-                  }
-                  if (variant.price == undefined) {
-                    sendNotification(
-                      `${vendor} Product: ${syncedProduct.bigcommerce_id}, variant: ${variant.id} (price error)`
-                    );
-                  }
                 });
               }
 

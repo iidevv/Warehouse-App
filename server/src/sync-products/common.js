@@ -5,6 +5,37 @@ import { sendNotification } from "../routes/tg-notifications.js";
 import { createNewDate } from "../common/index.js";
 import { puSearchInstance } from "../instances/pu-search.js";
 
+// Helper function to process array items in parallel with a limited concurrency
+export const asyncForEach = async (array, callback, concurrency = 5) => {
+  const queue = [...array];
+  const promises = [];
+  while (queue.length) {
+    while (promises.length < concurrency && queue.length) {
+      const item = queue.shift();
+      promises.push(callback(item));
+    }
+    await Promise.race(promises).then((completed) => {
+      promises.splice(promises.indexOf(completed), 1);
+    });
+  }
+  return Promise.all(promises);
+};
+
+// Helper function to execute a function with retries
+export const executeWithRetry = async (fn, maxRetries = 3, delay = 10000) => {
+  let retries = 0;
+  while (retries < maxRetries) {
+    try {
+      return await fn();
+    } catch (error) {
+      retries++;
+      console.error(`Attempt ${retries} failed. Retrying...`, error);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Max retries reached.");
+};
+
 // switchers
 const getModel = (vendor) => {
   let model;
@@ -129,9 +160,6 @@ const getPuProduct = async (id, name) => {
       ) {
         inventoryLevel = 0;
       }
-      if (price == 0) {
-        sendNotification(`sku: ${partNumber} price: $${price}, stock: 0`);
-      }
       return {
         id: partNumber,
         sku: partNumber,
@@ -184,37 +212,6 @@ export const updateBigcommerceProductVariants = async (id, variants) => {
   return message;
 };
 
-// Helper function to process array items in parallel with a limited concurrency
-export const asyncForEach = async (array, callback, concurrency = 5) => {
-  const queue = [...array];
-  const promises = [];
-  while (queue.length) {
-    while (promises.length < concurrency && queue.length) {
-      const item = queue.shift();
-      promises.push(callback(item));
-    }
-    await Promise.race(promises).then((completed) => {
-      promises.splice(promises.indexOf(completed), 1);
-    });
-  }
-  return Promise.all(promises);
-};
-
-// Helper function to execute a function with retries
-export const executeWithRetry = async (fn, maxRetries = 3, delay = 10000) => {
-  let retries = 0;
-  while (retries < maxRetries) {
-    try {
-      return await fn();
-    } catch (error) {
-      retries++;
-      console.error(`Attempt ${retries} failed. Retrying...`, error);
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-  throw new Error("Max retries reached.");
-};
-
 export const getSyncedProducts = async (
   vendor_id,
   name,
@@ -232,26 +229,34 @@ export const getSyncedProducts = async (
     query.status = status;
   }
 
-  const total = await model.countDocuments(query);
-  const totalPages = Math.ceil(total / pageSize);
-  const skip = (page - 1) * pageSize;
+  try {
+    const total = await model.countDocuments(query);
+    const totalPages = Math.ceil(total / pageSize);
+    const skip = (page - 1) * pageSize;
 
-  const products = await model.find(query).skip(skip).limit(pageSize);
-  return {
-    products,
-    total,
-    totalPages,
-    currentPage: page,
-  };
+    const products = await model.find(query).skip(skip).limit(pageSize);
+    return {
+      products,
+      total,
+      totalPages,
+      currentPage: page,
+    };
+  } catch (error) {
+    sendNotification(`getSyncedProducts Error: ${error}`);
+  }
 };
 
 export const getSyncedProduct = async (vendor_id, name, vendor) => {
   let model = getModel(vendor);
-  const product = await model.findOne({
-    // vendor_id,
-    product_name: name,
-  });
-  return product;
+  try {
+    const product = await model.findOne({
+      // vendor_id,
+      product_name: name,
+    });
+    return product;
+  } catch (error) {
+    sendNotification(`${vendor}, ${name}. getSyncedProduct Error: ${error} `);
+  }
 };
 
 export const updateSyncedProduct = async (updatedProductData, vendor) => {
@@ -303,6 +308,9 @@ export const updateSyncedProduct = async (updatedProductData, vendor) => {
       return { Error: "Product not found" };
     }
   } catch (error) {
-    return { Error: error };
+    sendNotification(
+      `${vendor}, ${updatedProductData.product_name}. updateSyncedProduct Error: ${error}`
+    );
+    return { error: error };
   }
 };
