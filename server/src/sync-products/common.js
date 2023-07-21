@@ -100,6 +100,9 @@ const getPuProduct = async (id, name) => {
     let response;
     // get all variants sku's
     const product = await getSyncedProduct(id, name, "PU");
+    if (!product) {
+      return;
+    }
     const incorporatingPartNumbers = product.variants.map((v) => v.vendor_id);
     // get all variants
     let payload = {

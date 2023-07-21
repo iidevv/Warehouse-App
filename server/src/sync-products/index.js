@@ -185,7 +185,6 @@ router.get("/sync", async (req, res) => {
   const name = req.query.name;
   const status = req.query.status;
   const vendor = req.query.vendor;
-  console.log(vendor);
   try {
     await updateProducts(vendor_id, name, status, vendor);
     res.send({ status: updateStatus });
