@@ -161,7 +161,9 @@ const getPuProduct = async (id, name) => {
         inventoryLevel = 0;
       }
       if (data?.access?.notForSale === undefined) {
-        sendNotification(`sku: ${partNumber}. No notForSale value`);
+        sendNotification(
+          `sku: ${partNumber}. notForSale: ${data?.access?.notForSale}`
+        );
       }
       return {
         id: partNumber,
