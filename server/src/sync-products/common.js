@@ -162,7 +162,7 @@ const getPuProduct = async (id, name) => {
       }
       if (data?.access?.notForSale === undefined) {
         sendNotification(
-          `sku: ${partNumber}. notForSale: ${data?.access?.notForSale}`
+          `${name}. sku: ${partNumber}. notForSale: ${data?.access?.notForSale}`
         );
       }
       return {
@@ -179,6 +179,7 @@ const getPuProduct = async (id, name) => {
       variants: variants,
     };
   } catch (error) {
+    sendNotification(`${name}. Error: ${error}`);
     throw error;
   }
 };
