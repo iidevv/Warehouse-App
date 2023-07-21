@@ -97,20 +97,24 @@ const getPuProduct = async (id, name) => {
 
     const items = response.data.result.hits;
 
-
     const data = items[0];
     const price =
-      data.prices.retail ||
-      data.prices.originalRetail ||
-      data.prices.originalBase + data.prices.originalBase * 0.35;
+      data?.prices?.retail ||
+      data?.prices?.originalRetail ||
+      (data?.prices?.originalBase !== undefined
+        ? data.prices.originalBase + data.prices.originalBase * 0.35
+        : 0) ||
+      0;
 
     const variants = incorporatingPartNumbers.map((partNumber) => {
       const item = items.find((item) => item.partNumber === partNumber);
 
       const price =
-        item?.prices.retail ||
-        item?.prices.originalRetail ||
-        item?.prices.originalBase + item?.prices.originalBase * 0.35 ||
+        item?.prices?.retail ||
+        item?.prices?.originalRetail ||
+        (item?.prices?.originalBase !== undefined
+          ? item.prices.originalBase + item.prices.originalBase * 0.35
+          : 0) ||
         0;
       let inventoryLevel = item
         ? item.inventory.locales.reduce(
@@ -118,8 +122,15 @@ const getPuProduct = async (id, name) => {
             0
           )
         : 0;
-      if (data.access.notForSale || data.access.unavailableForPurchase) {
+      if (
+        data.access.notForSale ||
+        data.access.unavailableForPurchase ||
+        price == 0
+      ) {
         inventoryLevel = 0;
+      }
+      if (price == 0) {
+        sendNotification(`sku: ${partNumber} price: $${price}, stock: 0`);
       }
       return {
         id: partNumber,
