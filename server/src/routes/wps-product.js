@@ -100,6 +100,7 @@ const createProduct = (obj) => {
         return {
           id: item.id,
           sku: item.sku,
+          upc: item.upc,
           option_values: [
             {
               option_display_name: `${variants[0].brand.data.name} options`,
@@ -115,6 +116,7 @@ const createProduct = (obj) => {
         return {
           id: item.id,
           sku: item.sku,
+          upc: item.upc,
           option_values: [
             {
               option_display_name: `${variants[0].brand.data.name} options`,
