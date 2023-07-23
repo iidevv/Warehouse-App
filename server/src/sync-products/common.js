@@ -3,7 +3,7 @@ import { InventoryModel } from "../models/Inventory.js";
 import { puInventoryModel } from "../models/puInventory.js";
 import { sendNotification } from "../routes/tg-notifications.js";
 import { createNewDate } from "../common/index.js";
-import { puSearchInstance } from "../instances/pu-search.js";
+import { puSearchInstance, puSearchLogin } from "../instances/pu-search.js";
 
 // Helper function to process array items in parallel with a limited concurrency
 export const asyncForEach = async (array, callback, concurrency = 5) => {
@@ -142,41 +142,44 @@ const getPuProduct = async (id, name) => {
         : 0) ||
       0;
 
-    const variants = incorporatingPartNumbers.map((partNumber) => {
-      const item = items.find((item) => item.partNumber === partNumber);
+    const variants = await Promise.all(
+      incorporatingPartNumbers.map(async (partNumber) => {
+        const item = items.find((item) => item.partNumber === partNumber);
 
-      const price =
-        item?.prices?.retail ||
-        item?.prices?.originalRetail ||
-        (item?.prices?.originalBase !== undefined
-          ? item.prices.originalBase + item.prices.originalBase * 0.35
-          : 0) ||
-        0;
-      let inventoryLevel = item
-        ? item.inventory.locales.reduce(
-            (total, local) => total + (local.quantity || 0),
-            0
-          )
-        : 0;
-      if (
-        data?.access?.notForSale ||
-        data?.access?.unavailableForPurchase ||
-        price == 0
-      ) {
-        inventoryLevel = 0;
-      }
-      if (data?.access?.notForSale === undefined) {
-        sendNotification(
-          `${name}. sku: ${partNumber}. notForSale: ${data?.access?.notForSale}`
-        );
-      }
-      return {
-        id: partNumber,
-        sku: partNumber,
-        price: price,
-        inventory_level: inventoryLevel,
-      };
-    });
+        const price =
+          item?.prices?.retail ||
+          item?.prices?.originalRetail ||
+          (item?.prices?.originalBase !== undefined
+            ? item.prices.originalBase + item.prices.originalBase * 0.35
+            : 0) ||
+          0;
+        let inventoryLevel = item
+          ? item.inventory.locales.reduce(
+              (total, local) => total + (local.quantity || 0),
+              0
+            )
+          : 0;
+        if (
+          data?.access?.notForSale ||
+          data?.access?.unavailableForPurchase ||
+          price == 0
+        ) {
+          inventoryLevel = 0;
+        }
+        if (data?.access?.notForSale === undefined) {
+          sendNotification(
+            `${name}. sku: ${partNumber}. notForSale: ${data?.access?.notForSale}`
+          );
+          await puSearchLogin();
+        }
+        return {
+          id: partNumber,
+          sku: partNumber,
+          price: price,
+          inventory_level: inventoryLevel,
+        };
+      })
+    );
     return {
       id: data.product.id,
       price: price,
