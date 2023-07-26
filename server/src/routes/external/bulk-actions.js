@@ -38,7 +38,7 @@ async function asyncForEach(array, callback, concurrency = 5) {
 router.get("/bulk-action/", async (req, res) => {
   const pageSize = 5;
   let currentPage = 29;
-  let totalPages = 1;
+  let totalPages = 29;
   let totalVideos = 0;
   while (currentPage <= totalPages) {
     try {
@@ -99,7 +99,7 @@ router.get("/bulk-action/", async (req, res) => {
       });
 
       currentPage++;
-      console.log(`Adding videos: ${currentPage}/${totalPages}`);
+      console.log(`Adding videos: ${currentPage}/${totalPages} (${totalVideos})`);
     } catch (error) {
       console.error("Error updating products:", error);
       break;
