@@ -65,6 +65,7 @@ router.get("/bulk-action/", async (req, res) => {
         let youtubeIds = [];
         for (const syncedVariant of syncedProduct.variants) {
           const puProduct = await executeWithRetry(async () => {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             return await puInstance
               .get(`/parts/${syncedVariant.vendor_id}`)
               .catch((err) => console.log("Get vendor product error: ", err));
