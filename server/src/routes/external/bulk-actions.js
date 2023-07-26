@@ -1,7 +1,7 @@
 import express from "express";
 import axios from "axios";
-import { bigCommerceInstance, puInstance } from "../../instances/index.js";
-import { puInventoryModel } from "../../models/puInventory.js";
+import { bigCommerceInstance, wpsInstance } from "../../instances/index.js";
+import { InventoryModel } from "../../models/Inventory.js";
 
 const router = express.Router();
 
@@ -37,17 +37,17 @@ async function asyncForEach(array, callback, concurrency = 5) {
 
 router.get("/bulk-action/", async (req, res) => {
   const pageSize = 5;
-  let currentPage = 334;
-  let totalPages = 334;
+  let currentPage = 1;
+  let totalPages = 1;
   let totalVideos = 0;
   while (currentPage <= totalPages) {
     try {
       // Get synced products
       const response = await executeWithRetry(async () => {
         const skip = (currentPage - 1) * pageSize;
-        const total = await puInventoryModel.countDocuments();
+        const total = await InventoryModel.countDocuments();
         totalPages = Math.ceil(total / pageSize);
-        return await puInventoryModel.find().skip(skip).limit(pageSize);
+        return await InventoryModel.find().skip(skip).limit(pageSize);
       });
       let productsToProcess = [];
 
@@ -61,41 +61,28 @@ router.get("/bulk-action/", async (req, res) => {
         // Add a delay between requests
         await new Promise((resolve) => setTimeout(resolve, 1000));
         const productId = syncedProduct.bigcommerce_id;
-        console.log(productId);
-        let youtubeIds = [];
-        for (const syncedVariant of syncedProduct.variants.slice(0, 2)) {
-          const puProduct = await executeWithRetry(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 400));
-            return await puInstance
-              .get(`/parts/${syncedVariant.vendor_id}`)
-              .catch((err) => console.log("Get vendor product error: ", err));
-          });
-          if (puProduct.data.product?.media) {
-            for (let mediaItem of puProduct.data.product.media) {
-              if (
-                mediaItem.type === "video" &&
-                mediaItem.source.name === "youtube"
-              ) {
-                youtubeIds.push(mediaItem.url);
-              }
-            }
-          }
+        let youtubeId = "";
+        const product = await executeWithRetry(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 400));
+          return await wpsInstance
+            .get(`/products/${syncedProduct.vendor_id}/resources`)
+            .catch((err) => console.log("Get vendor product error: ", err));
+        });
+        youtubeId = product.data?.data[0]?.reference;
+        let addVideo;
+        if (youtubeId) {
+          addVideo = await bigCommerceInstance
+            .post(`/catalog/products/${productId}/videos`, {
+              video_id: youtubeId,
+            })
+            .catch((err) =>
+              console.log(`Product id: ${productId}. Error: ${err}`)
+            );
         }
-        youtubeIds = [...new Set(youtubeIds)];
-        await Promise.all(
-          youtubeIds.map(async (youtubeId) => {
-            const addVideo = await bigCommerceInstance
-              .post(`/catalog/products/${productId}/videos`, {
-                video_id: youtubeId,
-              })
-              .catch((err) =>
-                console.log(`Product id: ${productId}. Error: ${err}`)
-              );
-            if (addVideo && addVideo.data) {
-              totalVideos++;
-            }
-          })
-        );
+        console.log(`${productId} / ${youtubeId}`);
+        if (addVideo && addVideo.data) {
+          totalVideos++;
+        }
       });
 
       currentPage++;
