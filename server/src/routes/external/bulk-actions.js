@@ -37,8 +37,8 @@ async function asyncForEach(array, callback, concurrency = 5) {
 
 router.get("/bulk-action/", async (req, res) => {
   const pageSize = 5;
-  let currentPage = 172;
-  let totalPages = 172;
+  let currentPage = 334;
+  let totalPages = 334;
   let totalVideos = 0;
   while (currentPage <= totalPages) {
     try {
