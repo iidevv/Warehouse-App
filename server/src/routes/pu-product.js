@@ -1,7 +1,7 @@
 import express from "express";
 import { puInstance } from "../instances/index.js";
 import { generateProductName } from "../common/index.js";
-import { puSearchInstance } from '../instances/pu-search.js';
+import { puSearchInstance } from "../instances/pu-search.js";
 
 const router = express.Router();
 
@@ -65,6 +65,7 @@ const createProduct = (obj) => {
         return {
           id: item.partNumber,
           sku: item.partNumber,
+          upc: item.upc,
           option_values: [
             {
               option_display_name: `${data.brandName} options`,
@@ -80,6 +81,7 @@ const createProduct = (obj) => {
         return {
           id: item.partNumber,
           sku: item.partNumber,
+          upc: item.upc,
           name: option,
           option_values: [
             {
@@ -196,6 +198,15 @@ const fetchData = async (id, search) => {
       puVariationItemsResponse = await puSearchInstance(payload);
     }
 
+    puVariationItemsResponse = puVariationItemsResponse.data.result.hits;
+
+    puVariationItemsResponse = await Promise.all(
+      puVariationItemsResponse.map(async (item) => {
+        const itemResponse = await puInstance.get(`/parts/${item.partNumber}`);
+        item.upc = itemResponse.data.upc || "";
+        return item;
+      })
+    );
     const productData = await puInstance.get(`parts/${id}/`);
     const imageExtensions = [".jpg", ".png", ".webp"];
 
@@ -212,7 +223,7 @@ const fetchData = async (id, search) => {
     };
     const puProduct = {
       info: productInfo,
-      variants: puVariationItemsResponse.data.result.hits,
+      variants: puVariationItemsResponse,
     };
 
     // return puProduct;

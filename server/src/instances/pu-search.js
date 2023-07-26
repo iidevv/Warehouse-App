@@ -20,7 +20,7 @@ const credentials = {
 let isLogged = false;
 let loginAttempts = 0;
 
-const login = async () => {
+export const puSearchLogin = async () => {
   try {
     await axios.put(loginUrl, credentials, {
       jar: cookieJar,
@@ -36,7 +36,7 @@ const login = async () => {
       sendNotification(`PU instance. Max login attempts reached`);
       throw new Error("Max login attempts reached");
     }
-    await login();
+    await puSearchLogin();
   }
 };
 
@@ -44,7 +44,7 @@ export const puSearchInstance = async (payload) => {
   if (!payload) return;
 
   if (!isLogged) {
-    await login();
+    await puSearchLogin();
   }
 
   try {
@@ -56,7 +56,7 @@ export const puSearchInstance = async (payload) => {
       .catch((err) => console.log(err));
     if (response.data.hits && !response.data.hits.every((hit) => hit.access)) {
       isLogged = false;
-      await login();
+      await puSearchLogin();
     }
     return response;
   } catch (error) {
