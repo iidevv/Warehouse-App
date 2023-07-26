@@ -37,9 +37,9 @@ async function asyncForEach(array, callback, concurrency = 5) {
 
 router.get("/bulk-action/", async (req, res) => {
   const pageSize = 5;
-  let currentPage = 13;
+  let currentPage = 1;
   let totalPages = 1;
-  let totalUpcAdded = 0;
+  let totalVideos = 0;
   while (currentPage <= totalPages) {
     try {
       // Get synced products
@@ -62,43 +62,50 @@ router.get("/bulk-action/", async (req, res) => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         const productId = syncedProduct.bigcommerce_id;
         console.log(productId);
+        let youtubeIds = [];
         for (const syncedVariant of syncedProduct.variants) {
           const puProduct = await executeWithRetry(async () => {
             return await puInstance
               .get(`/parts/${syncedVariant.vendor_id}`)
               .catch((err) => console.log("Get vendor product error: ", err));
           });
-          const variantId = syncedVariant.bigcommerce_id;
-          const upcCode = puProduct.data.upc;
-          const gtinCode = puProduct.data.gtin;
-          if (upcCode) {
-            await bigCommerceInstance
-              .put(`/catalog/products/${productId}/variants/${variantId}`, {
-                upc: upcCode,
-                gtin: gtinCode || upcCode,
-              })
-              .then(() => {
-                totalUpcAdded++;
-              })
-              .catch((err) =>
-                console.log(
-                  `Error updating product variant id: ${variantId}`,
-                  err
-                )
-              );
+          if (puProduct.data.product?.media) {
+            for (let mediaItem of puProduct.data.product.media) {
+              if (
+                mediaItem.type === "video" &&
+                mediaItem.source.name === "youtube"
+              ) {
+                youtubeIds.push(mediaItem.url);
+              }
+            }
           }
         }
+        youtubeIds = [...new Set(youtubeIds)];
+        await Promise.all(
+          youtubeIds.map(async (youtubeId) => {
+            const addVideo = await bigCommerceInstance
+              .post(`/catalog/products/${productId}/videos`, {
+                video_id: youtubeId,
+              })
+              .catch((err) =>
+                console.log(`Product id: ${productId}. Error: ${err}`)
+              );
+            if (addVideo && addVideo.data) {
+              totalVideos++;
+            }
+          })
+        );
       });
 
       currentPage++;
-      console.log(`UPC Update ${currentPage}/${totalPages} ()`);
+      console.log(`Adding videos: ${currentPage}/${totalPages}`);
     } catch (error) {
       console.error("Error updating products:", error);
       break;
     }
   }
-  console.log("Total UPC added: ", totalUpcAdded);
-  res.json({ status: "WPS products updated." });
+  console.log("Total Videos added: ", totalVideos);
+  res.json({ status: "products updated." });
 });
 
 export { router as bulkActionRouter };
