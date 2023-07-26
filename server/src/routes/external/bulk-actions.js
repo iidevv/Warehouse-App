@@ -37,8 +37,8 @@ async function asyncForEach(array, callback, concurrency = 5) {
 
 router.get("/bulk-action/", async (req, res) => {
   const pageSize = 5;
-  let currentPage = 33;
-  let totalPages = 33;
+  let currentPage = 45;
+  let totalPages = 45;
   let totalVideos = 0;
   while (currentPage <= totalPages) {
     try {
@@ -63,7 +63,7 @@ router.get("/bulk-action/", async (req, res) => {
         const productId = syncedProduct.bigcommerce_id;
         console.log(productId);
         let youtubeIds = [];
-        for (const syncedVariant of syncedProduct.variants) {
+        for (const syncedVariant of syncedProduct.variants.slice(0, 2)) {
           const puProduct = await executeWithRetry(async () => {
             await new Promise((resolve) => setTimeout(resolve, 200));
             return await puInstance
@@ -99,7 +99,9 @@ router.get("/bulk-action/", async (req, res) => {
       });
 
       currentPage++;
-      console.log(`Adding videos: ${currentPage}/${totalPages} (${totalVideos})`);
+      console.log(
+        `Adding videos: ${currentPage}/${totalPages} (${totalVideos})`
+      );
     } catch (error) {
       console.error("Error updating products:", error);
       break;
