@@ -37,8 +37,8 @@ async function asyncForEach(array, callback, concurrency = 5) {
 
 router.get("/bulk-action/", async (req, res) => {
   const pageSize = 5;
-  let currentPage = 29;
-  let totalPages = 29;
+  let currentPage = 33;
+  let totalPages = 33;
   let totalVideos = 0;
   while (currentPage <= totalPages) {
     try {
@@ -65,7 +65,7 @@ router.get("/bulk-action/", async (req, res) => {
         let youtubeIds = [];
         for (const syncedVariant of syncedProduct.variants) {
           const puProduct = await executeWithRetry(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 200));
             return await puInstance
               .get(`/parts/${syncedVariant.vendor_id}`)
               .catch((err) => console.log("Get vendor product error: ", err));
