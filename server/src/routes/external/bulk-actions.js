@@ -1,7 +1,12 @@
 import express from "express";
 import axios from "axios";
-import { bigCommerceInstance, wpsInstance } from "../../instances/index.js";
+import {
+  bigCommerceInstance,
+  wpsInstance,
+  gptInstance,
+} from "../../instances/index.js";
 import { InventoryModel } from "../../models/Inventory.js";
+import { OpenAIApi } from "openai";
 
 const router = express.Router();
 
@@ -96,6 +101,56 @@ router.get("/bulk-action/", async (req, res) => {
   }
   console.log("Total Videos added: ", totalVideos);
   res.json({ status: "products updated." });
+});
+
+const chatGpt = async (input) => {
+  try {
+    const openai = new OpenAIApi(gptInstance);
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: input,
+      max_tokens: 200,
+      temperature: 0,
+    });
+    return response.data.choices[0].text;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+router.get("/bulk-action-one/", async (req, res) => {
+  try {
+    const product = await bigCommerceInstance.get(`/catalog/products/5026`);
+    const productDescription = product.data.description;
+    const reviewRequest = {
+      reviewsCount: Math.floor(Math.random() * 6) + 1,
+      rules: [
+        "don't put full title in review",
+        "don't use same review length twice",
+        "describe one or more features that you liked or disliked",
+      ],
+      responseExample: `response example:
+      [{
+        author: "Jimmy Doe",
+        date_created: "",
+        title: "Worked for me!",
+        review: "I thought this product was pretty good",
+        rating: 5,
+        status: 1,
+      }]`,
+    };
+    let gptText = `create ${
+      reviewRequest.reviewsCount
+    } reviews (Important: ${reviewRequest.rules.join(
+      ", "
+    )}) for ${productDescription}. ${reviewRequest.responseExample}`;
+    console.log(gptText);
+    const response = await chatGpt(gptText);
+
+    res.json(response);
+  } catch (error) {
+    res.json({ error: error });
+  }
 });
 
 export { router as bulkActionRouter };
