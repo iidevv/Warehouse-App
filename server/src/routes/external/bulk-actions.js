@@ -103,51 +103,79 @@ router.get("/bulk-action/", async (req, res) => {
   res.json({ status: "products updated." });
 });
 
-const chatGpt = async (input) => {
+const randomDate = () => {
+  const start = "2022-01-01T00:00:00Z";
+  const end = "2023-06-30T23:59:59Z";
+  const startDate = new Date(start).getTime();
+  const endDate = new Date(end).getTime();
+  const randomTime = Math.random() * (endDate - startDate) + startDate;
+  const randomDate = new Date(randomTime);
+  return randomDate.toISOString();
+};
+
+const createReviews = async (input) => {
   try {
     const openai = new OpenAIApi(gptInstance);
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: input,
-      max_tokens: 200,
-      temperature: 0,
+    const response = await openai.createChatCompletion({
+      model: "gpt-4",
+      messages: [{ role: "user", content: input }],
     });
-    return response.data.choices[0].text;
+    const reviews = JSON.parse(response.data.choices[0].message?.content);
+    if (Array.isArray(reviews)) {
+      return reviews;
+    } else {
+      console.log(`Is Not Array: ${reviews}`);
+      return false;
+    }
   } catch (error) {
     console.log(error.message);
   }
 };
 
-router.get("/bulk-action-one/", async (req, res) => {
-  try {
-    const product = await bigCommerceInstance.get(`/catalog/products/5026`);
-    const productDescription = product.data.description;
-    const reviewRequest = {
-      reviewsCount: Math.floor(Math.random() * 6) + 1,
-      rules: [
-        "don't put full title in review",
-        "don't use same review length twice",
-        "describe one or more features that you liked or disliked",
-      ],
-      responseExample: `response example:
-      [{
-        author: "Jimmy Doe",
-        date_created: "",
-        title: "Worked for me!",
-        review: "I thought this product was pretty good",
-        rating: 5,
-        status: 1,
-      }]`,
-    };
-    let gptText = `create ${
-      reviewRequest.reviewsCount
-    } reviews (Important: ${reviewRequest.rules.join(
-      ", "
-    )}) for ${productDescription}. ${reviewRequest.responseExample}`;
-    console.log(gptText);
-    const response = await chatGpt(gptText);
+const setReviewText = (productDescription) => {
+  const reviewRequest = {
+    reviewsCount: Math.floor(Math.random() * 5) + 1,
+    rules: [
+      "Use only part of product name in the review (example: helmet, jersey)",
+      "The title of the review should be unique",
+      "Avoid using identical or repetitive phrases or sentence structures",
+      "Ensure that author names do not repeat and do not contain identical initials",
+      "Although the rating can range from 3 to 5 (whole number)",
+      "The length of reviews should vary widely(short, medium, long)",
+      "Each review should mention at least one feature of the product that the reviewer liked or disliked",
+    ],
+    responseExample: `response example (json):
+    [{"name":"Adnan R","title":"Worked for me","text":"I thought this product was pretty good","rating":5},{"name":"Adnan R","title":"Worked for me!","text":"I thought this product was pretty good","rating":5}]`,
+  };
+  return `create ${
+    reviewRequest.reviewsCount
+  } reviews (Important: ${reviewRequest.rules.join(
+    ", "
+  )}) for ${productDescription}. ${reviewRequest.responseExample}`;
+};
 
-    res.json(response);
+router.get("/bulk-action-one/", async (req, res) => {
+  const productId = req.query.id;
+  try {
+    const product = await bigCommerceInstance.get(
+      `/catalog/products/${productId}`
+    );
+    const productDescription = product.data.description;
+    const reviewsText = setReviewText(productDescription);
+    const reviews = await createReviews(reviewsText);
+    console.log(reviews);
+    await Promise.all(
+      reviews.map(async (review) => {
+        review.date_reviewed = randomDate();
+        review.text = review.text.replace(/'/g, " ").replace(/&/g, "and").replace(/;/g, ".");
+        review.status = "approved";
+        await bigCommerceInstance
+          .post(`/catalog/products/${productId}/reviews`, review)
+          .catch((err) => console.log(err));
+      })
+    );
+
+    res.json({ status: `ID: ${productId}. Reviews created.` });
   } catch (error) {
     res.json({ error: error });
   }
