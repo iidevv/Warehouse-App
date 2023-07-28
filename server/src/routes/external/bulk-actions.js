@@ -132,21 +132,40 @@ const createReviews = async (input) => {
   }
 };
 
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
 const setReviewText = (productDescription) => {
+  const reviewsCount = Math.floor(Math.random() * 7) + 1;
   const reviewRequest = {
-    reviewsCount: Math.floor(Math.random() * 5) + 1,
+    reviewsCount: reviewsCount,
     rules: [
       "Use only part of product name in the review (example: helmet, jersey)",
+      "Imagine you're a motorcyclist client, don't do overly detailed reviews (simple words)",
+      "Some review should casually mention one aspects of the product (remember you're not professional) that the reviewer found enjoyable or less satisfying",
       "The title of the review should be unique",
       "Avoid using identical or repetitive phrases or sentence structures",
       "Ensure that author names do not repeat and do not contain identical initials",
       "Although the rating can range from 3 to 5 (whole number)",
-      "The length of reviews should vary widely(short, medium, long)",
-      "Each review should mention at least one feature of the product that the reviewer liked or disliked",
     ],
     responseExample: `response example (json):
     [{"name":"Adnan R","title":"Worked for me","text":"I thought this product was pretty good","rating":5},{"name":"Adnan R","title":"Worked for me!","text":"I thought this product was pretty good","rating":5}]`,
   };
+  const possibleLengths = Array.from({ length: 10 }, (_, i) => (i + 1) * 30);
+  shuffleArray(possibleLengths);
+
+  for (let i = 0; i < reviewsCount; i++) {
+    let reviewLength = possibleLengths[i]; 
+    reviewRequest.rules.push(
+      `Review ${i + 1} should be ${reviewLength} characters long.`
+    );
+  }
+  console.log(reviewRequest.rules);
+
   return `create ${
     reviewRequest.reviewsCount
   } reviews (Important: ${reviewRequest.rules.join(
@@ -154,28 +173,49 @@ const setReviewText = (productDescription) => {
   )}) for ${productDescription}. ${reviewRequest.responseExample}`;
 };
 
+const postReviews = async (productId) => {
+  const product = await bigCommerceInstance.get(
+    `/catalog/products/${productId}`
+  );
+  const productDescription = product.data.description;
+  const reviewsText = setReviewText(productDescription);
+  const reviews = await createReviews(reviewsText);
+  await Promise.all(
+    reviews.map(async (review) => {
+      review.date_reviewed = randomDate();
+      review.title = review.title
+        .replace(/'/g, " ")
+        .replace(/&/g, "and")
+        .replace(/;/g, ".");
+      review.text = review.text
+        .replace(/'/g, " ")
+        .replace(/&/g, "and")
+        .replace(/;/g, ".");
+      review.status = "approved";
+      await bigCommerceInstance
+        .post(`/catalog/products/${productId}/reviews`, review)
+        .catch((err) => console.log(err));
+    })
+  );
+};
+
 router.get("/bulk-action-one/", async (req, res) => {
-  const productId = req.query.id;
+  const links = [];
   try {
-    const product = await bigCommerceInstance.get(
-      `/catalog/products/${productId}`
-    );
-    const productDescription = product.data.description;
-    const reviewsText = setReviewText(productDescription);
-    const reviews = await createReviews(reviewsText);
-    console.log(reviews);
+    const { data: productsToProccess } = await bigCommerceInstance
+      .get(
+        `/catalog/products?id:in=2222,5028,5006,4978,4964,4956,4850,4457,4358,4149`
+      )
+      .catch((err) => console.log(err));
+
     await Promise.all(
-      reviews.map(async (review) => {
-        review.date_reviewed = randomDate();
-        review.text = review.text.replace(/'/g, " ").replace(/&/g, "and").replace(/;/g, ".");
-        review.status = "approved";
-        await bigCommerceInstance
-          .post(`/catalog/products/${productId}/reviews`, review)
-          .catch((err) => console.log(err));
+      productsToProccess.map(async (product) => {
+        await postReviews(product.id);
+        links.push(product.custom_url.url);
       })
     );
-
-    res.json({ status: `ID: ${productId}. Reviews created.` });
+    console.log(links);
+    res.json(links);
   } catch (error) {
     res.json({ error: error });
   }
