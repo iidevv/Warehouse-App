@@ -202,7 +202,7 @@ router.get("/bulk-action-one/", async (req, res) => {
         .catch((err) => console.log(err));
       let processedProducts;
       const productsToProcess = products.data;
-      totalPages = products.meta.total_page;
+      totalPages = products.meta.pagination.total_pages;
       await Promise.all(
         productsToProcess.map(async (product) => {
           await postReviews(product.id);
