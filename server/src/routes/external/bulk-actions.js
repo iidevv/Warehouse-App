@@ -159,12 +159,11 @@ const setReviewText = (productDescription) => {
   shuffleArray(possibleLengths);
 
   for (let i = 0; i < reviewsCount; i++) {
-    let reviewLength = possibleLengths[i]; 
+    let reviewLength = possibleLengths[i];
     reviewRequest.rules.push(
       `Review ${i + 1} should be ${reviewLength} characters long.`
     );
   }
-  console.log(reviewRequest.rules);
 
   return `create ${
     reviewRequest.reviewsCount
@@ -183,14 +182,6 @@ const postReviews = async (productId) => {
   await Promise.all(
     reviews.map(async (review) => {
       review.date_reviewed = randomDate();
-      review.title = review.title
-        .replace(/'/g, " ")
-        .replace(/&/g, "and")
-        .replace(/;/g, ".");
-      review.text = review.text
-        .replace(/'/g, " ")
-        .replace(/&/g, "and")
-        .replace(/;/g, ".");
       review.status = "approved";
       await bigCommerceInstance
         .post(`/catalog/products/${productId}/reviews`, review)
@@ -200,22 +191,30 @@ const postReviews = async (productId) => {
 };
 
 router.get("/bulk-action-one/", async (req, res) => {
-  const links = [];
-  try {
-    const { data: productsToProccess } = await bigCommerceInstance
-      .get(
-        `/catalog/products?id:in=2222,5028,5006,4978,4964,4956,4850,4457,4358,4149`
-      )
-      .catch((err) => console.log(err));
+  const pageSize = 10;
+  let currentPage = 1;
+  let totalPages = 1;
 
-    await Promise.all(
-      productsToProccess.map(async (product) => {
-        await postReviews(product.id);
-        links.push(product.custom_url.url);
-      })
-    );
-    console.log(links);
-    res.json(links);
+  try {
+    while (currentPage <= totalPages) {
+      const products = await bigCommerceInstance
+        .get(`/catalog/products?limit=${pageSize}&page=${currentPage}`)
+        .catch((err) => console.log(err));
+      let processedProducts;
+      const productsToProcess = products.data;
+      totalPages = products.meta.total_page;
+      await Promise.all(
+        productsToProcess.map(async (product) => {
+          await postReviews(product.id);
+          processedProducts += product.name + "\n";
+        })
+      );
+      console.log(`Reviews created for: \n ${processedProducts}`);
+      console.log(`current page: ${currentPage}`);
+      currentPage++;
+    }
+
+    res.json({ success: true });
   } catch (error) {
     res.json({ error: error });
   }
