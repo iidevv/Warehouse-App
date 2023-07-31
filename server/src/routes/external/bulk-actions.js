@@ -192,8 +192,8 @@ const postReviews = async (productId) => {
 
 router.get("/bulk-action-one/", async (req, res) => {
   const pageSize = 10;
-  let currentPage = 1;
-  let totalPages = 1;
+  let currentPage = 2;
+  let totalPages = 2;
 
   try {
     while (currentPage <= totalPages) {
