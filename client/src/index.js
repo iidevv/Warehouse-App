@@ -14,17 +14,18 @@ import WpsProductPageContainer from "./components/WpsInventory/WpsProductPageCon
 import { Auth } from "./routes/Auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PUInventory from './routes/PUInventory';
-import PuDropship from './routes/PuDropship';
+import PUInventory from "./routes/PUInventory";
+import PuDropship from "./routes/PuDropship";
 import PuProductPageContainer from "./components/PuInventory/PuProductPageContainer";
 import ProductsPU from "./routes/ProductsPU";
 import ProductsWPS from "./routes/ProductsWPS";
-import WpsDropship from './routes/WpsDropship';
-import Cookies from 'js-cookie';
+import WpsDropship from "./routes/WpsDropship";
+import Cookies from "js-cookie";
 import Orders from "./routes/Orders";
+import HHInventory from "./routes/HHInventory";
 
 function AuthRoute({ component: Component, ...rest }) {
-  const isAuthenticated = Cookies.get('userID') ? true : false;
+  const isAuthenticated = Cookies.get("userID") ? true : false;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,65 +41,67 @@ function AuthRoute({ component: Component, ...rest }) {
   return <Component {...rest} />;
 }
 
-const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element: <AuthRoute component={App} />,
-      errorElement: <ErrorPage />,
-      children: [
-        {
-          path: "/auth",
-          element: <Auth />,
-        },
-        {
-          index: true,
-          element: <Index />,
-        },
-        {
-          path: "/orders",
-          element: <Orders />,
-        },
-        {
-          path: "/wps-catalog",
-          element: <WPSInventory />,
-        },
-        {
-          path: "/pu-catalog",
-          element: <PUInventory />,
-        },
-        {
-          path: "/dropship-pu",
-          element: <PuDropship />,
-        },
-        {
-          path: "/dropship-wps",
-          element: <WpsDropship />,
-        },
-        {
-          path: "/settings",
-          element: <Settings />,
-        },
-        {
-          path: "/products-pu",
-          element: <ProductsPU />,
-        },
-        {
-          path: "/products-wps",
-          element: <ProductsWPS />,
-        },
-        {
-          path: "/pu-product/:id",
-          element: <PuProductPageContainer />,
-        },
-        {
-          path: "/wps-product/:id",
-          element: <WpsProductPageContainer />,
-        },
-      ],
-    },
-  ]
-);
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AuthRoute component={App} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "/auth",
+        element: <Auth />,
+      },
+      {
+        index: true,
+        element: <Index />,
+      },
+      {
+        path: "/orders",
+        element: <Orders />,
+      },
+      {
+        path: "/wps-catalog",
+        element: <WPSInventory />,
+      },
+      {
+        path: "/pu-catalog",
+        element: <PUInventory />,
+      },
+      {
+        path: "/hh-catalog",
+        element: <HHInventory />,
+      },
+      {
+        path: "/dropship-pu",
+        element: <PuDropship />,
+      },
+      {
+        path: "/dropship-wps",
+        element: <WpsDropship />,
+      },
+      {
+        path: "/settings",
+        element: <Settings />,
+      },
+      {
+        path: "/products-pu",
+        element: <ProductsPU />,
+      },
+      {
+        path: "/products-wps",
+        element: <ProductsWPS />,
+      },
+      {
+        path: "/pu-product/:id",
+        element: <PuProductPageContainer />,
+      },
+      {
+        path: "/wps-product/:id",
+        element: <WpsProductPageContainer />,
+      },
+    ],
+  },
+]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

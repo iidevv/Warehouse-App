@@ -113,7 +113,7 @@ const randomDate = () => {
   return randomDate.toISOString();
 };
 
-const createReviews = async (input) => {
+const createReviews = async (input, name) => {
   try {
     const openai = new OpenAIApi(gptInstance);
     const response = await openai.createChatCompletion({
@@ -124,8 +124,15 @@ const createReviews = async (input) => {
     if (Array.isArray(reviews)) {
       return reviews;
     } else {
+      console.log(name);
       console.log(`Is Not Array: ${reviews}`);
-      return false;
+      // Wait for 3 seconds before retrying
+      return new Promise((resolve) => {
+        setTimeout(async () => {
+          const retryReviews = await createReviews(input, name);
+          resolve(retryReviews);
+        }, 3000);
+      });
     }
   } catch (error) {
     console.log(error.message);
@@ -178,7 +185,13 @@ const postReviews = async (productId) => {
   );
   const productDescription = product.data.description;
   const reviewsText = setReviewText(productDescription);
-  const reviews = await createReviews(reviewsText);
+  const reviews = await createReviews(reviewsText, product.data.name);
+
+  if (!reviews) {
+    console.log(`No reviews were created for product ID: ${productId}`);
+    return;
+  }
+
   await Promise.all(
     reviews.map(async (review) => {
       review.date_reviewed = randomDate();
@@ -192,24 +205,23 @@ const postReviews = async (productId) => {
 
 router.get("/bulk-action-one/", async (req, res) => {
   const pageSize = 10;
-  let currentPage = 2;
-  let totalPages = 2;
+  let currentPage = 287;
+  let totalPages = 287;
 
   try {
     while (currentPage <= totalPages) {
       const products = await bigCommerceInstance
         .get(`/catalog/products?limit=${pageSize}&page=${currentPage}`)
         .catch((err) => console.log(err));
-      let processedProducts;
       const productsToProcess = products.data;
       totalPages = products.meta.pagination.total_pages;
       await Promise.all(
         productsToProcess.map(async (product) => {
           await postReviews(product.id);
-          processedProducts += product.name + "\n";
+          console.log(`${product.name}`);
+          await new Promise((resolve) => setTimeout(resolve, 2000));
         })
       );
-      console.log(`Reviews created for: \n ${processedProducts}`);
       console.log(`current page: ${currentPage}`);
       currentPage++;
     }

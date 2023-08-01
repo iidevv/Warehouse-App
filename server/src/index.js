@@ -27,6 +27,7 @@ import { ProductAvailabilityRouter } from "./routes/external/productAvailability
 import { bulkActionRouter } from "./routes/external/bulk-actions.js";
 import { sendNotification } from "./routes/tg-notifications.js";
 import { testActionRouter } from "./routes/external/test-action.js";
+import { hhProductsRouter } from "./routes/hh-products.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -71,6 +72,7 @@ app.use("/api/pu-inventory", puInventoryRouter);
 app.use("/api/pu-dropship", puDropshipRouter);
 app.use("/api/pu", puProductsRouter);
 app.use("/api/pu", puProductRouter);
+app.use("/api/hh", hhProductsRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);

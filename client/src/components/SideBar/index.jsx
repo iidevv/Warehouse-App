@@ -133,7 +133,17 @@ const SideBar = (props) => {
                   <span className="mx-4 text-sm font-normal">WPS Catalog</span>
                 </NavLink>
               </li>
-
+              <li>
+                <NavLink
+                  to="/hh-catalog"
+                  onClick={handleSetMenuActive}
+                  className={({ isPending, isActive }) =>
+                    isActive ? "active-menu-link" : "menu-link"
+                  }
+                >
+                  <span className="mx-4 text-sm font-normal">HH Catalog</span>
+                </NavLink>
+              </li>
               {/* <li>
                 <NavLink
                   to="/settings"

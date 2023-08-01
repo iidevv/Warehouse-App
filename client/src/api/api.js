@@ -277,3 +277,18 @@ export const ordersAPI = {
     });
   },
 };
+
+export const hhProductsAPI = {
+  getProducts(name, page) {
+    return instance
+      .get(`/hh/products/`, {
+        params: {
+          name,
+          page,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+};

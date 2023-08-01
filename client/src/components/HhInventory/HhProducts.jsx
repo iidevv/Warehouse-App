@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import PuProduct from "./PuProduct";
+import HhProduct from "./HhProduct";
 
-const PuProducts = (props) => {
+const HhProducts = (props) => {
   let currentPage = +props.currentPage;
   let totalPages = +props.totalPages;
   const handleInputChange = (event) => {
@@ -13,7 +13,7 @@ const PuProducts = (props) => {
   return (
     <div className="container">
       <div>
-        <h2 className="text-2xl leading-tight mb-4">Parts Unlimited Catalog</h2>
+        <h2 className="text-2xl leading-tight mb-4">Helmet House Catalog</h2>
         <div className="flex items-center">
           <div className="lg:w-1/2 pr-2 mr-2 border-r">
             <input
@@ -66,21 +66,18 @@ const PuProducts = (props) => {
             </thead>
             <tbody>
               {props.products &&
-                props.products.map((m, i) => {
-                  if (m && m.product) {
+                props.products.map((product, i) => {
+                  if (product) {
                     return (
-                      <PuProduct
+                      <HhProduct
                         key={i}
-                        id={m.product.id}
-                        image={m.primaryMedia.absoluteUrl}
-                        sku={m.partNumber}
-                        name={m.description}
-                        stock={m.inventory.locales}
-                        price={
-                          m.prices.retail ||
-                          m.prices.originalRetail ||
-                          m.prices.originalBase + m.prices.originalBase * 0.35
-                        }
+                        id={1}
+                        image={product.list_image}
+                        sku={"-"}
+                        name={product.product_name}
+                        stock={"-"}
+                        url={product.direct_link}
+                        price={product.price}
                       />
                     );
                   } else {
@@ -137,4 +134,4 @@ const PuProducts = (props) => {
   );
 };
 
-export default PuProducts;
+export default HhProducts;

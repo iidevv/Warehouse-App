@@ -67,3 +67,12 @@ export const puInstance = axios.create({
   baseURL: "https://dealer.parts-unlimited.com/api/",
   timeout: 10000,
 });
+
+export const hhInstance = axios.create({
+  baseURL: "https://zjyz2e2uav-dsn.algolia.net/1/indexes/",
+  headers: {
+    "X-Algolia-Api-Key": "359401d73db874c67e4b2eb5395b48a9",
+    "X-Algolia-Application-Id": "ZJYZ2E2UAV",
+    "content-type": "application/json",
+  },
+});
