@@ -28,6 +28,7 @@ import { bulkActionRouter } from "./routes/external/bulk-actions.js";
 import { sendNotification } from "./routes/tg-notifications.js";
 import { testActionRouter } from "./routes/external/test-action.js";
 import { hhProductsRouter } from "./routes/hh-products.js";
+import { hhProductRouter } from "./routes/hh-product.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,6 +51,7 @@ app.use("/external", processingRouter);
 app.use("/external", ProductAvailabilityRouter);
 app.use("/external", bulkActionRouter);
 app.use("/external", testActionRouter);
+app.use("/api/hh", hhProductRouter);
 
 app.use("/api/images", express.static(path.join(__dirname, "../optimized")));
 
@@ -73,6 +75,7 @@ app.use("/api/pu-dropship", puDropshipRouter);
 app.use("/api/pu", puProductsRouter);
 app.use("/api/pu", puProductRouter);
 app.use("/api/hh", hhProductsRouter);
+// app.use("/api/hh", hhProductRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);
