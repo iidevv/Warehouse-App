@@ -51,7 +51,6 @@ app.use("/external", processingRouter);
 app.use("/external", ProductAvailabilityRouter);
 app.use("/external", bulkActionRouter);
 app.use("/external", testActionRouter);
-app.use("/api/hh", hhProductRouter);
 
 app.use("/api/images", express.static(path.join(__dirname, "../optimized")));
 
@@ -75,7 +74,7 @@ app.use("/api/pu-dropship", puDropshipRouter);
 app.use("/api/pu", puProductsRouter);
 app.use("/api/pu", puProductRouter);
 app.use("/api/hh", hhProductsRouter);
-// app.use("/api/hh", hhProductRouter);
+app.use("/api/hh", hhProductRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);

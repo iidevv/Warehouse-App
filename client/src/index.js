@@ -23,6 +23,7 @@ import WpsDropship from "./routes/WpsDropship";
 import Cookies from "js-cookie";
 import Orders from "./routes/Orders";
 import HHInventory from "./routes/HHInventory";
+import HhProductPageContainer from "./components/HhInventory/HhProductPageContainer";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = Cookies.get("userID") ? true : false;
@@ -98,6 +99,10 @@ const router = createBrowserRouter([
       {
         path: "/wps-product/:id",
         element: <WpsProductPageContainer />,
+      },
+      {
+        path: "/hh-product/:id",
+        element: <HhProductPageContainer />,
       },
     ],
   },

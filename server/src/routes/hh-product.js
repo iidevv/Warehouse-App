@@ -2,97 +2,56 @@ import axios from "axios";
 import express from "express";
 import { generateProductName } from "../common/index.js";
 import { JSDOM } from "jsdom";
+import { fetchAndParseFile } from "../common/hh-ftp.js";
 
 const router = express.Router();
 
-const createProduct = (obj) => {
+const createProduct = (obj, variantsData, link) => {
   const data = obj.variants[0];
-  const variants = obj.variants;
-  let description = "";
-  if (obj.info.features[0]) {
-    description += "<ul>";
-    description += obj.info.features
-      .map((item) => {
-        return `<li>${item.description}</li>`;
-      })
-      .join("");
-    description += "</ul>";
-  }
+  const additionalData = variantsData.find(
+    (row) => row["Part Number"] === data.sku
+  );
+  const price = data.price;
+  const weight = additionalData["Weight"];
+  const variants = obj.variants.map((item, i) => {
+    i++;
 
-  const price =
-    data.prices.retail ||
-    data.prices.originalRetail ||
-    data.prices.originalBase + data.prices.originalBase * 0.35;
-  const sortedVariants = variants
-    .map((item, i) => {
-      const cleanName = removeDuplicateWords(
-        data.productName,
-        item.description
-      );
-      const option = cleanName ? cleanName : item.description.toLowerCase();
-      let imageUrl = item.primaryMedia ? item.primaryMedia.absoluteUrl : false;
-      i++;
-      if (imageUrl) imageUrl = imageUrl.replace("http:", "https:");
-      let inventoryLevel = item.inventory.locales.reduce(
-        (total, local) => total + (local.quantity || 0),
-        0
-      );
-
-      if (data.access.notForSale || data.access.unavailableForPurchase) {
-        inventoryLevel = 0;
-      }
-
-      const is_default = i === 1 ? true : false;
-      const price =
-        item.prices.retail ||
-        item.prices.originalRetail ||
-        item.prices.originalBase + item.prices.originalBase * 0.35;
-      if (imageUrl) {
-        return {
-          id: item.partNumber,
-          sku: item.partNumber,
-          upc: item.upc,
-          option_values: [
-            {
-              option_display_name: `${data.brandName} options`,
-              label: option,
-            },
-          ],
-          price: price,
-          inventory_level: inventoryLevel,
-          image_url: imageUrl,
-          is_default: is_default,
-        };
-      } else {
-        return {
-          id: item.partNumber,
-          sku: item.partNumber,
-          upc: item.upc,
-          name: option,
-          option_values: [
-            {
-              option_display_name: `${data.brandName} options`,
-              label: option,
-            },
-          ],
-          price: item.prices.retail,
-          inventory_level: inventoryLevel,
-          is_default: is_default,
-        };
-      }
-    })
-    .sort((a, b) => {
-      return a.sku.localeCompare(b.sku);
-    });
+    let imageUrl = item.image_url ? item.image_url : false;
+    const is_default = i === 1 ? true : false;
+    const variantAdditional = variantsData.find(
+      (row) => row["Part Number"] === data.sku
+    );
+    const variant = {
+      id: item.sku,
+      sku: item.sku,
+      upc: variantAdditional["UPC"],
+      option_values: [
+        {
+          option_display_name: `Color`,
+          label: item.color,
+        },
+        {
+          option_display_name: `Size`,
+          label: item.size,
+        },
+      ],
+      price: item.price,
+      inventory_level: item.inventory_level,
+      is_default: is_default,
+    };
+    if (imageUrl) {
+      variant.image_url = imageUrl;
+    }
+    return variant;
+  });
   const mainImages = variants
     .map((item, i) => {
-      let imageUrl = item.primaryMedia ? item.primaryMedia.absoluteUrl : false;
+      let imageUrl = item.image_url ? item.image_url : false;
       i++;
-      if (imageUrl) imageUrl = imageUrl.replace("http:", "https:");
       const is_thumbnail = i === 1;
       if (imageUrl) {
         return {
-          variant_id: item.partNumber,
+          variant_id: item.sku,
           is_thumbnail: is_thumbnail,
           sort_order: i,
           image_url: imageUrl,
@@ -108,7 +67,7 @@ const createProduct = (obj) => {
         urls.indexOf(image.image_url) === index
       );
     });
-  const additionalImages = obj.info.images.map((image, i) => ({
+  const additionalImages = obj.images.map((image, i) => ({
     is_additional: true,
     is_thumbnail: false,
     sort_order: mainImages.length + 1 + i,
@@ -116,18 +75,23 @@ const createProduct = (obj) => {
   }));
   const images = [...mainImages, ...additionalImages];
   const product = {
-    vendor: "PU",
-    vendor_id: data.product.id,
-    name: generateProductName(data.brandName, data.productName),
+    vendor: "HH",
+    vendor_id: link,
+    name: generateProductName(obj.brand, obj.title),
     type: "physical",
-    weight: obj.info.physicalDimensions.weight,
-    price: price,
-    description: description || "",
-    brand_name: data.brandName || "",
+    weight,
+    price,
+    description: obj.description,
+    brand_name: obj.brand || "",
     inventory_tracking: "variant",
-    variants: sortedVariants,
+    variants,
     images: images,
   };
+  if (obj.videoCode) {
+    product.videos = {
+      video_id: obj.videoCode,
+    };
+  }
   return product;
 };
 
@@ -167,6 +131,8 @@ const parseHtmlContent = (htmlContent) => {
     description += descriptions[0].innerHTML;
     description = description.replace(/<meta charset="UTF-8">/g, "");
   }
+  description = description.trim();
+
   let videoCode = dom.window.document.querySelector(".youtube-iframe");
   if (videoCode) videoCode = videoCode.src.split("/embed/")[1].split("?")[0];
   let images = dom.window.document.querySelector(".detail-slider");
@@ -228,7 +194,12 @@ const parseHtmlContent = (htmlContent) => {
     variants = [...items]
       .map((item) => {
         if (!item.dataset.sku) return;
+        let option = dom.window.document.querySelector(
+          `input[value="${item.dataset.opts}"]`
+        );
+        const name = option ? option.dataset.full : "";
         return {
+          name,
           sku: item.dataset.sku,
           inventory_level: +item.dataset.inventory,
           price: +item.dataset.price,
@@ -244,8 +215,10 @@ router.get("/product/", async (req, res) => {
   const link = req.query.link;
   try {
     const htmlContent = await getHtmlContent(`https://helmethouse.com${link}`);
-    const data = parseHtmlContent(htmlContent);
-    res.json(data);
+    const productData = parseHtmlContent(htmlContent);
+    const variantsData = await fetchAndParseFile();
+    const product = createProduct(productData, variantsData, link);
+    res.json(product);
   } catch (error) {
     res.status(500).json({ error: error });
   }

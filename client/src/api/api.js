@@ -292,3 +292,17 @@ export const hhProductsAPI = {
       });
   },
 };
+
+export const hhProductAPI = {
+  getProduct(link) {
+    return instance
+      .get(`/hh/product/`, {
+        params: {
+          link,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+};
