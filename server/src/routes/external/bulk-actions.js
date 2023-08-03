@@ -205,8 +205,8 @@ const postReviews = async (productId) => {
 
 router.get("/bulk-action-one/", async (req, res) => {
   const pageSize = 10;
-  let currentPage = 287;
-  let totalPages = 287;
+  let currentPage = 1;
+  let totalPages = 1;
 
   try {
     while (currentPage <= totalPages) {
@@ -215,11 +215,34 @@ router.get("/bulk-action-one/", async (req, res) => {
         .catch((err) => console.log(err));
       const productsToProcess = products.data;
       totalPages = products.meta.pagination.total_pages;
+
       await Promise.all(
         productsToProcess.map(async (product) => {
-          await postReviews(product.id);
-          console.log(`${product.name}`);
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+          try {
+            const reviews = await bigCommerceInstance.get(
+              `/catalog/products/${product.id}/reviews`
+            );
+
+            await Promise.all(
+              reviews.data.map(async (review) => {
+                try {
+                  await bigCommerceInstance.delete(
+                    `/catalog/products/${product.id}/reviews/${review.id}`
+                  );
+                } catch (error) {
+                  console.error(
+                    `Failed to delete review: ${review.id} - ${error}`
+                  );
+                }
+              })
+            );
+
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          } catch (error) {
+            console.error(
+              `Failed to process product: ${product.id} - ${error}`
+            );
+          }
         })
       );
       console.log(`current page: ${currentPage}`);
