@@ -29,6 +29,7 @@ import { sendNotification } from "./routes/tg-notifications.js";
 import { testActionRouter } from "./routes/external/test-action.js";
 import { hhProductsRouter } from "./routes/hh-products.js";
 import { hhProductRouter } from "./routes/hh-product.js";
+import { hhInventoryRouter } from "./routes/hh-inventory.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,6 +76,7 @@ app.use("/api/pu", puProductsRouter);
 app.use("/api/pu", puProductRouter);
 app.use("/api/hh", hhProductsRouter);
 app.use("/api/hh", hhProductRouter);
+app.use("/api/hh-inventory", hhInventoryRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);

@@ -71,7 +71,7 @@ const HhProducts = (props) => {
                     return (
                       <HhProduct
                         key={i}
-                        id={1}
+                        id={product.objectID}
                         image={product.list_image}
                         sku={"-"}
                         name={product.product_name}

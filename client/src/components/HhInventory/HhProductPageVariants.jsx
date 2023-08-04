@@ -233,6 +233,9 @@ const HhProductPageVariants = (props) => {
                       </p>
                     </td>
                     <td className="px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200">
+                      {item.option_values[0]
+                        ? `${item.option_values[0].option_display_name}:`
+                        : ""}
                       <input
                         className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400  border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:lg:border-transparent"
                         type="text"
@@ -240,6 +243,10 @@ const HhProductPageVariants = (props) => {
                         value={item.option_values[0].label}
                         onChange={handleChangeVariantName}
                       />
+                      <br />
+                      {item.option_values[1]
+                        ? `${item.option_values[1].option_display_name}: ${item.option_values[1].label}`
+                        : ""}
                     </td>
                     <td className="px-2 py-1 lg:px-5 lg:py-5 text-sm  lg:border-t border-gray-200">
                       <p className="text-gray-900 whitespace-no-wrap">

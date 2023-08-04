@@ -35,7 +35,7 @@ const HhProduct = (props) => {
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
         <NavLink
-          to={`/hh-product?link=${props.url}`}
+          to={`/hh-product/${props.id}?link=${props.url}`}
           target="_blank"
           className="text-gray-900 whitespace-no-wrap underline hover:text-blue-600"
         >

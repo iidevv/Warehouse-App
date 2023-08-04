@@ -8,13 +8,11 @@ router.get("/create-text", async (req, res) => {
   let input = req.query.s;
   try {
     const openai = new OpenAIApi(gptInstance);
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: input,
-      max_tokens: 200,
-      temperature: 0,
+    const response = await openai.createChatCompletion({
+      model: "gpt-4",
+      messages: [{ role: "user", content: input }],
     });
-    res.json(response.data.choices[0].text);
+    res.json(response.data.choices[0].message?.content.trim());
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

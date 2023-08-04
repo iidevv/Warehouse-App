@@ -2,6 +2,12 @@ import defaultImg from "../../assets/default-image.png";
 import chatgpt from "../../assets/chatgpt.svg";
 import CategoriesSearch from "./../common/categoriesSearch/CategoriesSearch";
 import HhProductPageVariants from "./HhProductPageVariants";
+import {
+  searchKeywordsPrompt,
+  metaKeywordsPrompt,
+  metaDescriptionPrompt,
+  descriptionPrompt,
+} from "../common/gpt-prompts.js";
 
 const HhProductPage = (props) => {
   const productImg =
@@ -15,15 +21,22 @@ const HhProductPage = (props) => {
     props.onHandleContentChange(event.target.id, event.target.value);
   };
   const handleChatgptContent = () => {
-    const productTitle = `Product ${props.product.name} create`;
-    const search_keywords = `${productTitle}  comma-separated list of 4 search keywords`;
-    const meta_keywords = `${productTitle}  comma-separated list of 4 meta keywords use DMG`;
-    const meta_description = `${productTitle} meta description use Discount Moto Gear (show only text result remove)`;
-    const description = `${productTitle} description use Discount Moto Gear`;
-    props.onGetChatgptContent("search_keywords", search_keywords);
-    props.onGetChatgptContent("meta_keywords", meta_keywords);
-    props.onGetChatgptContent("meta_description", meta_description);
-    props.onGetChatgptContent("description", description);
+    props.onGetChatgptContent(
+      "search_keywords",
+      searchKeywordsPrompt(props.product.name, props.product.description)
+    );
+    props.onGetChatgptContent(
+      "meta_keywords",
+      metaKeywordsPrompt(props.product.name, props.product.description)
+    );
+    props.onGetChatgptContent(
+      "meta_description",
+      metaDescriptionPrompt(props.product.name, props.product.description)
+    );
+    props.onGetChatgptContent(
+      "description",
+      descriptionPrompt(props.product.name, props.product.description)
+    );
   };
 
   const handleChangeName = (event) => {
@@ -139,7 +152,11 @@ const HhProductPage = (props) => {
             onClick={() => {
               props.pushToCatalog(props.product);
             }}
-            disabled={props.current_categories && props.current_categories[0] ? false : true}
+            disabled={
+              props.current_categories && props.current_categories[0]
+                ? false
+                : true
+            }
             className="
             disabled:opacity-50
 						focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800

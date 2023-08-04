@@ -28,13 +28,12 @@ import {
 
 class HhProductContainer extends React.Component {
   componentDidMount() {
-    const link = urlParams.get("link");
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
+    const link = urlParams.get("link");
     const search = urlParams.get("search") || undefined;
     if (!link) link = 1;
     this.props.getProduct(link);
-
     this.props.setCategory(
       JSON.parse(localStorage.getItem("current_categories"))
     );

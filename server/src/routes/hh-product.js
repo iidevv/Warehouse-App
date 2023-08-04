@@ -12,7 +12,7 @@ const createProduct = (obj, variantsData, link) => {
     (row) => row["Part Number"] === data.sku
   );
   const price = data.price;
-  const weight = additionalData["Weight"];
+  const weight = +additionalData["Weight"];
   const variants = obj.variants.map((item, i) => {
     i++;
 
@@ -25,20 +25,43 @@ const createProduct = (obj, variantsData, link) => {
       id: item.sku,
       sku: item.sku,
       upc: variantAdditional["UPC"],
-      option_values: [
-        {
-          option_display_name: `Color`,
-          label: item.color,
-        },
-        {
-          option_display_name: `Size`,
-          label: item.size,
-        },
-      ],
+      option_values: [],
       price: item.price,
       inventory_level: item.inventory_level,
       is_default: is_default,
     };
+    const additionalSize =
+      variantAdditional["Size"].trim().length != 0
+        ? variantAdditional["Size"]
+        : "";
+    const additionalColor =
+      variantAdditional["Color"].trim().length != 0
+        ? variantAdditional["Color"]
+        : "";
+    if (item.color) {
+      variant.option_values.push({
+        option_display_name: `Color`,
+        label: item.color,
+      });
+    }
+    if (item.size) {
+      variant.option_values.push({
+        option_display_name: `Size`,
+        label: item.size,
+      });
+    }
+    if (!item.color && !item.size && (additionalSize || additionalColor)) {
+      variant.option_values.push({
+        option_display_name: `${obj.brand} Options`,
+        label: additionalSize || additionalColor,
+      });
+    }
+    if (!additionalSize && !additionalColor) {
+      variant.option_values.push({
+        option_display_name: `${obj.brand} Options`,
+        label: obj.brand,
+      });
+    }
     if (imageUrl) {
       variant.image_url = imageUrl;
     }
@@ -88,9 +111,11 @@ const createProduct = (obj, variantsData, link) => {
     images: images,
   };
   if (obj.videoCode) {
-    product.videos = {
-      video_id: obj.videoCode,
-    };
+    product.videos = [
+      {
+        video_id: obj.videoCode,
+      },
+    ];
   }
   return product;
 };
@@ -149,7 +174,6 @@ const parseHtmlContent = (htmlContent) => {
     variants = [...variantsNodeList]
       .map((variantNode, i) => {
         let color = variantNode.textContent;
-        console.log(color);
         let itemsNode = variantNode.nextElementSibling; // use nextElementSibling instead of nextSibling
         let previousElement = variantNode.previousElementSibling;
         let imageExist = true;

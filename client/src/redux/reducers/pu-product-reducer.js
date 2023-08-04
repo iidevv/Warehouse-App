@@ -46,9 +46,7 @@ const puProductReducer = (state = initialState, action) => {
           ...state,
           content: {
             ...state.content,
-            [action.payload.id]:
-              action.payload.value +
-              ("<br> " + state.productData.description || ""),
+            description: action.payload.value,
           },
         };
       } else {
@@ -387,17 +385,17 @@ export const getProduct = (id, search) => {
 
 export const getChatgptContent = (contentField, text) => {
   return (dispatch) => {
-    dispatch(setToggleIsFetching(true));
-    chatgptAPI.getText(text).then((data) => {
-      dispatch(
-        setHandleContentChange(
-          contentField,
-          data.replace(/(^\W+|\W+$)/g, ""),
-          true
-        )
-      );
-      dispatch(setToggleIsFetching(false));
-    });
+    dispatch(setHandleContentChange(contentField, "Generating...", true));
+    chatgptAPI
+      .getText(text)
+      .then((data) => {
+        dispatch(setHandleContentChange(contentField, data, true));
+      })
+      .catch((err) => {
+        dispatch(
+          setHandleContentChange(contentField, "Please try again.", true)
+        );
+      });
   };
 };
 

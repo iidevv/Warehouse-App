@@ -17,7 +17,7 @@ Ftp.on("error", (err) => {
   console.error("FTP error:", err);
 });
 
-const remotePath = "/master.csv";
+const remotePath = "/masterv.csv";
 const localPath = "./inventory_updates/hh_updates.csv";
 
 const parseCSV = (file) => {
