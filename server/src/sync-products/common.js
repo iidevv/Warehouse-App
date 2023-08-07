@@ -215,14 +215,14 @@ const getHHProduct = async (id, name) => {
       return;
     }
     const data = items[0];
-    const price = data["Retail"];
+    const price = +data["Retail"];
 
     const variants = await Promise.all(
       incorporatingPartNumbers.map(async (partNumber) => {
         const item = items.find((item) => item["Part Number"] == partNumber);
 
-        const price = item["Retail"];
-        let inventoryLevel = item["TTL Qty"];
+        const price = +item["Retail"];
+        let inventoryLevel = +item["TTL Qty"];
         if (price == 0) {
           inventoryLevel = 0;
         }

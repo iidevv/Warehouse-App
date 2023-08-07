@@ -108,7 +108,6 @@ export const updateProducts = (vendor, vendor_id, name, status) => {
               );
             }
           );
-
           // If an update is needed, update the product and its variants
           if (isPriceUpdated || isInventoryUpdated) {
             try {
