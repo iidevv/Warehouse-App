@@ -208,11 +208,9 @@ const getHHProduct = async (id, name) => {
     }
     const incorporatingPartNumbers = product.variants.map((v) => v.vendor_id);
     response = await readInventoryFile("HH");
-    console.log(incorporatingPartNumbers);
     const items = incorporatingPartNumbers.map((partNumber) => {
       return response.find((item) => item["Part Number"] == partNumber);
     });
-    console.log(items);
     if (items.length === 0) {
       return;
     }
