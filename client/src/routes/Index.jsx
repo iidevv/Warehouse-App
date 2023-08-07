@@ -1,5 +1,3 @@
-import DashboardContainer from "../components/Dashboard/DashboardContainer";
-import PuDashboardContainer from "../components/Dashboard/PuDashboardContainer";
 import IndexContainer from "../components/Index/IndexContainer";
 
 const Index = (props) => {

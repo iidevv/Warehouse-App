@@ -1,9 +1,11 @@
 import { bigCommerceInstance, wpsInstance } from "../instances/index.js";
 import { InventoryModel } from "../models/Inventory.js";
 import { puInventoryModel } from "../models/puInventory.js";
+import { hhInventoryModel } from "../models/hhInventory.js";
 import { sendNotification } from "../routes/tg-notifications.js";
 import { createNewDate } from "../common/index.js";
 import { puSearchInstance, puSearchLogin } from "../instances/pu-search.js";
+import { readInventoryFile } from "./ftp.js";
 
 // Helper function to process array items in parallel with a limited concurrency
 export const asyncForEach = async (array, callback, concurrency = 5) => {
@@ -46,6 +48,9 @@ const getModel = (vendor) => {
     case "WPS":
       model = InventoryModel;
       break;
+    case "HH":
+      model = hhInventoryModel;
+      break;
 
     default:
       break;
@@ -53,7 +58,7 @@ const getModel = (vendor) => {
   return model;
 };
 
-export const getProduct = async (id, name, vendor) => {
+export const getProduct = async (vendor, id, name) => {
   let product;
   switch (vendor) {
     case "PU":
@@ -61,6 +66,9 @@ export const getProduct = async (id, name, vendor) => {
       break;
     case "WPS":
       product = await getWPSProduct(id, name);
+      break;
+    case "HH":
+      product = await getHHProduct(id, name);
       break;
 
     default:
@@ -99,7 +107,7 @@ const getPuProduct = async (id, name) => {
   try {
     let response;
     // get all variants sku's
-    const product = await getSyncedProduct(id, name, "PU");
+    const product = await getSyncedProduct("PU", id, name);
     if (!product) {
       return;
     }
@@ -190,6 +198,54 @@ const getPuProduct = async (id, name) => {
     throw error;
   }
 };
+const getHHProduct = async (id, name) => {
+  try {
+    let response;
+    // get all variants sku's
+    const product = await getSyncedProduct("HH", id, name);
+    if (!product) {
+      return;
+    }
+    const incorporatingPartNumbers = product.variants.map((v) => v.vendor_id);
+    response = await readInventoryFile("HH");
+    console.log(incorporatingPartNumbers);
+    const items = incorporatingPartNumbers.map((partNumber) => {
+      return response.find((item) => item["Part Number"] == partNumber);
+    });
+    console.log(items);
+    if (items.length === 0) {
+      return;
+    }
+    const data = items[0];
+    const price = data["Retail"];
+
+    const variants = await Promise.all(
+      incorporatingPartNumbers.map(async (partNumber) => {
+        const item = items.find((item) => item["Part Number"] == partNumber);
+
+        const price = item["Retail"];
+        let inventoryLevel = item["TTL Qty"];
+        if (price == 0) {
+          inventoryLevel = 0;
+        }
+        return {
+          id: partNumber,
+          sku: partNumber,
+          price: price,
+          inventory_level: inventoryLevel,
+        };
+      })
+    );
+    return {
+      price: price,
+      variants: variants,
+    };
+  } catch (error) {
+    sendNotification(`${name}. Error: ${error}`);
+    throw error;
+  }
+};
+
 // common
 
 export const updateBigcommerceProduct = async (id, data) => {
@@ -226,16 +282,16 @@ export const updateBigcommerceProductVariants = async (id, variants) => {
 };
 
 export const getSyncedProducts = async (
+  vendor,
   vendor_id,
   name,
   page,
   pageSize,
-  status,
-  vendor
+  status
 ) => {
   let model = getModel(vendor);
   if (vendor_id && name) {
-    return getSyncedProduct(vendor_id, name, vendor);
+    return getSyncedProduct(vendor, vendor_id, name);
   }
   let query = {};
   if (status) {
@@ -259,7 +315,7 @@ export const getSyncedProducts = async (
   }
 };
 
-export const getSyncedProduct = async (vendor_id, name, vendor) => {
+export const getSyncedProduct = async (vendor, vendor_id, name) => {
   let model = getModel(vendor);
   try {
     const product = await model.findOne({
@@ -272,7 +328,7 @@ export const getSyncedProduct = async (vendor_id, name, vendor) => {
   }
 };
 
-export const updateSyncedProduct = async (updatedProductData, vendor) => {
+export const updateSyncedProduct = async (vendor, updatedProductData) => {
   let model = getModel(vendor);
   try {
     const product = await model.findOne({

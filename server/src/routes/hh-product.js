@@ -1,8 +1,8 @@
+import { JSDOM } from "jsdom";
 import axios from "axios";
 import express from "express";
 import { generateProductName } from "../common/index.js";
-import { JSDOM } from "jsdom";
-import { fetchAndParseFile } from "../common/hh-ftp.js";
+import { readInventoryFile } from "../sync-products/ftp.js";
 
 const router = express.Router();
 
@@ -240,7 +240,7 @@ router.get("/product/", async (req, res) => {
   try {
     const htmlContent = await getHtmlContent(`https://helmethouse.com${link}`);
     const productData = parseHtmlContent(htmlContent);
-    const variantsData = await fetchAndParseFile();
+    const variantsData = await readInventoryFile("HH");
     const product = createProduct(productData, variantsData, link);
     res.json(product);
   } catch (error) {

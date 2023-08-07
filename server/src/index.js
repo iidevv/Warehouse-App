@@ -95,8 +95,9 @@ const job = new CronJob({
     try {
       sendNotification("scheduled update started");
 
-      await updateProducts("", "", "", "WPS");
-      await updateProducts("", "", "", "PU");
+      await updateProducts("WPS");
+      await updateProducts("PU");
+      await updateProducts("HH");
 
       sendNotification("scheduled update complete");
     } catch (error) {

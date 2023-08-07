@@ -1,5 +1,6 @@
 import express from "express";
 import { sendNotification } from "../routes/tg-notifications.js";
+import { downloadInventoryFile } from "./ftp.js";
 import {
   asyncForEach,
   executeWithRetry,
@@ -13,24 +14,29 @@ import {
 
 let updateStatus = false;
 
-export const updateProducts = (vendor_id, name, status, vendor) => {
+export const updateProducts = (vendor, vendor_id, name, status) => {
   return new Promise(async (resolve, reject) => {
     const pageSize = 5;
     let currentPage = 1;
     let totalPages = 1;
     let productsToUpdate = 0;
     let productsUpdated = 0;
+
+    if (vendor == "HH") {
+      await downloadInventoryFile(vendor);
+    }
+
     while (currentPage <= totalPages) {
       try {
         // Get synced products
         const response = await executeWithRetry(() =>
           getSyncedProducts(
+            vendor,
             vendor_id,
             name,
             currentPage,
             pageSize,
-            status,
-            vendor
+            status
           )
         );
 
@@ -55,14 +61,14 @@ export const updateProducts = (vendor_id, name, status, vendor) => {
           // Get product data and compare it with the synced product data
           const product = await executeWithRetry(() =>
             getProduct(
+              vendor,
               syncedProduct.vendor_id,
-              syncedProduct.product_name,
-              vendor
+              syncedProduct.product_name
             )
           );
           if (!product) {
             syncedProduct.status = "Error";
-            await updateSyncedProduct(syncedProduct, vendor);
+            await updateSyncedProduct(vendor, syncedProduct);
             return;
           }
           // put product name for same products with different variations
@@ -70,9 +76,9 @@ export const updateProducts = (vendor_id, name, status, vendor) => {
 
           const syncedProductData = await executeWithRetry(() =>
             getSyncedProduct(
+              vendor,
               syncedProduct.vendor_id,
-              syncedProduct.product_name,
-              vendor
+              syncedProduct.product_name
             )
           );
 
@@ -147,16 +153,16 @@ export const updateProducts = (vendor_id, name, status, vendor) => {
               // } else {
               // }
               product.status = "Updated";
-              await updateSyncedProduct(product, vendor);
+              await updateSyncedProduct(vendor, product);
             } catch (error) {
               // If there's an error, update the synced product status to 'Error'
               product.status = "Error";
-              await updateSyncedProduct(product, vendor);
+              await updateSyncedProduct(vendor, product);
             }
           } else {
             // If there's no change, update the synced product status to 'No changes'
             product.status = "No changes";
-            await updateSyncedProduct(product, vendor);
+            await updateSyncedProduct(vendor, product);
           }
           productsUpdated++;
         });
@@ -186,7 +192,7 @@ router.get("/sync", async (req, res) => {
   const status = req.query.status;
   const vendor = req.query.vendor;
   try {
-    await updateProducts(vendor_id, name, status, vendor);
+    await updateProducts(vendor, vendor_id, name, status);
     res.send({ status: updateStatus });
   } catch (error) {
     res.status(500).json({ error: error });

@@ -24,6 +24,7 @@ import Cookies from "js-cookie";
 import Orders from "./routes/Orders";
 import HHInventory from "./routes/HHInventory";
 import HhProductPageContainer from "./components/HhInventory/HhProductPageContainer";
+import ProductsHH from "./routes/ProductsHH";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = Cookies.get("userID") ? true : false;
@@ -103,6 +104,10 @@ const router = createBrowserRouter([
       {
         path: "/hh-product/:id",
         element: <HhProductPageContainer />,
+      },
+      {
+        path: "/products-hh",
+        element: <ProductsHH />,
       },
     ],
   },

@@ -156,10 +156,10 @@ export const inventoryAPI = {
     return instance
       .get(`/inventory/sync/`, {
         params: {
+          vendor: "WPS",
           vendor_id,
           name,
           status,
-          vendor: "WPS",
         },
       })
       .then((response) => {
@@ -201,10 +201,10 @@ export const puInventoryAPI = {
     return instance
       .get(`/inventory/sync/`, {
         params: {
+          vendor: "PU",
           vendor_id,
           name,
           status,
-          vendor: "PU",
         },
       })
       .then((response) => {
@@ -304,5 +304,50 @@ export const hhProductAPI = {
       .then((response) => {
         return response.data;
       });
+  },
+};
+
+export const hhInventoryAPI = {
+  getProducts(name, page, status, search) {
+    return instance
+      .get(`/hh-inventory/products/`, {
+        params: {
+          name,
+          page,
+          status,
+          search,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+  deleteProduct(id) {
+    return instance
+      .delete(`/hh-inventory/products/`, {
+        params: { id },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+  updateProducts(vendor_id, name, status) {
+    return instance
+      .get(`/inventory/sync/`, {
+        params: {
+          vendor_id,
+          name,
+          status,
+          vendor: "HH",
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+  updateProductsStatus() {
+    return instance.get(`/inventory/sync-status/`).then((response) => {
+      return response.data;
+    });
   },
 };

@@ -3,6 +3,7 @@ import { dashboardAPI } from "../../api/api";
 const SET_DATA = "SET_DATA";
 const SET_DATA_WPS = "SET_DATA_WPS";
 const SET_DATA_PU = "SET_DATA_PU";
+const SET_DATA_HH = "SET_DATA_HH";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 
 let initialState = {
@@ -14,6 +15,13 @@ let initialState = {
     total: 0,
   },
   puData: {
+    noChangesTotal: 0,
+    updatedTotal: 0,
+    createdTotal: 0,
+    errorTotal: 0,
+    total: 0,
+  },
+  hhData: {
     noChangesTotal: 0,
     updatedTotal: 0,
     createdTotal: 0,
@@ -47,6 +55,11 @@ const dashboardReducer = (state = initialState, action) => {
         ...state,
         puData: { ...action.data },
       };
+    case SET_DATA_HH:
+      return {
+        ...state,
+        hhData: { ...action.data },
+      };
     case TOGGLE_IS_FETCHING:
       return {
         ...state,
@@ -79,6 +92,13 @@ export const setDataPU = (data) => {
   };
 };
 
+export const setDataHH = (data) => {
+  return {
+    type: SET_DATA_HH,
+    data,
+  };
+};
+
 export const setToggleIsFetching = (isFetching) => {
   return {
     type: TOGGLE_IS_FETCHING,
@@ -93,6 +113,7 @@ export const getTotals = () => {
       dispatch(setData(data.data));
       dispatch(setDataWPS(data.wpsData));
       dispatch(setDataPU(data.puData));
+      dispatch(setDataHH(data.hhData));
       dispatch(setToggleIsFetching(false));
     });
   };

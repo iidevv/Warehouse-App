@@ -1,22 +1,23 @@
 import express from "express";
 import { InventoryModel } from "../models/Inventory.js";
 import { puInventoryModel } from "../models/puInventory.js";
+import { hhInventoryModel } from "../models/hhInventory.js";
 
 const router = express.Router();
 
-const getDataWps = async () => {
+const getData = async (model) => {
   try {
-    const noChangesTotal = await InventoryModel.countDocuments({
+    const noChangesTotal = await model.countDocuments({
       status: "No changes",
     });
-    const updatedTotal = await InventoryModel.countDocuments({
+    const updatedTotal = await model.countDocuments({
       status: "Updated",
     });
-    const createdTotal = await InventoryModel.countDocuments({
+    const createdTotal = await model.countDocuments({
       status: "Created",
     });
-    const errorTotal = await InventoryModel.countDocuments({ status: "Error" });
-    const total = await InventoryModel.count();
+    const errorTotal = await model.countDocuments({ status: "Error" });
+    const total = await model.count();
     return {
       noChangesTotal,
       updatedTotal,
@@ -36,52 +37,31 @@ const getDataWps = async () => {
   }
 };
 
-const getDataPu = async () => {
-  try {
-    const noChangesTotal = await puInventoryModel.countDocuments({
-      status: "No changes",
-    });
-    const updatedTotal = await puInventoryModel.countDocuments({
-      status: "Updated",
-    });
-    const createdTotal = await puInventoryModel.countDocuments({
-      status: "Created",
-    });
-    const errorTotal = await puInventoryModel.countDocuments({
-      status: "Error",
-    });
-    const total = await puInventoryModel.count();
-    return {
-      noChangesTotal,
-      updatedTotal,
-      createdTotal,
-      errorTotal,
-      total,
-    };
-  } catch (error) {
-    console.log(error);
-    return {
-      noChangesTotal: 0,
-      updatedTotal: 0,
-      createdTotal: 0,
-      errorTotal: 0,
-      total: 0,
-    };
-  }
+const totalData = (data) => {
+  const totalData = {
+    noChangesTotal: 0,
+    updatedTotal: 0,
+    createdTotal: 0,
+    errorTotal: 0,
+    total: 0,
+  };
+  data.forEach((dataItem) => {
+    totalData.noChangesTotal += dataItem.noChangesTotal;
+    totalData.updatedTotal += dataItem.updatedTotal;
+    totalData.createdTotal += dataItem.createdTotal;
+    totalData.errorTotal += dataItem.errorTotal;
+    totalData.total += dataItem.total;
+  });
+  return totalData;
 };
 
 router.get("/info", async (req, res) => {
   try {
-    const wpsData = await getDataWps();
-    const puData = await getDataPu();
-    const data = {
-      noChangesTotal: wpsData.noChangesTotal + puData.noChangesTotal,
-      updatedTotal: wpsData.updatedTotal + puData.updatedTotal,
-      createdTotal: wpsData.createdTotal + puData.createdTotal,
-      errorTotal: wpsData.errorTotal + puData.errorTotal,
-      total: wpsData.total + puData.total,
-    };
-    res.json({ data, wpsData, puData });
+    const wpsData = await getData(InventoryModel);
+    const puData = await getData(puInventoryModel);
+    const hhData = await getData(hhInventoryModel);
+    const data = totalData([wpsData, puData, hhData]);
+    res.json({ data, wpsData, puData, hhData });
   } catch (error) {
     console.log(error);
   }

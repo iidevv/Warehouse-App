@@ -12,6 +12,7 @@ import WpsDropshipReducer from "./wps-dropship-reducer";
 import ordersReducer from "./orders-reducer";
 import hhProductsReducer from "./hh-products-reducer";
 import hhProductReducer from "./hh-product-reducer";
+import HhInventoryReducer from "./hh-inventory-reducer";
 
 export default combineReducers({
   dashboard: dashboardReducer,
@@ -24,6 +25,7 @@ export default combineReducers({
   puProduct: puProductReducer,
   hhProducts: hhProductsReducer,
   hhProduct: hhProductReducer,
+  hhInventory: HhInventoryReducer,
   puDropship: PuDropshipReducer,
   wpsDropship: WpsDropshipReducer,
   dmgInventory: dmgInventoryReducer,
