@@ -373,9 +373,7 @@ export const getChatgptContent = (contentField, text) => {
         dispatch(setHandleContentChange(contentField, data, true));
       })
       .catch((err) => {
-        dispatch(
-          setHandleContentChange(contentField, "Please try again.", true)
-        );
+        dispatch(setHandleContentChange(contentField, `Error: ${err}`, true));
       });
   };
 };
