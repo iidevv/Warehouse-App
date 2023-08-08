@@ -222,7 +222,9 @@ const getHHProduct = async (id, name) => {
         const item = items.find(
           (item) => item && item["Part Number"] === partNumber
         );
-
+        if (!item) {
+          sendNotification(`${name} - ${partNumber} not exist.`)
+        }
         const price = item ? +item["Retail"] : 0;
         let inventoryLevel = item ? +item["TTL Qty"] : 0;
         if (price == 0) {
