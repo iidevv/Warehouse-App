@@ -1,6 +1,6 @@
 import express from "express";
 import { bigCommerceInstanceV2, puInstance } from "../../instances/index.js";
-import { puInventoryModel } from "../../models/puInventory.js";
+import { puInventoryModel } from "../../models/Inventory.js";
 
 const router = express.Router();
 
@@ -89,7 +89,10 @@ const checkAndFormatPUOrderItems = async (orderItems) => {
         };
         puProduct = await puInstance.post("parts/search/", payload);
       }
-      if (puDbProduct !== null || (puProduct && puProduct.data.result.total === 1)) {
+      if (
+        puDbProduct !== null ||
+        (puProduct && puProduct.data.result.total === 1)
+      ) {
         return {
           line_number: item.sku,
           part_number: item.sku,
@@ -117,14 +120,14 @@ router.post("/pu-order/", async (req, res) => {
     const orderItems = await bigCommerceInstanceV2.get(
       `/orders/${orderId}/products`
     );
-    
+
     const filteredOrderItems = await checkAndFormatPUOrderItems(orderItems);
-    if(filteredOrderItems.length > 0) {
+    if (filteredOrderItems.length > 0) {
       console.log(filteredOrderItems);
       const orderShipping = await bigCommerceInstanceV2.get(
         `/orders/${orderId}/shipping_addresses`
       );
-  
+
       const orderForPU = {
         dealer_number: "DIS076",
         order_type: "DS",

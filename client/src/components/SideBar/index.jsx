@@ -85,64 +85,84 @@ const SideBar = (props) => {
                   <span className="mx-4 text-sm font-normal">Orders</span>
                 </NavLink>
               </li>
-              <li>
-                <NavLink
-                  to="/dropship-pu"
-                  onClick={handleSetMenuActive}
-                  className={({ isPending, isActive }) =>
-                    isActive ? "active-menu-link" : "menu-link"
-                  }
-                >
-                  <span className="mx-4 text-sm font-normal">
-                    PU Dropshipping
-                  </span>
-                </NavLink>
+              <li className="has-submenu">
+                <span className="menu-link mx-4 text-sm font-normal">
+                  Dropshipping
+                </span>
+                <ul>
+                  <li>
+                    <NavLink
+                      to="/dropship-pu"
+                      onClick={handleSetMenuActive}
+                      className={({ isPending, isActive }) =>
+                        isActive ? "active-menu-link" : "menu-link"
+                      }
+                    >
+                      <span className="mx-4 text-sm font-normal">
+                        PU Dropship
+                      </span>
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/dropship-wps"
+                      onClick={handleSetMenuActive}
+                      className={({ isPending, isActive }) =>
+                        isActive ? "active-menu-link" : "menu-link"
+                      }
+                    >
+                      <span className="mx-4 text-sm font-normal">
+                        WPS Dropship
+                      </span>
+                    </NavLink>
+                  </li>
+                </ul>
               </li>
-              <li>
-                <NavLink
-                  to="/pu-catalog"
-                  onClick={handleSetMenuActive}
-                  className={({ isPending, isActive }) =>
-                    isActive ? "active-menu-link" : "menu-link"
-                  }
-                >
-                  <span className="mx-4 text-sm font-normal">PU Catalog</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/dropship-wps"
-                  onClick={handleSetMenuActive}
-                  className={({ isPending, isActive }) =>
-                    isActive ? "active-menu-link" : "menu-link"
-                  }
-                >
-                  <span className="mx-4 text-sm font-normal">
-                    WPS Dropshipping
-                  </span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/wps-catalog"
-                  onClick={handleSetMenuActive}
-                  className={({ isPending, isActive }) =>
-                    isActive ? "active-menu-link" : "menu-link"
-                  }
-                >
-                  <span className="mx-4 text-sm font-normal">WPS Catalog</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/hh-catalog"
-                  onClick={handleSetMenuActive}
-                  className={({ isPending, isActive }) =>
-                    isActive ? "active-menu-link" : "menu-link"
-                  }
-                >
-                  <span className="mx-4 text-sm font-normal">HH Catalog</span>
-                </NavLink>
+              <li className="has-submenu">
+                <span className="menu-link mx-4 text-sm font-normal">
+                  Catalogs
+                </span>
+                <ul>
+                  <li>
+                    <NavLink
+                      to="/pu-catalog"
+                      onClick={handleSetMenuActive}
+                      className={({ isPending, isActive }) =>
+                        isActive ? "active-menu-link" : "menu-link"
+                      }
+                    >
+                      <span className="mx-4 text-sm font-normal">
+                        PU Catalog
+                      </span>
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/wps-catalog"
+                      onClick={handleSetMenuActive}
+                      className={({ isPending, isActive }) =>
+                        isActive ? "active-menu-link" : "menu-link"
+                      }
+                    >
+                      <span className="mx-4 text-sm font-normal">
+                        WPS Catalog
+                      </span>
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/hh-catalog"
+                      onClick={handleSetMenuActive}
+                      className={({ isPending, isActive }) =>
+                        isActive ? "active-menu-link" : "menu-link"
+                      }
+                    >
+                      <span className="mx-4 text-sm font-normal">
+                        HH Catalog
+                      </span>
+                    </NavLink>
+                  </li>
+                </ul>
               </li>
               {/* <li>
                 <NavLink

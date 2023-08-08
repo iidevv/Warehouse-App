@@ -101,7 +101,7 @@ const Dashboard = (props) => {
     <div className="m-5 lg:w-full">
       <div className="flex flex-row items-center w-full mb-6">
         <h2 className="text-2xl leading-tight mr-6">
-          WPS Products ({props.total})
+          {props.vendor} Products ({props.total})
         </h2>
         <button
           onClick={() => {

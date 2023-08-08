@@ -5,8 +5,7 @@ import {
   puInstance,
   wpsInstance,
 } from "../instances/index.js";
-import { puInventoryModel } from "../models/puInventory.js";
-import { InventoryModel } from "../models/Inventory.js";
+import { InventoryModel, puInventoryModel } from "../models/Inventory.js";
 import { OrdersModel } from "../models/Orders.js";
 
 const router = express.Router();
@@ -207,7 +206,9 @@ const createWPSOrder = async (id, shipping, items) => {
     po_number: orderId,
   };
   try {
-    await wpsInstance.post("/carts/", cart).catch(err => console.log('Error creating cart: ', err));
+    await wpsInstance
+      .post("/carts/", cart)
+      .catch((err) => console.log("Error creating cart: ", err));
 
     const itemsPromises = cartItems.map(async (item) => {
       try {
@@ -253,7 +254,8 @@ router.post("/order/", async (req, res) => {
     // global order info
     const order = await bigCommerceInstanceV2.get(`/orders/${orderId}`);
 
-    if (order.payment_status != "captured") return res.json({ message: "Order not paid!" });
+    if (order.payment_status != "captured")
+      return res.json({ message: "Order not paid!" });
 
     const orderItems = await bigCommerceInstanceV2.get(
       `/orders/${orderId}/products`

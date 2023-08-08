@@ -1,13 +1,11 @@
 import DashboardContainer from "../components/Dashboard/DashboardContainer";
 
-const ProductsWPS = (props) => {
+const Products = (props) => {
   return (
     <div className="container">
-      <div className="">
-        <DashboardContainer />
-      </div>
+      <DashboardContainer />
     </div>
   );
 };
 
-export default ProductsWPS;
+export default Products;

@@ -1,5 +1,6 @@
 import { inventoryAPI, dmgProductAPI } from "../../api/api";
 
+const SET_VENDOR = "SET_VENDOR";
 const SET_PRODUCTS = "SET_PRODUCTS";
 const SET_PRODUCTS_TOTAL = "SET_PRODUCTS_TOTAL";
 const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
@@ -96,17 +97,17 @@ export const setToggleIsFetching = (isFetching) => {
   };
 };
 
-export const deleteProduct = (id) => {
+export const deleteProduct = (vendor, id) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
 
-    const inventoryPromise = inventoryAPI.deleteProduct(id);
+    const inventoryPromise = inventoryAPI.deleteProduct(vendor, id);
     const dmgProductPromise = dmgProductAPI.deleteProduct(id);
 
     Promise.all([inventoryPromise, dmgProductPromise])
       .then(() => {
         dispatch(setToggleIsFetching(false));
-        dispatch(getProducts());
+        dispatch(getProducts(vendor));
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -115,16 +116,18 @@ export const deleteProduct = (id) => {
   };
 };
 
-export const getProducts = (name, page, status, search) => {
+export const getProducts = (vendor, name, page, status, search) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    inventoryAPI.getProducts(name, page, status, search).then((data) => {
-      dispatch(setProducts(data.products));
-      dispatch(setProductsTotal(data.total));
-      dispatch(setTotalPages(data.totalPages));
-      dispatch(setCurrentPage(data.currentPage));
-      dispatch(setToggleIsFetching(false));
-    });
+    inventoryAPI
+      .getProducts(vendor, name, page, status, search)
+      .then((data) => {
+        dispatch(setProducts(data.products));
+        dispatch(setProductsTotal(data.total));
+        dispatch(setTotalPages(data.totalPages));
+        dispatch(setCurrentPage(data.currentPage));
+        dispatch(setToggleIsFetching(false));
+      });
   };
 };
 
@@ -136,13 +139,15 @@ export const getStatus = () => {
   };
 };
 
-export const updateProducts = (vendor_id, name, status) => {
+export const updateProducts = (vendor, vendor_id, name, status) => {
   return (dispatch) => {
     dispatch(setStatus(true));
-    inventoryAPI.updateProducts(vendor_id, name, status).then((data) => {
-      dispatch(getProducts(vendor_id, name, status));
-      dispatch(setStatus(false));
-    });
+    inventoryAPI
+      .updateProducts(vendor, vendor_id, name, status)
+      .then((data) => {
+        dispatch(getProducts(vendor, vendor_id, name, status));
+        dispatch(setStatus(false));
+      });
   };
 };
 

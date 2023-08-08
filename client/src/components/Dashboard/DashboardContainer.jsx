@@ -14,21 +14,25 @@ import {
 } from "./../../redux/reducers/inventory-reducer";
 
 class DashboardContainer extends React.Component {
+  vendor = null;
   componentDidMount() {
-    this.props.getProducts();
-    this.props.getStatus();
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    this.vendor = urlParams.get("vendor");
+    this.props.getProducts(this.vendor);
+    this.props.getStatus(this.vendor);
   }
   onPageChanged = (name, page, status, search) => {
-    this.props.getProducts(name, page, status, search);
+    this.props.getProducts(this.vendor, name, page, status, search);
   };
   onFilterChanged = (name, page, status, search) => {
-    this.props.getProducts(name, page, status, search);
+    this.props.getProducts(this.vendor, name, page, status, search);
   };
   onDeleteProduct = (id) => {
-    this.props.deleteProduct(id);
+    this.props.deleteProduct(this.vendor, id);
   };
   onUpdateProducts = (vendor_id, name, status) => {
-    this.props.updateProducts(vendor_id, name, status);
+    this.props.updateProducts(this.vendor, vendor_id, name, status);
   };
 
   render() {
@@ -36,6 +40,7 @@ class DashboardContainer extends React.Component {
       <>
         {this.props.isFetching ? <Preloader /> : null}
         <Dashboard
+          vendor={this.vendor}
           products={this.props.products}
           total={this.props.total}
           onDeleteProduct={this.onDeleteProduct}
@@ -53,6 +58,7 @@ class DashboardContainer extends React.Component {
 
 let mapStateToProps = (state) => {
   return {
+    vendor: state.inventory.vendor,
     products: state.inventory.products,
     isFetching: state.inventory.isFetching,
     total: state.inventory.total,

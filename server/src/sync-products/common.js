@@ -1,9 +1,6 @@
 import { bigCommerceInstance, wpsInstance } from "../instances/index.js";
-import { InventoryModel } from "../models/Inventory.js";
-import { puInventoryModel } from "../models/puInventory.js";
-import { hhInventoryModel } from "../models/hhInventory.js";
 import { sendNotification } from "../routes/tg-notifications.js";
-import { createNewDate } from "../common/index.js";
+import { createNewDate, getInventoryModel } from "../common/index.js";
 import { puSearchInstance, puSearchLogin } from "../instances/pu-search.js";
 import { readInventoryFile } from "./ftp.js";
 
@@ -39,24 +36,6 @@ export const executeWithRetry = async (fn, maxRetries = 3, delay = 10000) => {
 };
 
 // switchers
-const getModel = (vendor) => {
-  let model;
-  switch (vendor) {
-    case "PU":
-      model = puInventoryModel;
-      break;
-    case "WPS":
-      model = InventoryModel;
-      break;
-    case "HH":
-      model = hhInventoryModel;
-      break;
-
-    default:
-      break;
-  }
-  return model;
-};
 
 export const getProduct = async (vendor, id, name) => {
   let product;
@@ -222,9 +201,7 @@ const getHHProduct = async (id, name) => {
         const item = items.find(
           (item) => item && item["Part Number"] === partNumber
         );
-        if (!item) {
-          sendNotification(`${name} - ${partNumber} not exist.`)
-        }
+
         const price = item ? +item["Retail"] : 0;
         let inventoryLevel = item ? +item["TTL Qty"] : 0;
         if (price == 0) {
@@ -291,7 +268,7 @@ export const getSyncedProducts = async (
   pageSize,
   status
 ) => {
-  let model = getModel(vendor);
+  let model = getInventoryModel(vendor);
   if (vendor_id && name) {
     return getSyncedProduct(vendor, vendor_id, name);
   }
@@ -318,7 +295,7 @@ export const getSyncedProducts = async (
 };
 
 export const getSyncedProduct = async (vendor, vendor_id, name) => {
-  let model = getModel(vendor);
+  let model = getInventoryModel(vendor);
   try {
     const product = await model.findOne({
       // vendor_id,
@@ -331,7 +308,7 @@ export const getSyncedProduct = async (vendor, vendor_id, name) => {
 };
 
 export const updateSyncedProduct = async (vendor, updatedProductData) => {
-  let model = getModel(vendor);
+  let model = getInventoryModel(vendor);
   try {
     const product = await model.findOne({
       // vendor_id: updatedProductData.id,

@@ -1,8 +1,6 @@
 import express from "express";
 import { createInventoryProduct } from "../sync-products/inventory-manager.js";
 import { bigCommerceInstance } from "../instances/index.js";
-import { createPuInventoryProduct } from "../sync-products/pu-inventory-manager.js";
-import { createHhInventoryProduct } from "../sync-products/hh-inventory-manager.js";
 
 const router = express.Router();
 
@@ -36,20 +34,8 @@ router.post("/create", async (req, res) => {
       "/catalog/products",
       product
     );
-    let result;
-    switch (product.vendor) {
-      case "WPS":
-        result = await createInventoryProduct(product, message, "Created");
-        break;
-      case "PU":
-        result = await createPuInventoryProduct(product, message, "Created");
-        break;
-      case "HH":
-        result = await createHhInventoryProduct(product, message, "Created");
-        break;
-      default:
-        break;
-    }
+    let result = await createInventoryProduct(product, message, "Created");
+
     res.json({ message, result });
   } catch (error) {
     console.log(error);

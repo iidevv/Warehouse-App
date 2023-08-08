@@ -17,14 +17,12 @@ import { useNavigate } from "react-router-dom";
 import PUInventory from "./routes/PUInventory";
 import PuDropship from "./routes/PuDropship";
 import PuProductPageContainer from "./components/PuInventory/PuProductPageContainer";
-import ProductsPU from "./routes/ProductsPU";
-import ProductsWPS from "./routes/ProductsWPS";
+import Products from "./routes/Products";
 import WpsDropship from "./routes/WpsDropship";
 import Cookies from "js-cookie";
 import Orders from "./routes/Orders";
 import HHInventory from "./routes/HHInventory";
 import HhProductPageContainer from "./components/HhInventory/HhProductPageContainer";
-import ProductsHH from "./routes/ProductsHH";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = Cookies.get("userID") ? true : false;
@@ -86,12 +84,8 @@ const router = createBrowserRouter([
         element: <Settings />,
       },
       {
-        path: "/products-pu",
-        element: <ProductsPU />,
-      },
-      {
-        path: "/products-wps",
-        element: <ProductsWPS />,
+        path: "/products",
+        element: <Products />,
       },
       {
         path: "/pu-product/:id",
@@ -104,10 +98,6 @@ const router = createBrowserRouter([
       {
         path: "/hh-product/:id",
         element: <HhProductPageContainer />,
-      },
-      {
-        path: "/products-hh",
-        element: <ProductsHH />,
       },
     ],
   },

@@ -129,10 +129,11 @@ export const chatgptAPI = {
 };
 
 export const inventoryAPI = {
-  getProducts(name, page, status, search) {
+  getProducts(vendor, name, page, status, search) {
     return instance
       .get(`/inventory/products/`, {
         params: {
+          vendor,
           name,
           page,
           status,
@@ -143,20 +144,20 @@ export const inventoryAPI = {
         return response.data;
       });
   },
-  deleteProduct(id) {
+  deleteProduct(vendor, id) {
     return instance
       .delete(`/inventory/products/`, {
-        params: { id },
+        params: { vendor, id },
       })
       .then((response) => {
         return response.data;
       });
   },
-  updateProducts(vendor_id, name, status) {
+  updateProducts(vendor, vendor_id, name, status) {
     return instance
       .get(`/inventory/sync/`, {
         params: {
-          vendor: "WPS",
+          vendor,
           vendor_id,
           name,
           status,

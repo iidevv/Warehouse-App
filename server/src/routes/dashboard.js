@@ -1,7 +1,5 @@
 import express from "express";
-import { InventoryModel } from "../models/Inventory.js";
-import { puInventoryModel } from "../models/puInventory.js";
-import { hhInventoryModel } from "../models/hhInventory.js";
+import { InventoryModel, puInventoryModel, hhInventoryModel } from "../models/Inventory.js";
 
 const router = express.Router();
 

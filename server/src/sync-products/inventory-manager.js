@@ -1,5 +1,5 @@
 import { createNewDate } from "./../common/index.js";
-import { addInventoryProduct } from '../routes/inventory.js';
+import { addInventoryProduct } from "../routes/inventory.js";
 
 export const createInventoryProduct = async (
   vendorProduct,
@@ -22,7 +22,10 @@ export const createInventoryProduct = async (
     status: status,
   };
   try {
-    const res = await addInventoryProduct(inventoryProduct);
+    const res = await addInventoryProduct(
+      vendorProduct.vendor,
+      inventoryProduct
+    );
     return "Product synced!";
   } catch (error) {
     console.log(error);

@@ -9,6 +9,15 @@
   .menu-link {
     @apply flex items-center justify-start w-full p-4 my-2 font-thin text-gray-500 uppercase transition-colors duration-200 hover:text-blue-500;
   }
+  .has-submenu ul {
+    @apply hidden border-b border-blue-500 bg-gray-50;
+  }
+  .has-submenu ul li {
+    @apply ml-3;
+  }
+  .has-submenu:hover ul {
+    @apply block;
+  }
   .h-screen-80 {
     height: 80vh;
   }
