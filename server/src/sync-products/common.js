@@ -209,7 +209,7 @@ const getHHProduct = async (id, name) => {
     const incorporatingPartNumbers = product.variants.map((v) => v.vendor_id);
     response = await readInventoryFile("HH");
     const items = incorporatingPartNumbers.map((partNumber) => {
-      return response.find((item) => item["Part Number"] == partNumber);
+      return response.find((item) => item && item["Part Number"] == partNumber);
     });
     if (items.length === 0) {
       return;
@@ -219,10 +219,12 @@ const getHHProduct = async (id, name) => {
 
     const variants = await Promise.all(
       incorporatingPartNumbers.map(async (partNumber) => {
-        const item = items.find((item) => item["Part Number"] == partNumber);
+        const item = items.find(
+          (item) => item && item["Part Number"] === partNumber
+        );
 
-        const price = +item["Retail"];
-        let inventoryLevel = +item["TTL Qty"];
+        const price = item ? +item["Retail"] : 0;
+        let inventoryLevel = item ? +item["TTL Qty"] : 0;
         if (price == 0) {
           inventoryLevel = 0;
         }
