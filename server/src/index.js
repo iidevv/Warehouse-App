@@ -28,6 +28,7 @@ import { sendNotification } from "./routes/tg-notifications.js";
 import { testActionRouter } from "./routes/external/test-action.js";
 import { hhProductsRouter } from "./routes/hh-products.js";
 import { hhProductRouter } from "./routes/hh-product.js";
+import { catalogRouter } from "./routes/catalog.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,6 +51,7 @@ app.use("/external", processingRouter);
 app.use("/external", ProductAvailabilityRouter);
 app.use("/external", bulkActionRouter);
 app.use("/external", testActionRouter);
+app.use("/api/catalog", catalogRouter);
 
 app.use("/api/images", express.static(path.join(__dirname, "../optimized")));
 
@@ -68,6 +70,7 @@ app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
 
 app.use("/api/inventory", SyncProductsRouter);
+// app.use("/api/catalog", catalogRouter);
 app.use("/api/pu-dropship", puDropshipRouter);
 app.use("/api/pu", puProductsRouter);
 app.use("/api/pu", puProductRouter);
