@@ -279,6 +279,22 @@ export const ordersAPI = {
   },
 };
 
+export const catalogAPI = {
+  getProducts(vendor, offset, search) {
+    return instance
+      .get(`/catalog/products/`, {
+        params: {
+          vendor,
+          offset,
+          search,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+};
+
 export const hhProductsAPI = {
   getProducts(name, page) {
     return instance

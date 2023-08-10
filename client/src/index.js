@@ -23,6 +23,7 @@ import Cookies from "js-cookie";
 import Orders from "./routes/Orders";
 import HHInventory from "./routes/HHInventory";
 import HhProductPageContainer from "./components/HhInventory/HhProductPageContainer";
+import Catalog from "./routes/Catalog";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = Cookies.get("userID") ? true : false;
@@ -60,6 +61,18 @@ const router = createBrowserRouter([
         element: <Orders />,
       },
       {
+        path: "/catalog",
+        element: <Catalog />,
+      },
+      {
+        path: "/products",
+        element: <Products />,
+      },
+      {
+        path: "/settings",
+        element: <Settings />,
+      },
+      {
         path: "/wps-catalog",
         element: <WPSInventory />,
       },
@@ -78,14 +91,6 @@ const router = createBrowserRouter([
       {
         path: "/dropship-wps",
         element: <WpsDropship />,
-      },
-      {
-        path: "/settings",
-        element: <Settings />,
-      },
-      {
-        path: "/products",
-        element: <Products />,
       },
       {
         path: "/pu-product/:id",

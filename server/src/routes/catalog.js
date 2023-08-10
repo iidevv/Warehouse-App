@@ -4,23 +4,23 @@ import { getInventory, getPrice } from "../common/pu.js";
 
 const router = express.Router();
 
-const getWPSCatalog = async (offset = "", search = "", searchBy = "name") => {
+const getWPSCatalog = async (offset = "", search = "") => {
   try {
     const catalog = {};
     const response = await wpsInstance.get(
-      `/items?include=inventory,images&filter[${searchBy}][pre]=${search}&page[cursor]=${offset}`
+      `/items?include=inventory,images&filter[name][pre]=${search}&page[cursor]=${offset}`
     );
     catalog.data = response.data.data.map((item) => {
       return {
         id: item.id,
         name: item.name,
-        url: `/product/${item.id}?vendor="WPS"`,
+        url: `/product/${item.id}?vendor=WPS`,
         sku: item.sku,
         image_url: item.images.data[0]
           ? `https://${item.images.data[0]?.domain}${item.images.data[0]?.path}${item.images.data[0]?.filename}`
           : "",
         price: +item.list_price,
-        iventory: +item.inventory.data.total,
+        inventory: +item.inventory.data.total,
       };
     });
     catalog.meta = {
@@ -51,13 +51,13 @@ const getPUCatalog = async (offset = 0, search = "") => {
       return {
         id: item.partNumber,
         name: item.description,
-        url: `/product/${item.partNumber}?vendor="PU"`,
+        url: `/product/${item.partNumber}?vendor=PU`,
         sku: item.partNumber,
         image_url: item.primaryMedia
           ? item.primaryMedia.absoluteUrl.replace("http:", "https:")
           : "",
         price: getPrice(item.prices),
-        iventory: getInventory(item.inventory),
+        inventory: getInventory(item.inventory),
       };
     });
     // next/prev
@@ -95,21 +95,57 @@ const getPUCatalog = async (offset = 0, search = "") => {
 
 const getHHCatalog = async (offset = 0, search = "") => {
   try {
+    const catalog = {};
+
     const response = await hhInstance.get(
       `/stage_products?query=${search}&page=${offset}`
     );
-    return response.data;
-    // return catalog;
+    catalog.data = response.data.hits.map((item) => {
+      return {
+        id: item.objectID,
+        name: item.product_name,
+        url: `/product/${item.objectID}?vendor=PU&link=${item.direct_link}`,
+        sku: item.skus[0],
+        image_url: item.list_image,
+        price: item.price,
+        inventory: null,
+      };
+    });
+    const navigation = (offset, total, totalProducts) => {
+      let next = null;
+      let prev = null;
+      if (offset < total) {
+        next = offset + 1;
+      }
+
+      if (offset >= 1) {
+        prev = offset - 1;
+      }
+
+      return {
+        current: offset,
+        next,
+        prev,
+        total: totalProducts,
+      };
+    };
+
+    catalog.meta = navigation(
+      response.data.page,
+      response.data.nbPages,
+      response.data.nbHits
+    );
+    return catalog;
   } catch (error) {
     return error.message;
   }
 };
 
-const getCatalog = async (vendor, offset, search, searchBy) => {
+const getCatalog = async (vendor, offset, search) => {
   let response;
   switch (vendor) {
     case "WPS":
-      response = await getWPSCatalog(offset, search, searchBy);
+      response = await getWPSCatalog(offset, search);
       break;
     case "PU":
       response = await getPUCatalog(offset, search);
@@ -127,11 +163,9 @@ const getCatalog = async (vendor, offset, search, searchBy) => {
 router.get("/products/", async (req, res) => {
   const vendor = req.query.vendor;
   const offset = req.query.offset;
-  const searchBy = req.query.searchby;
   const search = req.query.search;
-
   try {
-    const response = await getCatalog(vendor, offset, search, searchBy);
+    const response = await getCatalog(vendor, offset, search);
     if (response.error) {
       res.status(400).json(response);
     } else {

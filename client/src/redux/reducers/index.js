@@ -10,9 +10,11 @@ import WpsDropshipReducer from "./wps-dropship-reducer";
 import ordersReducer from "./orders-reducer";
 import hhProductsReducer from "./hh-products-reducer";
 import hhProductReducer from "./hh-product-reducer";
+import catalogReducer from "./catalog-reducer";
 
 export default combineReducers({
   dashboard: dashboardReducer,
+  catalog: catalogReducer,
   inventory: inventoryReducer,
   orders: ordersReducer,
   wpsProduct: wpsProductReducer,
