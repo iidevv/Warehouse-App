@@ -1,64 +1,100 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
+import { useLocation } from "react-router-dom";
 import Preloader from "../common/preloader/Preloader";
 import Catalog from "./Catalog.js";
 import {
   getProducts,
   setOffset,
+  setVendor,
   setProducts,
   setSearch,
   setToggleIsFetching,
 } from "../../redux/reducers/catalog-reducer";
 
-class CatalogContainer extends React.Component {
-  vendor = null;
-  componentDidMount() {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    this.vendor = urlParams.get("vendor");
-    const offset = urlParams.get("offset") || "";
-    const search = urlParams.get("search") || "";
+function CatalogContainer({
+  meta,
+  search,
+  vendor,
+  products,
+  isFetching,
+  getProducts,
+  setVendor,
+  setSearch,
+}) {
+  const location = useLocation();
+  const searchTimeout = useRef(null);
+  const prevMeta = useRef();
+  const prevSearch = useRef();
 
-    this.props.getProducts(this.vendor, offset, search);
-  }
-  componentDidUpdate(prevProps) {
-    if (this.props.meta.current !== prevProps.meta.current) {
-      const newUrl = `${window.location.origin}${window.location.pathname}?vendor=${this.vendor}&offset=${this.props.meta.current}&search=${this.props.search}`;
+  useEffect(() => {
+    const { vendor, offset, search } = parseUrlParams();
+    if (vendor) {
+      getProducts(vendor, offset, search);
+    }
+  }, [location]);
+
+  useEffect(() => {
+    if (meta.current !== prevMeta.current || search !== prevSearch.current) {
+      console.log("used");
+      const newUrl = `${window.location.origin}${window.location.pathname}?vendor=${vendor}&offset=${meta.current}&search=${search}`;
       window.history.pushState({ path: newUrl }, "", newUrl);
     }
-  }
-  onPageChanged = (offset) => {
-    this.props.getProducts(this.vendor, offset, this.props.search);
+
+    prevMeta.current = meta;
+    prevSearch.current = search;
+  }, [meta, search, vendor]);
+
+  const parseUrlParams = () => {
+    const queryString = location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const vendorFromUrl = urlParams.get("vendor");
+    const offset = urlParams.get("offset");
+    const searchFromUrl = urlParams.get("search");
+
+    if (vendorFromUrl !== null) setVendor(vendorFromUrl);
+    if (searchFromUrl !== null) setSearch(searchFromUrl);
+
+    return { vendor: vendorFromUrl, offset, search: searchFromUrl };
+  };
+
+  const onPageChanged = (offset) => {
+    getProducts(vendor, offset, search);
     const container = document.querySelector(".scroll-container");
     if (container) container.scrollTo(0, 0);
   };
-  onSearch = (offset, search) => {
-    this.props.setSearch(search);
-    this.props.getProducts(this.vendor, offset, search);
+
+  const onSearch = (offset, search) => {
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+    setSearch(search);
+    searchTimeout.current = setTimeout(() => {
+      getProducts(vendor, offset, search);
+    }, 500);
   };
 
-  render() {
-    return (
-      <>
-        {this.props.isFetching ? <Preloader /> : null}
-        <Catalog
-          vendor={this.vendor}
-          products={this.props.products}
-          meta={this.props.meta}
-          search={this.props.search}
-          onPageChanged={this.onPageChanged}
-          onSearch={this.onSearch}
-        />
-      </>
-    );
-  }
+  return (
+    <>
+      {isFetching ? <Preloader /> : null}
+      <Catalog
+        vendor={vendor}
+        products={products}
+        meta={meta}
+        search={search}
+        onPageChanged={onPageChanged}
+        onSearch={onSearch}
+      />
+    </>
+  );
 }
 
 let mapStateToProps = (state) => {
   return {
     products: state.catalog.products,
     search: state.catalog.search,
+    vendor: state.catalog.vendor,
     searchBy: state.catalog.searchBy,
     meta: state.catalog.meta,
     isFetching: state.catalog.isFetching,
@@ -69,6 +105,7 @@ export default compose(
   connect(mapStateToProps, {
     getProducts,
     setProducts,
+    setVendor,
     setSearch,
     setOffset,
     setToggleIsFetching,

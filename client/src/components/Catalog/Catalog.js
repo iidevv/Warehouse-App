@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import CatalogProduct from "./CatalogProduct";
 
 const Catalog = (props) => {
-  
   const handleSearch = (e) => {
     const search = e.target.value;
     props.onSearch("", search);
@@ -20,14 +19,55 @@ const Catalog = (props) => {
           {props.meta.total ? `(${props.meta.total})` : ""}
         </h2>
         <div className="flex flex-col-reverse lg:flex-row">
-          <div className="lg:w-1/2 flex">
+          <div className="lg:w-1/2 flex shadow bg-white p-2">
             <input
               type="text"
               value={props.search}
               onChange={handleSearch}
-              className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+              className="rounded-lg border-transparent flex-1 appearance-none mr-2 border w-full py-2 px-4 text-gray-600 placeholder-gray-400 text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               placeholder="Search..."
             />
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => {
+                  onPageChanged(props.meta.prev);
+                }}
+                value={props.meta.prev}
+                disabled={props.meta.prev !== null ? false : true}
+                className="disabled:opacity-50 w-full p-4 text-base text-gray-600 bg-white border rounded-l-xl hover:bg-gray-100"
+              >
+                <svg
+                  width="9"
+                  fill="currentColor"
+                  height="8"
+                  className=""
+                  viewBox="0 0 1792 1792"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"></path>
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onPageChanged(props.meta.next);
+                }}
+                disabled={props.meta.next !== null ? false : true}
+                className="disabled:opacity-50 w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
+              >
+                <svg
+                  width="9"
+                  fill="currentColor"
+                  height="8"
+                  className=""
+                  viewBox="0 0 1792 1792"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"></path>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -1,11 +1,14 @@
 import { catalogAPI } from "../../api/api";
 
 const SET_PRODUCTS = "SET_PRODUCTS";
+const SET_VENDOR = "SET_VENDOR";
 const SET_META = "SET_META";
 const SET_SEARCH = "SET_SEARCH";
 const SET_OFFSET = "SET_OFFSET";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
+
 let initialState = {
+  vendor: "",
   search: "",
   offset: "",
   products: [],
@@ -25,6 +28,11 @@ const catalogReducer = (state = initialState, action) => {
         ...state,
         products: [...action.products],
       };
+    case SET_VENDOR:
+      return {
+        ...state,
+        vendor: action.vendor,
+      };
     case SET_META:
       return {
         ...state,
@@ -38,7 +46,7 @@ const catalogReducer = (state = initialState, action) => {
     case SET_OFFSET:
       return {
         ...state,
-        offset: [...action.offset],
+        offset: action.offset,
       };
     case TOGGLE_IS_FETCHING:
       return {
@@ -58,6 +66,13 @@ export const setProducts = (products) => {
   };
 };
 
+export const setVendor = (vendor) => {
+  return {
+    type: SET_VENDOR,
+    vendor,
+  };
+};
+
 export const setMeta = (meta) => {
   return {
     type: SET_META,
@@ -74,7 +89,7 @@ export const setSearch = (search) => {
 
 export const setOffset = (offset) => {
   return {
-    type: SET_SEARCH,
+    type: SET_OFFSET,
     offset,
   };
 };
@@ -93,7 +108,6 @@ export const getProducts = (vendor, offset, search) => {
       dispatch(setProducts(data.data));
       dispatch(setMeta(data.meta));
       dispatch(setOffset(offset));
-      dispatch(setSearch(search));
       dispatch(setToggleIsFetching(false));
     });
   };
