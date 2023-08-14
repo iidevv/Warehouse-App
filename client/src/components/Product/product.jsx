@@ -1,7 +1,7 @@
 import defaultImg from "../../assets/default-image.png";
 import chatgpt from "../../assets/chatgpt.svg";
 import CategoriesSearch from "./../common/categoriesSearch/CategoriesSearch";
-import PuProductPageVariants from "./PuProductPageVariants";
+import ProductVariants from "./productVariants";
 import {
   searchKeywordsPrompt,
   metaKeywordsPrompt,
@@ -9,7 +9,7 @@ import {
   descriptionPrompt,
 } from "../common/gpt-prompts.js";
 
-const PuProductPage = (props) => {
+const Product = (props) => {
   const productImg =
     props.product.images &&
     props.product.images.length &&
@@ -251,7 +251,7 @@ const PuProductPage = (props) => {
           <span>Chat GPT</span>
         </button>
       </div>
-      <PuProductPageVariants
+      <ProductVariants
         variants={props.product.variants}
         onFindAndReplace={props.onFindAndReplace}
         onHandleRemoveVariants={props.onHandleRemoveVariants}
@@ -263,4 +263,4 @@ const PuProductPage = (props) => {
   );
 };
 
-export default PuProductPage;
+export default Product;

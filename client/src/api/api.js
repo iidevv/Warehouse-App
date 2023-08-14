@@ -293,6 +293,20 @@ export const catalogAPI = {
         return response.data;
       });
   },
+  getProduct(vendor, id, search, link) {
+    return instance
+      .get(`/catalog/product/`, {
+        params: {
+          vendor,
+          id,
+          search,
+          link,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
 };
 
 export const hhProductsAPI = {

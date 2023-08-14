@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import defaultImg from "../../assets/default-image.png";
 
-const HhProductPageVariants = (props) => {
+const ProductVariants = (props) => {
   const [selectedVariants, setSelectedVariants] = useState([]);
   const [lastCheckedIndex, setLastCheckedIndex] = useState(null);
   const [checkboxStates, setCheckboxStates] = useState({});
@@ -282,4 +282,4 @@ const HhProductPageVariants = (props) => {
   );
 };
 
-export default HhProductPageVariants;
+export default ProductVariants;

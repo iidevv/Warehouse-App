@@ -1,6 +1,11 @@
 import express from "express";
-import { hhInstance, puInstance, wpsInstance } from "../instances/index.js";
-import { getInventory, getPrice } from "../common/pu.js";
+import {
+  hhInstance,
+  lsInstance,
+  puInstance,
+  wpsInstance,
+} from "../../instances/index.js";
+import { getInventory, getPrice } from "../../common/pu.js";
 
 const router = express.Router();
 
@@ -14,7 +19,7 @@ const getWPSCatalog = async (offset = "", search = "") => {
       return {
         id: item.id,
         name: item.name,
-        url: `/product/${item.id}?vendor=WPS`,
+        url: item.product_id ? `/product/${item.product_id}?vendor=WPS` : null,
         sku: item.sku,
         image_url: item.images.data[0]
           ? `https://${item.images.data[0]?.domain}${item.images.data[0]?.path}${item.images.data[0]?.filename}`
@@ -104,7 +109,7 @@ const getHHCatalog = async (offset = 0, search = "") => {
       return {
         id: item.objectID,
         name: item.product_name,
-        url: `/product/${item.objectID}?vendor=PU&link=${item.direct_link}`,
+        url: `/product/${item.objectID}?vendor=HH&link=${item.direct_link}`,
         sku: item.skus[0],
         image_url: item.list_image,
         price: item.price,
@@ -141,6 +146,56 @@ const getHHCatalog = async (offset = 0, search = "") => {
   }
 };
 
+const getLSCatalog = async (offset = 0, search = "") => {
+  try {
+    const catalog = {};
+
+    const response = await lsInstance.post(`/products/query`, {
+      query: { filter: `{"name": {"$contains": "${search}"}}` },
+    });
+    catalog.data = response.data.products.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        url: `/product/${item.id}?vendor=LS`,
+        sku: null,
+        image_url: item.media.mainMedia.thumbnail.url,
+        price: item.price.price,
+        inventory: null,
+      };
+    });
+    // next/prev
+    const navigation = (offset, totalProducts) => {
+      let next = null;
+      let prev = null;
+      const pageSize = 10;
+
+      if (offset + pageSize < totalProducts) {
+        next = offset + pageSize;
+      }
+
+      if (offset >= pageSize) {
+        prev = offset - pageSize;
+      }
+
+      return {
+        current: offset,
+        next,
+        prev,
+        total: totalProducts,
+      };
+    };
+
+    catalog.meta = navigation(
+      response.data.metadata.offset,
+      response.data.totalResults
+    );
+    return catalog;
+  } catch (error) {
+    return error.message;
+  }
+};
+
 const getCatalog = async (vendor, offset, search) => {
   let response;
   switch (vendor) {
@@ -153,6 +208,9 @@ const getCatalog = async (vendor, offset, search) => {
     case "HH":
       response = await getHHCatalog(offset, search);
       break;
+    case "LS":
+      response = await getLSCatalog(offset, search);
+      break;
     default:
       response = { error: "Unsupported vendor." };
       break;
@@ -161,9 +219,7 @@ const getCatalog = async (vendor, offset, search) => {
 };
 
 router.get("/products/", async (req, res) => {
-  const vendor = req.query.vendor;
-  const offset = req.query.offset;
-  const search = req.query.search;
+  const { vendor, offset, search } = req.query;
   try {
     const response = await getCatalog(vendor, offset, search);
     if (response.error) {

@@ -1,4 +1,4 @@
-import { hhProductAPI, dmgProductAPI, chatgptAPI } from "./../../api/api";
+import { dmgProductAPI, catalogAPI, chatgptAPI } from "./../../api/api";
 
 const SET_PRODUCT_PAGE = "SET_PRODUCT_PAGE";
 const SET_INFO_ALERT = "SET_INFO_ALERT";
@@ -14,6 +14,7 @@ const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
 const FIND_AND_REPLACE = "FIND_AND_REPLACE";
 const REMOVE_ADDITIONAL_IMAGE = "REMOVE_ADDITIONAL_IMAGE";
 const SET_PRODUCT_CREATE_DATA = "SET_PRODUCT_CREATE_DATA";
+
 let initialState = {
   productData: {
     name: "",
@@ -33,7 +34,7 @@ let initialState = {
   create_value: "",
 };
 
-const hhProductReducer = (state = initialState, action) => {
+const productReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_PRODUCT_PAGE:
       return {
@@ -372,10 +373,10 @@ export const createBigcommerceProduct = (data) => {
   };
 };
 
-export const getProduct = (link) => {
+export const getProduct = (vendor, id, search, link) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    hhProductAPI.getProduct(link).then((data) => {
+    catalogAPI.getProduct(vendor, id, search, link).then((data) => {
       dispatch(setProduct(data));
       dispatch(setHandleContentChange("description", data.description));
       dispatch(setToggleIsFetching(false));
@@ -392,11 +393,9 @@ export const getChatgptContent = (contentField, text) => {
         dispatch(setHandleContentChange(contentField, data, true));
       })
       .catch((err) => {
-        dispatch(
-          setHandleContentChange(contentField, `Error: ${err}`, true)
-        );
+        dispatch(setHandleContentChange(contentField, `Error: ${err}`, true));
       });
   };
 };
 
-export default hhProductReducer;
+export default productReducer;

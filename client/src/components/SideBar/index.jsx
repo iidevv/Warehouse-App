@@ -85,45 +85,16 @@ const SideBar = (props) => {
                   <span className="mx-4 text-sm font-normal">Orders</span>
                 </NavLink>
               </li>
-              <li className="has-submenu">
-                <span className="menu-link mx-4 text-sm font-normal">
-                  Catalogs
-                </span>
-                <ul>
-                  <li>
-                    <NavLink
-                      to="/catalog?vendor=PU"
-                      onClick={handleSetMenuActive}
-                      className="menu-link"
-                    >
-                      <span className="mx-4 text-sm font-normal">
-                        PU Catalog
-                      </span>
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to="/catalog?vendor=WPS"
-                      onClick={handleSetMenuActive}
-                      className="menu-link"
-                    >
-                      <span className="mx-4 text-sm font-normal">
-                        WPS Catalog
-                      </span>
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to="/catalog?vendor=HH"
-                      onClick={handleSetMenuActive}
-                      className="menu-link"
-                    >
-                      <span className="mx-4 text-sm font-normal">
-                        HH Catalog
-                      </span>
-                    </NavLink>
-                  </li>
-                </ul>
+              <li>
+                <NavLink
+                  to="/catalogs"
+                  onClick={handleSetMenuActive}
+                  className={({ isPending, isActive }) =>
+                    isActive ? "active-menu-link" : "menu-link"
+                  }
+                >
+                  <span className="mx-4 text-sm font-normal">Catalogs</span>
+                </NavLink>
               </li>
               <li className="has-submenu">
                 <span className="menu-link mx-4 text-sm font-normal">

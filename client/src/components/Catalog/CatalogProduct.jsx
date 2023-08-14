@@ -19,7 +19,7 @@ const CatalogProduct = (props) => {
         {props.sku}
       </td>
       <td className="px-2 lg:px-5 py-5 text-sm bg-white border-b border-gray-200">
-        {props.id ? (
+        {props.url ? (
           <NavLink
             to={props.url}
             target="_blank"

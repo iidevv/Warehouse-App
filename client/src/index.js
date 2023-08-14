@@ -9,21 +9,17 @@ import Settings from "./routes/Settings";
 import Index from "./routes/Index";
 import store from "./redux/store";
 import { Provider } from "react-redux";
-import WPSInventory from "./routes/WPSInventory";
-import WpsProductPageContainer from "./components/WpsInventory/WpsProductPageContainer";
 import { Auth } from "./routes/Auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PUInventory from "./routes/PUInventory";
 import PuDropship from "./routes/PuDropship";
-import PuProductPageContainer from "./components/PuInventory/PuProductPageContainer";
-import Products from "./routes/Products";
 import WpsDropship from "./routes/WpsDropship";
 import Cookies from "js-cookie";
 import Orders from "./routes/Orders";
-import HHInventory from "./routes/HHInventory";
-import HhProductPageContainer from "./components/HhInventory/HhProductPageContainer";
-import Catalog from "./routes/Catalog";
+import ProductContainer from "./components/Product/productContainer";
+import CatalogContainer from "./components/Catalog/CatalogContainer";
+import DashboardContainer from "./components/Dashboard/DashboardContainer";
+import Catalogs from "./routes/Catalogs";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = Cookies.get("userID") ? true : false;
@@ -62,27 +58,23 @@ const router = createBrowserRouter([
       },
       {
         path: "/catalog",
-        element: <Catalog />,
+        element: <CatalogContainer />,
+      },
+      {
+        path: "/catalogs",
+        element: <Catalogs />,
+      },
+      {
+        path: "/product/:id",
+        element: <ProductContainer />,
       },
       {
         path: "/products",
-        element: <Products />,
+        element: <DashboardContainer />,
       },
       {
         path: "/settings",
         element: <Settings />,
-      },
-      {
-        path: "/wps-catalog",
-        element: <WPSInventory />,
-      },
-      {
-        path: "/pu-catalog",
-        element: <PUInventory />,
-      },
-      {
-        path: "/hh-catalog",
-        element: <HHInventory />,
       },
       {
         path: "/dropship-pu",
@@ -91,18 +83,6 @@ const router = createBrowserRouter([
       {
         path: "/dropship-wps",
         element: <WpsDropship />,
-      },
-      {
-        path: "/pu-product/:id",
-        element: <PuProductPageContainer />,
-      },
-      {
-        path: "/wps-product/:id",
-        element: <WpsProductPageContainer />,
-      },
-      {
-        path: "/hh-product/:id",
-        element: <HhProductPageContainer />,
       },
     ],
   },

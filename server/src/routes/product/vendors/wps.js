@@ -1,21 +1,17 @@
-import express from "express";
-import { wpsInstance } from "../instances/index.js";
-import { generateProductName } from "../common/index.js";
+import { wpsInstance } from "../../../instances/index.js";
+import { generateProductName } from "../../../common/index.js";
+import { removeDuplicateWords } from "../common.js";
 
-const router = express.Router();
-
-const removeDuplicateWords = (title, variation) => {
-  const titleWords = new Set(title.toLowerCase().split(" "));
-  const variationWords = variation.toLowerCase().split(" ");
-
-  const filteredVariation = variationWords.filter(
-    (word) => !titleWords.has(word)
-  );
-
-  return filteredVariation
-    .join(" ")
-    .toLowerCase()
-    .replace(/(^\W+|\W+$)/g, "");
+const fetchData = async (id) => {
+  try {
+    const wpsProduct = await wpsInstance.get(
+      `/products/${id}/?include=features,items.images,items.inventory,items.brand`
+    );
+    return wpsProduct.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 };
 
 const createProduct = (obj) => {
@@ -92,7 +88,7 @@ const createProduct = (obj) => {
       i++;
       const is_default = i === 1 ? true : false;
       let is_available = false;
-      if(item.inventory.data && +item.list_price !== 0) {
+      if (item.inventory.data && +item.list_price !== 0) {
         is_available = true;
       }
 
@@ -134,25 +130,12 @@ const createProduct = (obj) => {
   return product;
 };
 
-const fetchData = async (id) => {
+export const getWPSProduct = async (id) => {
   try {
-    const wpsProduct = await wpsInstance.get(
-      `/products/${id}/?include=features,items.images,items.inventory,items.brand`
-    );
-    return createProduct(wpsProduct.data);
+    const productData = await fetchData(id);
+    const product = createProduct(productData);
+    return product;
   } catch (error) {
-    return error;
+    return { error: error };
   }
 };
-
-router.get("/product/", async (req, res) => {
-  const id = req.query.id;
-  try {
-    const product = await fetchData(id);
-    res.json(product);
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-});
-
-export { router as WPSProductRouter };

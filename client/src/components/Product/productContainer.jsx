@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
-import WpsProductPage from "./WpsProductPage";
+import Product from "./product";
 import withRouter from "../../hoc/withRouter";
 import Preloader from "../common/preloader/Preloader";
 import Notifications from "../common/notifications/Notifications";
@@ -23,13 +23,24 @@ import {
   getChatgptContent,
   findAndReplace,
   removeAdditionalImage,
-} from "../../redux/reducers/wps-product-reducer";
+  setProductCreateData,
+} from "../../redux/reducers/product-reducer";
 
-class WpsProductContainer extends React.Component {
+class ProductContainer extends React.Component {
   componentDidMount() {
-    let id = this.props.params.id;
+    const id = this.props.params.id;
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const search = urlParams.get("search") || undefined;
+    const vendor = urlParams.get("vendor") || undefined;
+    const link = urlParams.get("link") || undefined;
     if (!id) id = 1;
-    this.props.getProduct(id);
+    this.props.getProduct(vendor, id, search, link);
+    // if (search) {
+    //   this.props.getProduct(id, search);
+    //   this.props.setProductCreateData("search", search);
+    // } else {
+    // }
     this.props.setCategory(
       JSON.parse(localStorage.getItem("current_categories"))
     );
@@ -44,7 +55,8 @@ class WpsProductContainer extends React.Component {
       localStorage.getItem("current_categories")
     ).flatMap((id) => +id.category_id);
     data.categories = categories;
-
+    data.create_type = this.props.create_type;
+    data.create_value = this.props.create_value;
     // remove duplicates
     data.images = data.images.filter((image, index, array) => {
       const firstIndex = array.findIndex(
@@ -98,12 +110,16 @@ class WpsProductContainer extends React.Component {
   onHandleRemoveAdditionalImage = (url) => {
     this.props.removeAdditionalImage(url);
   };
+  onSetProductCreateData = (type, value) => {
+    this.props.setProductCreateData(type, value);
+  };
+
   render() {
     return (
       <>
         {this.props.isFetching ? <Preloader /> : null}
         <Notifications info={this.props.info} />
-        <WpsProductPage
+        <Product
           product={this.props.productData}
           content={this.props.content}
           pushToCatalog={this.pushToCatalog}
@@ -118,8 +134,11 @@ class WpsProductContainer extends React.Component {
           onHandleChangeVariantName={this.onHandleChangeVariantName}
           onHandleRemoveAdditionalImage={this.onHandleRemoveAdditionalImage}
           onGetChatgptContent={this.onGetChatgptContent}
+          onSetProductCreateData={this.onSetProductCreateData}
           categories={this.props.categories}
           current_categories={this.props.current_categories}
+          create_type={this.props.create_type}
+          create_value={this.props.create_value}
         />
       </>
     );
@@ -128,12 +147,14 @@ class WpsProductContainer extends React.Component {
 
 let mapStateToProps = (state) => {
   return {
-    productData: state.wpsProduct.productData,
-    content: state.wpsProduct.content,
-    info: state.wpsProduct.info,
-    isFetching: state.wpsProduct.isFetching,
-    categories: state.wpsProduct.categories,
-    current_categories: state.wpsProduct.current_categories,
+    productData: state.product.productData,
+    content: state.product.content,
+    info: state.product.info,
+    isFetching: state.product.isFetching,
+    categories: state.product.categories,
+    current_categories: state.product.current_categories,
+    create_type: state.product.create_type,
+    create_value: state.product.create_value,
   };
 };
 
@@ -156,6 +177,7 @@ export default compose(
     getChatgptContent,
     findAndReplace,
     removeAdditionalImage,
+    setProductCreateData,
   }),
   withRouter
-)(WpsProductContainer);
+)(ProductContainer);

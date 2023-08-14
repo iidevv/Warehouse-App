@@ -37,7 +37,7 @@ class DashboardContainer extends React.Component {
 
   render() {
     return (
-      <>
+      <div className="container">
         {this.props.isFetching ? <Preloader /> : null}
         <Dashboard
           vendor={this.vendor}
@@ -51,7 +51,7 @@ class DashboardContainer extends React.Component {
           totalPages={this.props.totalPages}
           status={this.props.status}
         />
-      </>
+      </div>
     );
   }
 }

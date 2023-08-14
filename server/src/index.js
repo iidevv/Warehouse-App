@@ -4,8 +4,6 @@ import mongoose from "mongoose";
 import url from "url";
 import path from "path";
 import { bigcommerceRouter } from "./routes/bigcommerce.js";
-import { WPSProductsRouter } from "./routes/wps-products.js";
-import { WPSProductRouter } from "./routes/wps-product.js";
 import { inventoryRouter } from "./routes/inventory.js";
 import { SyncProductsRouter, updateProducts } from "./sync-products/index.js";
 import { userRouter } from "./routes/user.js";
@@ -13,8 +11,6 @@ import { chatgptRouter } from "./routes/chatgpt.js";
 import { CronJob } from "cron";
 import { authenticate } from "./routes/user.js";
 import cookieParser from "cookie-parser";
-import { puProductsRouter } from "./routes/pu-products.js";
-import { puProductRouter } from "./routes/pu-product.js";
 import { puExternalProductRouter } from "./routes/external/pu-product.js";
 import { puDropshipRouter } from "./routes/pu-dropship.js";
 import { dropshipOrderRouter } from "./routes/dropship.js";
@@ -26,9 +22,8 @@ import { ProductAvailabilityRouter } from "./routes/external/productAvailability
 import { bulkActionRouter } from "./routes/external/bulk-actions.js";
 import { sendNotification } from "./routes/tg-notifications.js";
 import { testActionRouter } from "./routes/external/test-action.js";
-import { hhProductsRouter } from "./routes/hh-products.js";
-import { hhProductRouter } from "./routes/hh-product.js";
-import { catalogRouter } from "./routes/catalog.js";
+import { catalogRouter } from "./routes/catalog/catalog.js";
+import { productRouter } from "./routes/product/product.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,21 +62,15 @@ app.use("/api/auth", userRouter);
 
 app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
-
 app.use("/api/inventory", SyncProductsRouter);
 app.use("/api/catalog", catalogRouter);
+app.use("/api/catalog", productRouter);
+app.use("/api/dropship", dropshipOrderRouter);
 app.use("/api/pu-dropship", puDropshipRouter);
-app.use("/api/pu", puProductsRouter);
-app.use("/api/pu", puProductRouter);
-app.use("/api/hh", hhProductsRouter);
-app.use("/api/hh", hhProductRouter);
+app.use("/api/wps-dropship", wpsDropshipRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/gpt", chatgptRouter);
 app.use("/api/products", bigcommerceRouter);
-app.use("/api/wps", WPSProductsRouter);
-app.use("/api/wps", WPSProductRouter);
-app.use("/api/wps-dropship", wpsDropshipRouter);
-app.use("/api/dropship", dropshipOrderRouter);
 
 mongoose.connect(
   `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}/${dbname}?authMechanism=DEFAULT&authSource=${dbname}&ssl=true&sslValidate=false`
@@ -91,13 +80,9 @@ const job = new CronJob({
   cronTime: "0 7,14,18 * * *",
   onTick: async () => {
     try {
-      sendNotification("scheduled update started");
-
       await updateProducts("WPS");
       await updateProducts("PU");
       await updateProducts("HH");
-
-      sendNotification("scheduled update complete");
     } catch (error) {
       sendNotification(`Error during updating: ${error}`);
     }

@@ -37,7 +37,6 @@ function CatalogContainer({
 
   useEffect(() => {
     if (meta.current !== prevMeta.current || search !== prevSearch.current) {
-      console.log("used");
       const newUrl = `${window.location.origin}${window.location.pathname}?vendor=${vendor}&offset=${meta.current}&search=${search}`;
       window.history.pushState({ path: newUrl }, "", newUrl);
     }
@@ -76,7 +75,7 @@ function CatalogContainer({
   };
 
   return (
-    <>
+    <div className="container">
       {isFetching ? <Preloader /> : null}
       <Catalog
         vendor={vendor}
@@ -86,7 +85,7 @@ function CatalogContainer({
         onPageChanged={onPageChanged}
         onSearch={onSearch}
       />
-    </>
+    </div>
   );
 }
 

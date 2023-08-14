@@ -173,7 +173,7 @@ export const updateProducts = (vendor, vendor_id, name, status) => {
       }
     }
     sendNotification(
-      `${vendor} products updated. ${productsUpdated}/${productsToUpdate}. Total pages: ${totalPages}`
+      `${vendor} products updated. ${productsUpdated}/${productsToUpdate}.`
     );
     resolve();
   });
