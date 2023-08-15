@@ -1,10 +1,6 @@
 import express from "express";
-import {
-  hhInstance,
-  lsInstance,
-  puInstance,
-  wpsInstance,
-} from "../../instances/index.js";
+import { hhInstance, puInstance, wpsInstance } from "../../instances/index.js";
+import { lsInstance } from "../../instances/ls-instance.js";
 import { getInventory, getPrice } from "../../common/pu.js";
 
 const router = express.Router();
@@ -149,9 +145,15 @@ const getHHCatalog = async (offset = 0, search = "") => {
 const getLSCatalog = async (offset = 0, search = "") => {
   try {
     const catalog = {};
-
+    if (!offset) offset = 0;
     const response = await lsInstance.post(`/products/query`, {
-      query: { filter: `{"name": {"$contains": "${search}"}}` },
+      query: {
+        filter: `{"name": {"$contains": "${search}"}}`,
+        paging: {
+          limit: 10,
+          offset: offset,
+        },
+      },
     });
     catalog.data = response.data.products.map((item) => {
       return {
@@ -160,7 +162,7 @@ const getLSCatalog = async (offset = 0, search = "") => {
         url: `/product/${item.id}?vendor=LS`,
         sku: null,
         image_url: item.media.mainMedia.thumbnail.url,
-        price: item.price.price,
+        price: null,
         inventory: null,
       };
     });
