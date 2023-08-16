@@ -23,3 +23,4 @@ const InventorySchema = new mongoose.Schema({
 export const InventoryModel = mongoose.model("wps-products", InventorySchema);
 export const puInventoryModel = mongoose.model("pu-products", InventorySchema);
 export const hhInventoryModel = mongoose.model("hh-products", InventorySchema);
+export const lsInventoryModel = mongoose.model("ls-products", InventorySchema);

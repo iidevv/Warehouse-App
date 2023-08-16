@@ -1,5 +1,6 @@
 import Jsftp from "jsftp";
 import Papa from "papaparse";
+import * as XLSX from "xlsx";
 import {
   mkdirSync,
   existsSync,
@@ -15,7 +16,7 @@ config();
 
 // helpers
 
-const parseCSV = (file) => {
+export const parseCSV = (file) => {
   return new Promise((resolve, reject) => {
     Papa.parse(file, {
       header: true,
@@ -25,9 +26,24 @@ const parseCSV = (file) => {
   });
 };
 
+export const parseXLSX = async (buffer) => {
+  try {
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    
+    // Преобразовать лист в массив объектов
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+    
+    return jsonData;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // main
 
-export const downloadInventoryFile = async (vendor, fileFormat = "csv") => {
+export const downloadInventoryFile = async (vendor) => {
   let remotePath = "";
   let Ftp;
 
@@ -39,9 +55,17 @@ export const downloadInventoryFile = async (vendor, fileFormat = "csv") => {
         user: process.env.HH_FTP_USERNAME,
         pass: process.env.HH_FTP_PASSWORD,
       });
-      remotePath = `/masterv.${fileFormat}`;
+      remotePath = `/masterv.csv`;
       break;
-
+    case "LS":
+      Ftp = new Jsftp({
+        host: process.env.LS_FTP_HOST,
+        port: 21,
+        user: process.env.LS_FTP_USERNAME,
+        pass: process.env.LS_FTP_PASSWORD,
+      });
+      remotePath = `/Updated Inventory.csv`;
+      break;
     default:
       return false;
   }

@@ -2,6 +2,7 @@ import {
   InventoryModel,
   puInventoryModel,
   hhInventoryModel,
+  lsInventoryModel,
 } from "../models/Inventory.js";
 
 export const createNewDate = () => {
@@ -44,6 +45,9 @@ export const getInventoryModel = (vendor) => {
       break;
     case "HH":
       model = hhInventoryModel;
+      break;
+    case "LS":
+      model = lsInventoryModel;
       break;
 
     default:

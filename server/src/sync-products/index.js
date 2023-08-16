@@ -22,7 +22,7 @@ export const updateProducts = (vendor, vendor_id, name, status) => {
     let productsToUpdate = 0;
     let productsUpdated = 0;
 
-    if (vendor == "HH") {
+    if (vendor == "HH" || vendor == "LS") {
       await downloadInventoryFile(vendor);
     }
 

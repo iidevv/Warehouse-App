@@ -1,92 +1,99 @@
+import { promises as fs } from "fs";
 import { lsInstance } from "../../../instances/ls-instance.js";
 import { generateProductName } from "../../../common/index.js";
 import { removeDuplicateWords } from "../common.js";
+import { parseXLSX, readInventoryFile } from "../../../sync-products/ftp.js";
+import { sendNotification } from "../../tg-notifications.js";
+
+const readAdditionalFile = async () => {
+  const localPath = `./additional_files/LS_GTIN.xlsx`;
+  try {
+    const file = await fs.readFile(localPath);
+    const results = await parseXLSX(file);
+    return results;
+  } catch (err) {
+    sendNotification(`LS readAdditionalFile Error: ${err}`);
+    return false;
+  }
+};
 
 const fetchData = async (id) => {
   try {
     const productData = await lsInstance.get(`/products/${id}`);
-    console.log(productData.data.product);
-    
-
-    // return product;
+    const variantsData = await readInventoryFile("LS");
+    const variantsAdditional = await readAdditionalFile();
+    return { data: productData.data.product, variantsData, variantsAdditional };
   } catch (error) {
     return error;
   }
 };
 
 const createProduct = (obj) => {
-  const data = obj.variants[0];
-  const variants = obj.variants;
-  let description = "";
-  if (obj.info.features[0]) {
-    description += "<ul>";
-    description += obj.info.features
-      .map((item) => {
-        return `<li>${item.description}</li>`;
-      })
-      .join("");
-    description += "</ul>";
+  let variantsInfo = obj.data.additionalInfoSections[0];
+  let variants = [];
+
+  if (variantsInfo.title.includes("NUMBERS")) {
+    const regex = /(?:<p>)?([A-Za-z0-9]+): ([A-Za-z0-9\-]+)(?:<\/p>)?/g;
+
+    for (const match of variantsInfo.description.matchAll(regex)) {
+      if (match[1] && match[2]) {
+        variants.push({
+          size: match[1],
+          sku: match[2],
+        });
+      }
+    }
+  } else if (variantsInfo.title.includes("PART NUMBER")) {
+    const regex = /(?:<p>)([A-Za-z0-9\-]+)(?:<\/p>)?/g;
+
+    for (const match of variantsInfo.description.matchAll(regex)) {
+      variants.push({
+        sku: match[1],
+      });
+    }
   }
-
-  const price = getPrice(data.prices);
-  const sortedVariants = variants
-    .map((item, i) => {
-      const cleanName = removeDuplicateWords(
-        data.productName,
-        item.description
-      );
-      const option = cleanName ? cleanName : item.description.toLowerCase();
-      let imageUrl = item.primaryMedia ? item.primaryMedia.absoluteUrl : false;
-      i++;
-      if (imageUrl) imageUrl = imageUrl.replace("http:", "https:");
-      let inventoryLevel = item.inventory.locales.reduce(
-        (total, local) => total + (local.quantity || 0),
-        0
-      );
-
-      if (data.access.notForSale || data.access.unavailableForPurchase) {
-        inventoryLevel = 0;
-      }
-
-      const is_default = i === 1 ? true : false;
-      const price = getPrice(item.prices);
-      if (imageUrl) {
-        return {
-          id: item.partNumber,
-          sku: item.partNumber,
-          upc: item.upc,
-          option_values: [
-            {
-              option_display_name: `${data.brandName} options`,
-              label: option,
-            },
-          ],
-          price: price,
-          inventory_level: inventoryLevel,
-          image_url: imageUrl,
-          is_default: is_default,
-        };
-      } else {
-        return {
-          id: item.partNumber,
-          sku: item.partNumber,
-          upc: item.upc,
-          name: option,
-          option_values: [
-            {
-              option_display_name: `${data.brandName} options`,
-              label: option,
-            },
-          ],
-          price: item.prices.retail,
-          inventory_level: inventoryLevel,
-          is_default: is_default,
-        };
-      }
-    })
-    .sort((a, b) => {
-      return a.sku.localeCompare(b.sku);
-    });
+  let description = "";
+  if (obj.data.additionalInfoSections[1]) {
+    description = obj.data.additionalInfoSections[1].description;
+  }
+  const data = obj.variantsData.find(
+    (row) => row["PartNumber"] === variants[0].sku
+  );
+  const price = data["RetailPrice"];
+  const sortedVariants = variants.map((item, i) => {
+    const data = obj.variantsData.find((row) => row["PartNumber"] === item.sku);
+    const additionalData = obj.variantsAdditional.find(
+      (row) => row["Part Number"] === item.sku
+    );
+    let imageUrl = obj.data?.media?.mainMedia?.image?.url || false;
+    i++;
+    console.log(obj.data.media.items);
+    return;
+    const is_default = i === 1 ? true : false;
+    const variant = {
+      id: item.sku,
+      sku: item.sku,
+      gtin: additionalData["EAN"],
+      option_values: [
+        {
+          option_display_name: `Color`,
+          label: additionalData["Color"],
+        },
+        {
+          option_display_name: `Size`,
+          label: additionalData["Size"],
+        },
+      ],
+      price: +data["RetailPrice"],
+      inventory_level: +data["In Stock"],
+      is_default: is_default,
+    };
+    if (imageUrl) {
+      variant.image_url = imageUrl;
+    }
+    return variant;
+  });
+  return;
   const mainImages = variants
     .map((item, i) => {
       let imageUrl = item.primaryMedia ? item.primaryMedia.absoluteUrl : false;
@@ -137,8 +144,7 @@ const createProduct = (obj) => {
 export const getLSProduct = async (id) => {
   try {
     const productData = await fetchData(id);
-    console.log(productData);
-    // const product = createProduct(productData);
+    const product = createProduct(productData);
     // return product;
   } catch (error) {
     return { error: error };
