@@ -198,7 +198,7 @@ const getLSCatalog = async (offset = 0, search = "") => {
   }
 };
 
-const getCatalog = async (vendor, offset, search) => {
+export const getCatalog = async (vendor, offset, search) => {
   let response;
   switch (vendor) {
     case "WPS":

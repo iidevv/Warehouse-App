@@ -83,6 +83,7 @@ const job = new CronJob({
       await updateProducts("WPS");
       await updateProducts("PU");
       await updateProducts("HH");
+      await updateProducts("LS");
     } catch (error) {
       sendNotification(`Error during updating: ${error}`);
     }

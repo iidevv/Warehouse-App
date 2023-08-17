@@ -36,11 +36,9 @@ class ProductContainer extends React.Component {
     const link = urlParams.get("link") || undefined;
     if (!id) id = 1;
     this.props.getProduct(vendor, id, search, link);
-    // if (search) {
-    //   this.props.getProduct(id, search);
-    //   this.props.setProductCreateData("search", search);
-    // } else {
-    // }
+    if (search) {
+      this.props.setProductCreateData("search", search);
+    }
     this.props.setCategory(
       JSON.parse(localStorage.getItem("current_categories"))
     );
@@ -112,6 +110,7 @@ class ProductContainer extends React.Component {
   };
   onSetProductCreateData = (type, value) => {
     this.props.setProductCreateData(type, value);
+    console.log(type, value);
   };
 
   render() {

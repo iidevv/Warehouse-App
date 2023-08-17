@@ -1,5 +1,10 @@
 import express from "express";
-import { InventoryModel, puInventoryModel, hhInventoryModel } from "../models/Inventory.js";
+import {
+  InventoryModel,
+  puInventoryModel,
+  hhInventoryModel,
+  lsInventoryModel,
+} from "../models/Inventory.js";
 
 const router = express.Router();
 
@@ -58,8 +63,9 @@ router.get("/info", async (req, res) => {
     const wpsData = await getData(InventoryModel);
     const puData = await getData(puInventoryModel);
     const hhData = await getData(hhInventoryModel);
-    const data = totalData([wpsData, puData, hhData]);
-    res.json({ data, wpsData, puData, hhData });
+    const lsData = await getData(lsInventoryModel);
+    const data = totalData([wpsData, puData, hhData, lsData]);
+    res.json({ data, wpsData, puData, hhData, lsData });
   } catch (error) {
     console.log(error);
   }

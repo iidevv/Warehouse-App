@@ -18,11 +18,11 @@ const Index = (props) => {
       url: "/products?vendor=HH",
       data: props.hhData,
     },
-    // {
-    //   name: "LS 2",
-    //   url: "/products?vendor=LS",
-    //   data: props.lsData,
-    // },
+    {
+      name: "LS 2",
+      url: "/products?vendor=LS",
+      data: props.lsData,
+    },
     // {
     //   name: "Tucker",
     //   url: "/products?vendor=TR",
@@ -36,8 +36,13 @@ const Index = (props) => {
       </div>
       <div className="flex flex-col lg:flex-row">
         <div className="grid grid-cols-1 lg:grid-1/3 lg:grid-cols-2 gap-10 w-full mb-10">
-          {data.map((vendor) => (
-            <Widget title={vendor.name} link={vendor.url} data={vendor.data} />
+          {data.map((vendor, i) => (
+            <Widget
+              key={i}
+              title={vendor.name}
+              link={vendor.url}
+              data={vendor.data}
+            />
           ))}
         </div>
         <div className="w-full lg:w-2/6 lg:ml-10">

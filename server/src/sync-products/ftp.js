@@ -31,10 +31,10 @@ export const parseXLSX = async (buffer) => {
     const workbook = XLSX.read(buffer, { type: "buffer" });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    
+
     // Преобразовать лист в массив объектов
     const jsonData = XLSX.utils.sheet_to_json(worksheet);
-    
+
     return jsonData;
   } catch (error) {
     throw error;
@@ -43,7 +43,7 @@ export const parseXLSX = async (buffer) => {
 
 // main
 
-export const downloadInventoryFile = async (vendor) => {
+export const downloadInventoryFile = async (vendor, fileFormat) => {
   let remotePath = "";
   let Ftp;
 

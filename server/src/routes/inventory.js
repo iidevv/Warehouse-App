@@ -49,7 +49,6 @@ export const getInventoryProducts = async (
 
 export const addInventoryProduct = async (vendor, productData) => {
   const Model = getInventoryModel(vendor);
-
   const {
     vendor_id,
     bigcommerce_id,

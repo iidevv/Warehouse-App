@@ -19,6 +19,7 @@ class IndexContainer extends React.Component {
           wpsData={this.props.wpsData}
           puData={this.props.puData}
           hhData={this.props.hhData}
+          lsData={this.props.lsData}
         />
       </>
     );
@@ -30,6 +31,7 @@ let mapStateToProps = (state) => {
     wpsData: state.dashboard.wpsData,
     puData: state.dashboard.puData,
     hhData: state.dashboard.hhData,
+    lsData: state.dashboard.lsData,
     data: state.dashboard.data,
     isFetching: state.dashboard.isFetching,
   };

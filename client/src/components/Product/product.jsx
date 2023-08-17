@@ -50,12 +50,13 @@ const Product = (props) => {
   };
   return (
     <div className="container">
-      {props.create_value && (
-        <div className="bg-white shadow-lg mb-10 p-4 flex flex-col lg:flex-row lg:items-center">
-          <p className="font-semibold mr-6 mb-2 lg:mb-0 lg:w-48">
-            Combine By Name:
+      {props.product.search_available && (
+        <div className="bg-white shadow-lg mb-10 p-4 flex flex-col">
+          <p className="block text-sm font-medium text-gray-700 mb-2">
+            <b>Combine by name.</b> Use the product name (no brands, no colors):
           </p>
           <form className="flex flex-col lg:flex-row items-start lg:items-center w-full">
+            <input type="hidden" name="vendor" value={props.product.vendor} />
             <input
               type="text"
               name="search"

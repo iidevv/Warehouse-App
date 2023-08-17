@@ -18,7 +18,7 @@ const getProduct = async (vendor, id, search, link) => {
       response = await getHHProduct(link);
       break;
     case "LS":
-      response = await getLSProduct(id);
+      response = await getLSProduct(id, search);
       break;
     default:
       response = { error: "Unsupported vendor." };

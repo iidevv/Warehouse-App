@@ -49,7 +49,9 @@ export const getProduct = async (vendor, id, name) => {
     case "HH":
       product = await getHHProduct(id, name);
       break;
-
+    case "LS":
+      product = await getLSProduct(id, name);
+      break;
     default:
       break;
   }
@@ -204,6 +206,53 @@ const getHHProduct = async (id, name) => {
 
         const price = item ? +item["Retail"] : 0;
         let inventoryLevel = item ? +item["TTL Qty"] : 0;
+        if (price == 0) {
+          inventoryLevel = 0;
+        }
+        return {
+          id: partNumber,
+          sku: partNumber,
+          price: price,
+          inventory_level: inventoryLevel,
+        };
+      })
+    );
+    return {
+      price: price,
+      variants: variants,
+    };
+  } catch (error) {
+    sendNotification(`${name}. Error: ${error}`);
+    throw error;
+  }
+};
+const getLSProduct = async (id, name) => {
+  try {
+    let response;
+    // get all variants sku's
+    const product = await getSyncedProduct("LS", id, name);
+    if (!product) {
+      return;
+    }
+    const incorporatingPartNumbers = product.variants.map((v) => v.vendor_id);
+    response = await readInventoryFile("LS");
+    const items = incorporatingPartNumbers.map((partNumber) => {
+      return response.find((item) => item && item["PartNumber"] == partNumber);
+    });
+    if (items.length === 0) {
+      return;
+    }
+    const data = items[0];
+    const price = +data["RetailPrice"];
+
+    const variants = await Promise.all(
+      incorporatingPartNumbers.map(async (partNumber) => {
+        const item = items.find(
+          (item) => item && item["PartNumber"] === partNumber
+        );
+
+        const price = item ? +item["RetailPrice"] : 0;
+        let inventoryLevel = item ? +item["In Stock"] : 0;
         if (price == 0) {
           inventoryLevel = 0;
         }
