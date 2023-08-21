@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 import axios from "axios";
 
-import { removeDuplicateWords } from "../common.js";
+import { removeDuplicateWords, standardizeSize } from "../common.js";
 import { readInventoryFile } from "../../../sync-products/ftp.js";
 import { generateProductName } from "../../../common/index.js";
 
@@ -147,7 +147,7 @@ const createProduct = (obj, variantsData, link) => {
     if (item.size) {
       variant.option_values.push({
         option_display_name: `Size`,
-        label: item.size,
+        label: standardizeSize(item.size),
       });
     }
     if (!item.color && !item.size && (additionalSize || additionalColor)) {

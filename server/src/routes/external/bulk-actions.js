@@ -7,6 +7,7 @@ import {
 } from "../../instances/index.js";
 import { InventoryModel } from "../../models/Inventory.js";
 import { OpenAIApi } from "openai";
+import { createOptions, standardizeSize } from "../product/common.js";
 
 const router = express.Router();
 
@@ -103,115 +104,17 @@ router.get("/bulk-action/", async (req, res) => {
   res.json({ status: "products updated." });
 });
 
-const randomDate = () => {
-  const start = "2022-01-01T00:00:00Z";
-  const end = "2023-06-30T23:59:59Z";
-  const startDate = new Date(start).getTime();
-  const endDate = new Date(end).getTime();
-  const randomTime = Math.random() * (endDate - startDate) + startDate;
-  const randomDate = new Date(randomTime);
-  return randomDate.toISOString();
-};
-
-const createReviews = async (input, name) => {
-  try {
-    const openai = new OpenAIApi(gptInstance);
-    const response = await openai.createChatCompletion({
-      model: "gpt-4",
-      messages: [{ role: "user", content: input }],
-    });
-    const reviews = JSON.parse(response.data.choices[0].message?.content);
-    if (Array.isArray(reviews)) {
-      return reviews;
-    } else {
-      console.log(name);
-      console.log(`Is Not Array: ${reviews}`);
-      // Wait for 3 seconds before retrying
-      return new Promise((resolve) => {
-        setTimeout(async () => {
-          const retryReviews = await createReviews(input, name);
-          resolve(retryReviews);
-        }, 3000);
-      });
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-const setReviewText = (productDescription) => {
-  const reviewsCount = Math.floor(Math.random() * 7) + 1;
-  const reviewRequest = {
-    reviewsCount: reviewsCount,
-    rules: [
-      "Use only part of product name in the review (example: helmet, jersey)",
-      "Imagine you're a motorcyclist client, don't do overly detailed reviews (simple words)",
-      "Some review should casually mention one aspects of the product (remember you're not professional) that the reviewer found enjoyable or less satisfying",
-      "The title of the review should be unique",
-      "Avoid using identical or repetitive phrases or sentence structures",
-      "Ensure that author names do not repeat and do not contain identical initials",
-      "Although the rating can range from 3 to 5 (whole number)",
-    ],
-    responseExample: `response example (json):
-    [{"name":"Adnan R","title":"Worked for me","text":"I thought this product was pretty good","rating":5},{"name":"Adnan R","title":"Worked for me!","text":"I thought this product was pretty good","rating":5}]`,
-  };
-  const possibleLengths = Array.from({ length: 10 }, (_, i) => (i + 1) * 30);
-  shuffleArray(possibleLengths);
-
-  for (let i = 0; i < reviewsCount; i++) {
-    let reviewLength = possibleLengths[i];
-    reviewRequest.rules.push(
-      `Review ${i + 1} should be ${reviewLength} characters long.`
-    );
-  }
-
-  return `create ${
-    reviewRequest.reviewsCount
-  } reviews (Important: ${reviewRequest.rules.join(
-    ", "
-  )}) for ${productDescription}. ${reviewRequest.responseExample}`;
-};
-
-const postReviews = async (productId) => {
-  const product = await bigCommerceInstance.get(
-    `/catalog/products/${productId}`
-  );
-  const productDescription = product.data.description;
-  const reviewsText = setReviewText(productDescription);
-  const reviews = await createReviews(reviewsText, product.data.name);
-
-  if (!reviews) {
-    console.log(`No reviews were created for product ID: ${productId}`);
-    return;
-  }
-
-  await Promise.all(
-    reviews.map(async (review) => {
-      review.date_reviewed = randomDate();
-      review.status = "approved";
-      await bigCommerceInstance
-        .post(`/catalog/products/${productId}/reviews`, review)
-        .catch((err) => console.log(err));
-    })
-  );
-};
-
 router.get("/bulk-action-one/", async (req, res) => {
-  const pageSize = 10;
+  const pageSize = 5;
   let currentPage = 1;
   let totalPages = 1;
 
   try {
     while (currentPage <= totalPages) {
       const products = await bigCommerceInstance
-        .get(`/catalog/products?limit=${pageSize}&page=${currentPage}`)
+        .get(
+          `/catalog/products?limit=${pageSize}&page=${currentPage}&id:in=5308`
+        )
         .catch((err) => console.log(err));
       const productsToProcess = products.data;
       totalPages = products.meta.pagination.total_pages;
@@ -219,19 +122,20 @@ router.get("/bulk-action-one/", async (req, res) => {
       await Promise.all(
         productsToProcess.map(async (product) => {
           try {
-            const reviews = await bigCommerceInstance.get(
-              `/catalog/products/${product.id}/reviews`
+            const brand = product.name.split(" ")[0];
+            const variants = await bigCommerceInstance.get(
+              `/catalog/products/${product.id}/variants`
             );
-
             await Promise.all(
-              reviews.data.map(async (review) => {
+              variants.data.map(async (variant) => {
                 try {
-                  await bigCommerceInstance.delete(
-                    `/catalog/products/${product.id}/reviews/${review.id}`
+                  const options = await bigCommerceInstance.get(
+                    `/catalog/products/${product.id}/options`
                   );
+                  console.log(options.data[0].option_values);
                 } catch (error) {
                   console.error(
-                    `Failed to delete review: ${review.id} - ${error}`
+                    `Failed to update variant: ${variant.id} - ${error}`
                   );
                 }
               })

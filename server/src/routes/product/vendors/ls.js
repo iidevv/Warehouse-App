@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import { lsInstance } from "../../../instances/ls-instance.js";
 import { generateProductName } from "../../../common/index.js";
-import { removeDuplicateWords } from "../common.js";
+import { removeDuplicateWords, standardizeSize } from "../common.js";
 import { parseXLSX, readInventoryFile } from "../../../sync-products/ftp.js";
 import { sendNotification } from "../../tg-notifications.js";
 import { getCatalog } from "../../catalog/catalog.js";
@@ -81,7 +81,7 @@ const createProduct = (obj) => {
           },
           {
             option_display_name: `Size`,
-            label: additionalData["Size"],
+            label: standardizeSize(additionalData["Size"]),
           },
         ],
         price: +data["RetailPrice"],

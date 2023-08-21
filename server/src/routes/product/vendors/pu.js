@@ -2,7 +2,7 @@ import { generateProductName } from "../../../common/index.js";
 import { getPrice } from "../../../common/pu.js";
 import { puInstance } from "../../../instances/index.js";
 import { puSearchInstance } from "../../../instances/pu-search.js";
-import { removeDuplicateWords } from "../common.js";
+import { createOptions, removeDuplicateWords } from "../common.js";
 
 const fetchData = async (id, search) => {
   try {
@@ -104,7 +104,11 @@ const createProduct = (obj) => {
         data.productName,
         item.description
       );
-      const option = cleanName ? cleanName : item.description.toLowerCase();
+      const option = createOptions(
+        cleanName ? cleanName : item.description.toLowerCase(),
+        data.brandName || ""
+      );
+
       let imageUrl = item.primaryMedia ? item.primaryMedia.absoluteUrl : false;
       i++;
       if (imageUrl) imageUrl = imageUrl.replace("http:", "https:");
@@ -119,39 +123,20 @@ const createProduct = (obj) => {
 
       const is_default = i === 1 ? true : false;
       const price = getPrice(item.prices);
+      let variant = {
+        id: item.partNumber,
+        sku: item.partNumber,
+        upc: item.upc,
+        option_values: option,
+        price: price,
+        inventory_level: inventoryLevel,
+        image_url: imageUrl,
+        is_default: is_default,
+      };
       if (imageUrl) {
-        return {
-          id: item.partNumber,
-          sku: item.partNumber,
-          upc: item.upc,
-          option_values: [
-            {
-              option_display_name: `${data.brandName} options`,
-              label: option,
-            },
-          ],
-          price: price,
-          inventory_level: inventoryLevel,
-          image_url: imageUrl,
-          is_default: is_default,
-        };
-      } else {
-        return {
-          id: item.partNumber,
-          sku: item.partNumber,
-          upc: item.upc,
-          name: option,
-          option_values: [
-            {
-              option_display_name: `${data.brandName} options`,
-              label: option,
-            },
-          ],
-          price: item.prices.retail,
-          inventory_level: inventoryLevel,
-          is_default: is_default,
-        };
+        variant.image_url = imageUrl;
       }
+      return variant;
     })
     .sort((a, b) => {
       return a.sku.localeCompare(b.sku);

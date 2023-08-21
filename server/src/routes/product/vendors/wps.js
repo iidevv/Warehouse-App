@@ -1,6 +1,6 @@
 import { wpsInstance } from "../../../instances/index.js";
 import { generateProductName } from "../../../common/index.js";
-import { removeDuplicateWords } from "../common.js";
+import { createOptions, removeDuplicateWords } from "../common.js";
 
 const fetchData = async (id) => {
   try {
@@ -81,7 +81,10 @@ const createProduct = (obj) => {
     inventory_tracking: "variant",
     variants: variants.map((item, i) => {
       const cleanName = removeDuplicateWords(data.name, item.name);
-      const option = cleanName ? cleanName : item.name.toLowerCase();
+      const option = createOptions(
+        cleanName ? cleanName : item.name.toLowerCase(),
+        variants[0].brand.data.name || ""
+      );
       const imageUrl = item.images.data[0]
         ? `https://${item.images.data[0].domain}${item.images.data[0].path}${item.images.data[0].filename}`
         : false;
@@ -97,12 +100,7 @@ const createProduct = (obj) => {
           id: item.id,
           sku: item.sku,
           upc: item.upc,
-          option_values: [
-            {
-              option_display_name: `${variants[0].brand.data.name} options`,
-              label: option,
-            },
-          ],
+          option_values: option,
           price: item.list_price,
           inventory_level: is_available ? item.inventory.data.total : 0,
           image_url: imageUrl,
