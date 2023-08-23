@@ -84,7 +84,7 @@ export const standardizeSize = (sizeStr) => {
 
     "6xl": "6XL",
 
-    "yl": "Y-L",
+    yl: "Y-L",
 
     "s-m": "S-M",
     "xl/2xl": "XL-2XL",
@@ -94,6 +94,7 @@ export const standardizeSize = (sizeStr) => {
 };
 
 export const extractColorAndSize = (name) => {
+  name = name.toLowerCase();
   const sizePattern =
     /(\bextralarge\b|\bdouble xl\b|\btriple xl\b|\b\d{1,2}x?\b|\bxx-large\b|\bx-small\b|\bx-large\b|\bmedium\b|\bxlarge\b|\bxl\/2xl\b|\bsmall\b|\blarge\b|\bxxxl\b|\bxxs\b|\bmed\b|\b2xl\b|\bxxl\b|\b3xl\b|\b4xl\b|\b5xl\b|\b6xl\b|\bs-m\b|\bxs\b|\bsm\b|\bmd\b|\blg\b|\bxl\b|\b2x\b|\b3x\b|\b4x\b|\b5x\b|\byl\b|\bs\b|\bm\b|\bl\b)/i;
   const response = {};
@@ -105,10 +106,11 @@ export const extractColorAndSize = (name) => {
   ) {
     response.id = 1;
     response.color = name.split("-")[0].trim();
-    response.size = name.split("-")[1].trim();
+    response.size = name.split("-")[1].replace("size", "").trim();
   } else if (name.includes("sz")) {
     response.id = 2;
-    response.color = name.split("sz")[0].trim();
+    if (name.split("sz")[0].trim().length > 0)
+      response.color = name.split("sz")[0].trim();
     response.size = name.split("sz")[1].trim();
   } else if (name.split(" ").length == 1 && name.match(sizePattern)) {
     response.id = 3;
@@ -130,7 +132,7 @@ export const extractColorAndSize = (name) => {
 
 // Testing the function
 
-(function extartTest() {
+(function extractTest() {
   const data = [
     "black - large",
     "phantom 2x",
@@ -172,6 +174,10 @@ export const extractColorAndSize = (name) => {
     "1:16 polaris pro-x 800 blue",
     "black/red md",
     "tall sm chest 38-40",
+    "sz 06",
+    "GREY - SIZE 7",
+    "slate blue/black sz 38",
+    "grey md"
   ];
 
   data.map((name) => {
