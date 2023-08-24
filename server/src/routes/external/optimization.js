@@ -33,7 +33,10 @@ async function processProduct(product) {
           });
 
           const optimizedBuffer = await sharp(buffer)
-            .resize(1000, 1000, { fit: "contain", background: { r: 255, g: 255, b: 255 } })
+            .resize(1000, 1000, {
+              fit: "contain",
+              background: { r: 255, g: 255, b: 255 },
+            })
             .flatten({ background: { r: 255, g: 255, b: 255 } })
             .jpeg({ quality: 90 })
             .toBuffer();
@@ -79,14 +82,12 @@ async function processProduct(product) {
 router.post("/optimization/", async (req, res) => {
   const productId = req.body.data.id;
   if (!productId) return res.status(500).json({ error: "ID is not provided" });
+  let product;
 
-  const { data: product } = await bigCommerceInstance.get(
-    `/catalog/products/${productId}`
-  );
-
-  if (!product.id) {
-    console.log(`${productId} not found! (optimization)`);
-    return;
+  try {
+    product = await bigCommerceInstance.get(`/catalog/products/${productId}`);
+  } catch (error) {
+    res.status(500).json({ error: error });
   }
   try {
     await processProduct(product);
