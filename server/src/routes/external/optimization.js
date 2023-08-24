@@ -85,7 +85,7 @@ router.post("/optimization/", async (req, res) => {
   if (!productId) return res.status(500).json({ error: "ID is not provided" });
 
   try {
-    const product = await bigCommerceInstance.get(
+    const { data: product } = await bigCommerceInstance.get(
       `/catalog/products/${productId}`
     );
     await processProduct(product);
