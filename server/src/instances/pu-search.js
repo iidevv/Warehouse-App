@@ -42,7 +42,7 @@ export const puSearchLogin = async () => {
 
 export const puSearchInstance = async (payload) => {
   if (!payload) return;
-
+  
   if (!isLogged) {
     await puSearchLogin();
   }
@@ -61,6 +61,7 @@ export const puSearchInstance = async (payload) => {
       isLogged = false;
       await puSearchLogin();
     }
+    console.log(response.data.request.filters[0].matches[0].matches);
     return response;
   } catch (error) {
     sendNotification(`PU instance. Request error: ${error.message}`);
