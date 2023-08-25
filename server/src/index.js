@@ -5,10 +5,9 @@ import url from "url";
 import path from "path";
 import { bigcommerceRouter } from "./routes/bigcommerce.js";
 import { inventoryRouter } from "./routes/inventory.js";
-import { SyncProductsRouter, updateProducts } from "./sync-products/index.js";
+import { SyncProductsRouter } from "./sync-products/index.js";
 import { userRouter } from "./routes/user.js";
 import { chatgptRouter } from "./routes/chatgpt.js";
-import { CronJob } from "cron";
 import { authenticate } from "./routes/user.js";
 import cookieParser from "cookie-parser";
 import { puExternalProductRouter } from "./routes/external/pu-product.js";
@@ -20,10 +19,10 @@ import { externalOptimizationRouter } from "./routes/external/optimization.js";
 import { processingRouter } from "./routes/external/processing.js";
 import { ProductAvailabilityRouter } from "./routes/external/productAvailabilityChecker.js";
 import { bulkActionRouter } from "./routes/external/bulk-actions.js";
-import { sendNotification } from "./routes/tg-notifications.js";
 import { testActionRouter } from "./routes/external/test-action.js";
 import { catalogRouter } from "./routes/catalog/catalog.js";
 import { productRouter } from "./routes/product/product.js";
+import "./cron/index.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,24 +74,6 @@ app.use("/api/products", bigcommerceRouter);
 mongoose.connect(
   `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}/${dbname}?authMechanism=DEFAULT&authSource=${dbname}&ssl=true&sslValidate=false`
 );
-
-const job = new CronJob({
-  cronTime: "0 7,14,18 * * *",
-  onTick: async () => {
-    try {
-      await updateProducts("WPS");
-      await updateProducts("PU");
-      await updateProducts("HH");
-      await updateProducts("LS");
-    } catch (error) {
-      sendNotification(`Error during updating: ${error}`);
-    }
-  },
-  timeZone: "America/Los_Angeles",
-  start: false,
-});
-
-if (useHttps) job.start();
 
 app.listen(port, () =>
   console.log(`Server started on http://localhost:${port}`)

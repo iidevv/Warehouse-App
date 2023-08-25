@@ -54,7 +54,10 @@ export const puSearchInstance = async (payload) => {
         withCredentials: true,
       })
       .catch((err) => console.log(err));
-    if (response.data.hits && !response.data.hits.every((hit) => hit.access)) {
+    if (
+      response.data.result.hits &&
+      !response.data.result.hits.every((hit) => hit.access)
+    ) {
       isLogged = false;
       await puSearchLogin();
     }
