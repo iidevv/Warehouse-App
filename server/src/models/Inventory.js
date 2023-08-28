@@ -24,3 +24,21 @@ export const InventoryModel = mongoose.model("wps-products", InventorySchema);
 export const puInventoryModel = mongoose.model("pu-products", InventorySchema);
 export const hhInventoryModel = mongoose.model("hh-products", InventorySchema);
 export const lsInventoryModel = mongoose.model("ls-products", InventorySchema);
+
+// new schema
+
+const itemSchema = new mongoose.Schema({
+  vendor: { type: String, required: true },
+  id: { type: Number, required: true },
+  product_id: { type: Number, required: true },
+  name: { type: String, required: true },
+  sku: { type: String, required: true, unique: true },
+  inventory_level: { type: Number, required: true },
+  inventory_status: { type: String, required: true }, // low (1-3), medium (4-8), high (9+)
+  price: { type: Number, required: true },
+  update_date: { type: Date, required: true },
+  update_status: { type: String, required: true },
+  update_log: String,
+  discontinued: Boolean,
+  closeout_id: Number,
+});
