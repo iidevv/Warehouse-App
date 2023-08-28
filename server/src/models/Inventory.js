@@ -25,20 +25,66 @@ export const puInventoryModel = mongoose.model("pu-products", InventorySchema);
 export const hhInventoryModel = mongoose.model("hh-products", InventorySchema);
 export const lsInventoryModel = mongoose.model("ls-products", InventorySchema);
 
-// new schema
+const ProductItemSchema = new mongoose.Schema(
+  {
+    vendor: { type: String, required: true },
 
-const itemSchema = new mongoose.Schema({
-  vendor: { type: String, required: true },
-  id: { type: Number, required: true },
-  product_id: { type: Number, required: true },
-  name: { type: String, required: true },
-  sku: { type: String, required: true, unique: true },
-  inventory_level: { type: Number, required: true },
-  inventory_status: { type: String, required: true }, // low (1-3), medium (4-8), high (9+)
-  price: { type: Number, required: true },
-  update_date: { type: Date, required: true },
-  update_status: { type: String, required: true },
-  update_log: String,
-  discontinued: Boolean,
-  closeout_id: Number,
-});
+    item_id: { type: Number, required: true },
+    product_id: { type: Number, required: true },
+
+    product_name: { type: String, required: true },
+    sku: { type: String, required: true, unique: true, index: true },
+
+    inventory_level: {
+      type: Number,
+      required: true,
+      min: 0,
+      set: function (val) {
+        // middleware inventory_status
+        if (val <= 3) this.inventory_status = "low";
+        else if (val <= 8) this.inventory_status = "medium";
+        else this.inventory_status = "high";
+        return val;
+      },
+    },
+
+    inventory_status: {
+      type: String,
+      required: true,
+      enum: ["low", "medium", "high"],
+      index: true,
+    },
+
+    price: { type: Number, required: true, min: 0 },
+    sale_price: { type: Number, required: false, min: 0 },
+
+    update_status: {
+      type: String,
+      required: true,
+      enum: ["error", "created", "updated", "no changes"],
+      index: true,
+    },
+
+    update_log: String,
+    discontinued: { type: Boolean, default: false },
+    closeout_id: Number,
+  },
+  { timestamps: true }
+);
+
+export const ProductItemModel = mongoose.model(
+  "wps-product-items",
+  ProductItemSchema
+);
+export const puProductItemModel = mongoose.model(
+  "pu-product-items",
+  ProductItemSchema
+);
+export const hhProductItemModel = mongoose.model(
+  "hh-product-items",
+  ProductItemSchema
+);
+export const lsProductItemModel = mongoose.model(
+  "ls-product-items",
+  ProductItemSchema
+);

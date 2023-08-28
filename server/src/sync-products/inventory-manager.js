@@ -1,5 +1,5 @@
 import { createNewDate } from "./../common/index.js";
-import { addInventoryProduct } from "../routes/inventory.js";
+import { addInventoryProduct, addProductItem } from "../routes/inventory.js";
 
 export const createInventoryProduct = async (
   vendorProduct,
@@ -26,6 +26,26 @@ export const createInventoryProduct = async (
       vendorProduct.vendor,
       inventoryProduct
     );
+
+    await Promise.all(
+      product.data.variants.map(async (item) => {
+        const data = {
+          item_id: item.id,
+          product_id: product.data.id,
+          product_name: product.data.name,
+          sku: item.sku,
+          inventory_level: item.inventory_level,
+          price: item.price,
+          sale_price: item.sale_price,
+          update_status: status.toLowerCase(),
+          update_log: "",
+          discontinued: false,
+          closeout_id: null,
+        };
+        await addProductItem(vendorProduct.vendor, data);
+      })
+    );
+
     return "Product synced!";
   } catch (error) {
     console.log(error);

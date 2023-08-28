@@ -3,6 +3,10 @@ import {
   puInventoryModel,
   hhInventoryModel,
   lsInventoryModel,
+  lsProductItemModel,
+  hhProductItemModel,
+  ProductItemModel,
+  puProductItemModel,
 } from "../models/Inventory.js";
 
 export const createNewDate = () => {
@@ -48,6 +52,28 @@ export const getInventoryModel = (vendor) => {
       break;
     case "LS":
       model = lsInventoryModel;
+      break;
+
+    default:
+      break;
+  }
+  return model;
+};
+
+export const getProductItemModel = (vendor) => {
+  let model;
+  switch (vendor) {
+    case "PU":
+      model = puProductItemModel;
+      break;
+    case "WPS":
+      model = ProductItemModel;
+      break;
+    case "HH":
+      model = hhProductItemModel;
+      break;
+    case "LS":
+      model = lsProductItemModel;
       break;
 
     default:

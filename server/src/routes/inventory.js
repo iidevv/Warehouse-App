@@ -1,5 +1,9 @@
 import express from "express";
-import { createNewDate, getInventoryModel } from "./../common/index.js";
+import {
+  createNewDate,
+  getInventoryModel,
+  getProductItemModel,
+} from "./../common/index.js";
 const router = express.Router();
 
 export const getInventoryProducts = async (
@@ -77,6 +81,46 @@ export const addInventoryProduct = async (vendor, productData) => {
     status,
     create_type,
     create_value,
+  });
+  await newProduct.save();
+
+  return newProduct;
+};
+
+export const addProductItem = async (vendor, data) => {
+  const Model = getProductItemModel(vendor);
+  const {
+    item_id,
+    product_id,
+    product_name,
+    sku,
+    inventory_level,
+    price,
+    sale_price,
+    update_status,
+    update_log,
+    discontinued,
+    closeout_id,
+  } = data;
+  const ProductItem = await Model.findOne({
+    sku,
+  });
+
+  if (ProductItem) throw new Error("Product already exists!");
+
+  const newProduct = new Model({
+    vendor,
+    item_id,
+    product_id,
+    product_name,
+    sku,
+    inventory_level,
+    price,
+    sale_price,
+    update_status,
+    update_log,
+    discontinued,
+    closeout_id,
   });
   await newProduct.save();
 
