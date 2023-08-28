@@ -40,7 +40,6 @@ export const createInventoryProduct = async (
           update_status: status.toLowerCase(),
           update_log: "",
           discontinued: false,
-          closeout_id: null,
         };
         await addProductItem(vendorProduct.vendor, data);
       })

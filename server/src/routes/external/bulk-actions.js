@@ -1,6 +1,9 @@
 import express from "express";
-import { bigCommerceInstance } from "../../instances/index.js";
+import { bigCommerceInstance, wpsInstance } from "../../instances/index.js";
 import { createOptions, standardizeSize } from "../product/common.js";
+import { addProductItem, getInventoryProducts } from "../inventory.js";
+import { sendNotification } from "../tg-notifications.js";
+import { puSearchInstance } from "../../instances/pu-search.js";
 
 const router = express.Router();
 
@@ -205,5 +208,91 @@ const updateVariantOptions = async (productId, variantId, options) => {
 //     res.json({ error: error.message });
 //   }
 // });
+
+router.get("/bulk-action-newdb/", async (req, res) => {
+  const vendor = req.query.vendor;
+  if (!vendor) return res.json({ error: "Vendor not provided" });
+
+  const pageSize = 10;
+  let currentPage = 1;
+  let totalPages = 1;
+  let totalProducts = 0;
+  let totalProductItems = 0;
+  try {
+    while (currentPage <= totalPages) {
+      const products = await getInventoryProducts(
+        vendor,
+        null,
+        null,
+        currentPage,
+        pageSize,
+        null,
+        null,
+        false
+      );
+
+      const productsToProcess = products.products;
+      totalPages = products.totalPages;
+
+      await asyncForEach(
+        productsToProcess,
+        async (product) => {
+          try {
+            // const incorporatingPartNumbers = product.variants.map((item) => {
+            //   return item.vendor_id;
+            // });
+
+            // let puVariationItemsResponse = await puSearchInstance(payload);
+            // puVariationItemsResponse =
+            //   puVariationItemsResponse.data.result.hits;
+
+            await Promise.all(
+              product.variants.map(async (item) => {
+                const data = {
+                  item_id: item.bigcommerce_id,
+                  product_id: product.bigcommerce_id,
+                  product_name: product.product_name,
+                  sku: item.vendor_id,
+                  inventory_level: item.inventory_level,
+                  price: item.variant_price,
+                  sale_price: null,
+                  update_status: product.status.toLowerCase(),
+                  update_log: "",
+                  discontinued: false,
+                };
+                // const itemAdditional = puVariationItemsResponse.find((v) => {
+                //   return v.partNumber == item.vendor_id;
+                // });
+                // if (!itemAdditional) {
+                //   sendNotification(
+                //     `Page: ${currentPage}. ${product.product_name}. No Additional. Item id: ${item.bigcommerce_id} Prod id: ${product.bigcommerce_id}`
+                //   );
+                // }
+
+                // data.discontinued =
+                //   itemAdditional.status == "DISCONTINUED" ? true : false;
+                totalProductItems++;
+                await addProductItem(vendor, data);
+              })
+            );
+            totalProducts++;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          } catch (error) {
+            console.error(
+              `Failed to process product: ${product.product_name} - ${error}`
+            );
+          }
+        },
+        5
+      );
+      console.log(`current page: ${currentPage}. Items: ${totalProductItems}`);
+      currentPage++;
+    }
+    console.log(`Total products: ${totalProducts}`);
+    res.json({ success: true });
+  } catch (error) {
+    res.json({ error: error.message });
+  }
+});
 
 export { router as bulkActionRouter };

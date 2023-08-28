@@ -67,7 +67,6 @@ const ProductItemSchema = new mongoose.Schema(
 
     update_log: String,
     discontinued: { type: Boolean, default: false },
-    closeout_id: Number,
   },
   { timestamps: true }
 );

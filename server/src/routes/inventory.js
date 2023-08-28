@@ -100,13 +100,12 @@ export const addProductItem = async (vendor, data) => {
     update_status,
     update_log,
     discontinued,
-    closeout_id,
   } = data;
   const ProductItem = await Model.findOne({
     sku,
   });
 
-  if (ProductItem) throw new Error("Product already exists!");
+  if (ProductItem) throw new Error(`${product_name} - ${sku}. Already exists!`);
 
   const newProduct = new Model({
     vendor,
@@ -120,7 +119,6 @@ export const addProductItem = async (vendor, data) => {
     update_status,
     update_log,
     discontinued,
-    closeout_id,
   });
   await newProduct.save();
 
