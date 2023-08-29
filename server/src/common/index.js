@@ -9,6 +9,37 @@ import {
   puProductItemModel,
 } from "../models/Inventory.js";
 
+// Helper function to process array items in parallel with a limited concurrency
+export const asyncForEach = async (array, callback, concurrency = 5) => {
+  const queue = [...array];
+  const promises = [];
+  while (queue.length) {
+    while (promises.length < concurrency && queue.length) {
+      const item = queue.shift();
+      promises.push(callback(item));
+    }
+    await Promise.race(promises).then((completed) => {
+      promises.splice(promises.indexOf(completed), 1);
+    });
+  }
+  return Promise.all(promises);
+};
+
+// Helper function to execute a function with retries
+export const executeWithRetry = async (fn, maxRetries = 3, delay = 10000) => {
+  let retries = 0;
+  while (retries < maxRetries) {
+    try {
+      return await fn();
+    } catch (error) {
+      retries++;
+      console.error(`Attempt ${retries} failed. Retrying...`, error);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Max retries reached.");
+};
+
 export const createNewDate = () => {
   const options = {
     timeZone: "America/Los_Angeles",

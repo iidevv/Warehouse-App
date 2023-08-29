@@ -4,6 +4,7 @@ import { createOptions, standardizeSize } from "../product/common.js";
 import { addProductItem, getInventoryProducts } from "../inventory.js";
 import { sendNotification } from "../tg-notifications.js";
 import { puSearchInstance } from "../../instances/pu-search.js";
+import { getInventoryModel, getProductItemModel } from "../../common/index.js";
 
 const router = express.Router();
 
@@ -209,90 +210,77 @@ const updateVariantOptions = async (productId, variantId, options) => {
 //   }
 // });
 
+// wps updates
+async function getVendorInfo(ids) {
+  const chunkSize = 10;
+  const chunks = [];
+  for (let i = 0; i < ids.length; i += chunkSize) {
+    chunks.push(ids.slice(i, i + chunkSize));
+  }
+
+  let allVendorInfo = [];
+  for (const chunk of chunks) {
+    try {
+      const response = await wpsInstance.get(
+        `/items?filter[id]=${chunk.join(",")}`
+      );
+      allVendorInfo = allVendorInfo.concat(response.data.data);
+    } catch (error) {
+      console.log(
+        `Error retrieving vendor INFO for chunk ${chunk.join(",")}: ${error}`
+      );
+    }
+  }
+  return allVendorInfo;
+}
+
 router.get("/bulk-action-newdb/", async (req, res) => {
   const vendor = req.query.vendor;
   if (!vendor) return res.json({ error: "Vendor not provided" });
 
-  const pageSize = 10;
-  let currentPage = 1;
-  let totalPages = 1;
-  let totalProducts = 0;
-  let totalProductItems = 0;
-  try {
-    while (currentPage <= totalPages) {
-      const products = await getInventoryProducts(
-        vendor,
-        null,
-        null,
-        currentPage,
-        pageSize,
-        null,
-        null,
-        false
-      );
+  // const Model = getInventoryModel(vendor);
+  // const products = await Model.find();
 
-      const productsToProcess = products.products;
-      totalPages = products.totalPages;
+  // let skusAdded = 0;
+  // let totalProducts = 0;
 
-      await asyncForEach(
-        productsToProcess,
-        async (product) => {
-          try {
-            // const incorporatingPartNumbers = product.variants.map((item) => {
-            //   return item.vendor_id;
-            // });
+  // try {
+  //   for (const product of products) {
+  //     await asyncForEach(product.variants, async (item) => {
+  //       const data = {
+  //         item_id: item.bigcommerce_id,
+  //         product_id: product.bigcommerce_id,
+  //         product_name: product.product_name,
+  //         sku: item.vendor_id,
+  //         inventory_level: item.inventory_level,
+  //         price: item.variant_price,
+  //         sale_price: null,
+  //         update_status: product.status.toLowerCase(),
+  //         update_log: "",
+  //         discontinued: false,
+  //       };
 
-            // let puVariationItemsResponse = await puSearchInstance(payload);
-            // puVariationItemsResponse =
-            //   puVariationItemsResponse.data.result.hits;
+  //       try {
+  //         await addProductItem(vendor, data);
+  //         skusAdded++;
+  //       } catch (error) {
+  //         console.error(
+  //           `Failed to process variant for product: ${product.product_name} with SKU ${item.vendor_id} - ${error}`
+  //         );
+  //       }
+  //     });
 
-            await Promise.all(
-              product.variants.map(async (item) => {
-                const data = {
-                  item_id: item.bigcommerce_id,
-                  product_id: product.bigcommerce_id,
-                  product_name: product.product_name,
-                  sku: item.vendor_id,
-                  inventory_level: item.inventory_level,
-                  price: item.variant_price,
-                  sale_price: null,
-                  update_status: product.status.toLowerCase(),
-                  update_log: "",
-                  discontinued: false,
-                };
-                // const itemAdditional = puVariationItemsResponse.find((v) => {
-                //   return v.partNumber == item.vendor_id;
-                // });
-                // if (!itemAdditional) {
-                //   sendNotification(
-                //     `Page: ${currentPage}. ${product.product_name}. No Additional. Item id: ${item.bigcommerce_id} Prod id: ${product.bigcommerce_id}`
-                //   );
-                // }
+  //     totalProducts++;
+  //     console.log(
+  //       `Processed product: ${product.product_name}. Total products processed: ${totalProducts}. Skus added: ${skusAdded}`
+  //     );
+  //   }
 
-                // data.discontinued =
-                //   itemAdditional.status == "DISCONTINUED" ? true : false;
-                totalProductItems++;
-                await addProductItem(vendor, data);
-              })
-            );
-            totalProducts++;
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-          } catch (error) {
-            console.error(
-              `Failed to process product: ${product.product_name} - ${error}`
-            );
-          }
-        },
-        5
-      );
-      console.log(`current page: ${currentPage}. Items: ${totalProductItems}`);
-      currentPage++;
-    }
-    console.log(`Total products: ${totalProducts}`);
-    res.json({ success: true });
-  } catch (error) {
-    res.json({ error: error.message });
-  }
+  //   console.log(`Total SKUs added: ${skusAdded}`);
+  //   res.json({ totalSKUsAdded: skusAdded });
+  // } catch (error) {
+  //   res.json({ error: error.message });
+  // }
 });
 
 export { router as bulkActionRouter };
