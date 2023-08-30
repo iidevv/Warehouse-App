@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 const variantSchema = new mongoose.Schema({
   vendor_id: String,
@@ -70,6 +71,8 @@ const ProductItemSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+ProductItemSchema.plugin(paginate);
 
 export const ProductItemModel = mongoose.model(
   "wps-product-items",

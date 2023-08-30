@@ -23,6 +23,8 @@ import { testActionRouter } from "./routes/external/test-action.js";
 import { catalogRouter } from "./routes/catalog/catalog.js";
 import { productRouter } from "./routes/product/product.js";
 import "./cron/index.js";
+import "./sync/common.js";
+import { SyncRouter } from "./sync/index.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,6 +60,7 @@ app.use(
 );
 
 app.use("/api/auth", userRouter);
+app.use("/api/inventory", SyncRouter);
 
 app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
