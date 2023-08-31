@@ -26,7 +26,7 @@ export const asyncForEach = async (array, callback, concurrency = 5) => {
 };
 
 // Helper function to execute a function with retries
-export const executeWithRetry = async (fn, maxRetries = 3, delay = 10000) => {
+export const executeWithRetry = async (fn, maxRetries = 3, delay = 5000) => {
   let retries = 0;
   while (retries < maxRetries) {
     try {

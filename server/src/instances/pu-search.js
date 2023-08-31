@@ -60,7 +60,9 @@ export const puSearchInstance = async (payload) => {
     ) {
       isLogged = false;
       await puSearchLogin();
+      throw new Error("No access.");
     }
+    console.log(response.data.result.hits[0].access);
     return response;
   } catch (error) {
     sendNotification(`PU instance. Request error: ${error.message}`);

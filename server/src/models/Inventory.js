@@ -90,3 +90,8 @@ export const lsProductItemModel = mongoose.model(
   "ls-product-items",
   ProductItemSchema
 );
+
+export const updateProductItemModel = mongoose.model(
+  "update-product-items",
+  ProductItemSchema
+);
