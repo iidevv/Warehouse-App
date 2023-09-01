@@ -14,26 +14,16 @@ const Dashboard = (props) => {
     };
     return date.toLocaleString("en-US", options);
   };
-  const handleDeleteClick = (event) => {
-    const id = +event.target.id;
-    props.onDeleteProduct(id);
-  };
-
-  const [activeDropdownIndex, setActiveDropdownIndex] = useState(null);
-  const toggleDropdown = (index) => {
-    setActiveDropdownIndex(activeDropdownIndex === index ? null : index);
-  };
-
-  const handlePageClick = (name, page, statusFilter, searchFilter) => {
-    props.onPageChanged(name, page, statusFilter, searchFilter);
+  const handlePageClick = (page, query) => {
+    props.onPageChanged(page, query);
   };
 
   const [statusFilter, setStatusFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [isInitialSearch, setIsInitialSearch] = useState(true);
 
-  const handleUpdateClick = (vendor_id, name) => {
-    props.onUpdateProducts(vendor_id, name, statusFilter);
+  const handleUpdateClick = (item_id) => {
+    props.onUpdateProducts(item_id);
   };
 
   const handleFilterChange = (event) => {
@@ -76,7 +66,7 @@ const Dashboard = (props) => {
           <button
             key={i}
             disabled={props.currentPage === i}
-            onClick={() => handlePageClick("", i, statusFilter, searchFilter)}
+            onClick={() => handlePageClick()}
             type="button"
             className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black"
           >
@@ -119,10 +109,9 @@ const Dashboard = (props) => {
           className="rounded-lg border-transparent mr-4 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
         >
           <option value="">Status</option>
-          <option value="Error">Error</option>
-          <option value="Created">Created</option>
-          <option value="Updated">Updated</option>
-          <option value="No changes">No changes</option>
+          <option value="error">Error</option>
+          <option value="created">Created</option>
+          <option value="updated">Updated</option>
         </select>
         <input
           onChange={handleFilterChange}
@@ -139,19 +128,43 @@ const Dashboard = (props) => {
                 scope="col"
                 className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
               >
-                Product Name
+                SKU
               </th>
               <th
                 scope="col"
                 className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
               >
-                Last updated
+                Name
               </th>
               <th
                 scope="col"
                 className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
               >
-                Status
+                Updates Status
+              </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                Last update
+              </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                Stock Status
+              </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                In Stock
+              </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                Discontinued
               </th>
               <th
                 scope="col"
@@ -169,53 +182,50 @@ const Dashboard = (props) => {
                     <tr key={i} className="flex flex-col lg:table-row">
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                         <p className="text-xl font-bold lg:font-normal lg:text-sm lg:text-gray-900 whitespace-no-wrap">
-                          {m.product_name}{" "}
-                          {m.create_type == "search" ? " (Combined)" : ""}
+                          {m.sku}
+                        </p>
+                      </td>
+                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200 truncate-wrapper">
+                        <p className="text-gray-900 whitespace-no-wrap truncate">
+                          {m.product_name}
                         </p>
                       </td>
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">
-                          {createNewDate(m.last_updated)}
+                          {m.update_status}{" "}
+                          {m.update_log ? `(${m.update_log})` : ""}
                         </p>
                       </td>
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">
-                          {m.status}
+                          {createNewDate(m.updatedAt)}
+                        </p>
+                      </td>
+                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {m.inventory_status}
+                        </p>
+                      </td>
+                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {m.inventory_level}
+                        </p>
+                      </td>
+                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {m.discontinued ? "Yes" : "No"}
                         </p>
                       </td>
                       <td className="relative px-5 pb-4 lg:py-5 text-sm bg-white border-b-8 lg:border-b border-gray-100">
                         <button
-                          className="text-blue-600 hover:text-indigo-900 mr-1 pr-1 border-r"
-                          data-product-id={m.bigcommerce_id}
+                          className="text-blue-600 hover:text-indigo-900"
+                          data-product-id={m.item_id}
                           onClick={() => {
-                            handleUpdateClick(m.vendor_id, m.product_name);
+                            handleUpdateClick(m.item_id);
                           }}
                         >
                           Update
                         </button>
-                        <button
-                          onClick={() => toggleDropdown(i)}
-                          className="text-red-600 hover:text-indigo-900"
-                        >
-                          Delete
-                        </button>
-                        {activeDropdownIndex === i && (
-                          <div className="absolute top-1/2 -translate-y-1/2 bg-white shadow-md rounded-sm px-1 py-1 border z-10">
-                            <button
-                              onClick={() => toggleDropdown(i)}
-                              className="text-blue-600 mr-2 hover:underline"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={handleDeleteClick}
-                              id={m.bigcommerce_id}
-                              className="text-red-600 hover:underline"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        )}
                       </td>
                     </tr>
                   );

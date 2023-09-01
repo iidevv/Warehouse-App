@@ -8,7 +8,6 @@ import {
   getProducts,
   setProducts,
   setToggleIsFetching,
-  deleteProduct,
   updateProducts,
   getStatus,
 } from "./../../redux/reducers/inventory-reducer";
@@ -22,17 +21,14 @@ class DashboardContainer extends React.Component {
     this.props.getProducts(this.vendor);
     this.props.getStatus(this.vendor);
   }
-  onPageChanged = (name, page, status, search) => {
-    this.props.getProducts(this.vendor, name, page, status, search);
+  onPageChanged = (page, query) => {
+    this.props.getProducts(this.vendor, page, query);
   };
-  onFilterChanged = (name, page, status, search) => {
-    this.props.getProducts(this.vendor, name, page, status, search);
+  onFilterChanged = (page, query) => {
+    this.props.getProducts(this.vendor, page, query);
   };
-  onDeleteProduct = (id) => {
-    this.props.deleteProduct(this.vendor, id);
-  };
-  onUpdateProducts = (vendor_id, name, status) => {
-    this.props.updateProducts(this.vendor, vendor_id, name, status);
+  onUpdateProducts = (query) => {
+    this.props.updateProducts(this.vendor, query);
   };
 
   render() {
@@ -43,7 +39,6 @@ class DashboardContainer extends React.Component {
           vendor={this.vendor}
           products={this.props.products}
           total={this.props.total}
-          onDeleteProduct={this.onDeleteProduct}
           onUpdateProducts={this.onUpdateProducts}
           onPageChanged={this.onPageChanged}
           onFilterChanged={this.onFilterChanged}
@@ -73,7 +68,6 @@ export default compose(
     getProducts,
     setProducts,
     setToggleIsFetching,
-    deleteProduct,
     updateProducts,
     getStatus,
   })

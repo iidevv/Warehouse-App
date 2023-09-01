@@ -2,9 +2,9 @@ import { promises as fs } from "fs";
 import { lsInstance } from "../../../instances/ls-instance.js";
 import { generateProductName } from "../../../common/index.js";
 import { removeDuplicateWords, standardizeSize } from "../common.js";
-import { parseXLSX, readInventoryFile } from "../../../sync-products/ftp.js";
 import { sendNotification } from "../../tg-notifications.js";
 import { getCatalog } from "../../catalog/catalog.js";
+import { parseXLSX, readInventoryFile } from "../../../ftp/index.js";
 
 const readAdditionalFile = async () => {
   const localPath = `./additional_files/LS.xlsx`;

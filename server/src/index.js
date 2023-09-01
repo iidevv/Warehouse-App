@@ -5,7 +5,6 @@ import url from "url";
 import path from "path";
 import { bigcommerceRouter } from "./routes/bigcommerce.js";
 import { inventoryRouter } from "./routes/inventory.js";
-import { SyncProductsRouter } from "./sync-products/index.js";
 import { userRouter } from "./routes/user.js";
 import { chatgptRouter } from "./routes/chatgpt.js";
 import { authenticate } from "./routes/user.js";
@@ -22,9 +21,10 @@ import { bulkActionRouter } from "./routes/external/bulk-actions.js";
 import { testActionRouter } from "./routes/external/test-action.js";
 import { catalogRouter } from "./routes/catalog/catalog.js";
 import { productRouter } from "./routes/product/product.js";
+import { SyncRouter } from "./sync/index.js";
+
 import "./cron/index.js";
 import "./sync/common.js";
-import { SyncRouter } from "./sync/index.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,11 +60,10 @@ app.use(
 );
 
 app.use("/api/auth", userRouter);
-app.use("/api/inventory", SyncRouter);
 
 app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
-app.use("/api/inventory", SyncProductsRouter);
+app.use("/api/inventory", SyncRouter);
 app.use("/api/catalog", catalogRouter);
 app.use("/api/catalog", productRouter);
 app.use("/api/dropship", dropshipOrderRouter);

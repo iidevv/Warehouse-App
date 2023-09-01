@@ -1,13 +1,10 @@
 import { executeWithRetry, getProductItemModel } from "../common/index.js";
 import { getInventory, getPrice } from "../common/pu.js";
+import { downloadInventoryFile, readInventoryFile } from "../ftp/index.js";
 import { bigCommerceInstance, wpsInstance } from "../instances/index.js";
 import { puSearchInstance, puSearchLogin } from "../instances/pu-search.js";
 import { updateProductItemModel } from "../models/Inventory.js";
 import { sendNotification } from "../routes/tg-notifications.js";
-import {
-  downloadInventoryFile,
-  readInventoryFile,
-} from "../sync-products/ftp.js";
 
 export const beforeUpdateProducts = async (vendor, query = {}) => {
   if (Object.keys(query).length) {

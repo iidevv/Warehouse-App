@@ -24,15 +24,6 @@ export const dmgProductAPI = {
       return response;
     });
   },
-  deleteProduct(id) {
-    return instance
-      .delete("products/delete", {
-        params: { id },
-      })
-      .then((response) => {
-        return response;
-      });
-  },
   getCategories(query) {
     return instance
       .get(`products/categories?name:like=${query}`)
@@ -144,15 +135,6 @@ export const inventoryAPI = {
         return response.data;
       });
   },
-  deleteProduct(vendor, id) {
-    return instance
-      .delete(`/inventory/products/`, {
-        params: { vendor, id },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
   updateProducts(vendor, vendor_id, name, status) {
     return instance
       .get(`/inventory/sync/`, {
@@ -184,15 +166,6 @@ export const puInventoryAPI = {
           status,
           search,
         },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  deleteProduct(id) {
-    return instance
-      .delete(`/pu-inventory/products/`, {
-        params: { id },
       })
       .then((response) => {
         return response.data;
@@ -348,15 +321,6 @@ export const hhInventoryAPI = {
           status,
           search,
         },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  deleteProduct(id) {
-    return instance
-      .delete(`/hh-inventory/products/`, {
-        params: { id },
       })
       .then((response) => {
         return response.data;

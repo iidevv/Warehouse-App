@@ -1,7 +1,6 @@
 import express from "express";
 import axios from "axios";
 import { bigCommerceInstance } from "../../instances/index.js";
-import { InventoryModel, puInventoryModel } from "../../models/Inventory.js";
 import { sendNotification } from "../tg-notifications.js";
 
 const router = express.Router();

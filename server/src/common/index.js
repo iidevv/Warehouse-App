@@ -1,11 +1,7 @@
 import {
-  InventoryModel,
-  puInventoryModel,
-  hhInventoryModel,
-  lsInventoryModel,
   lsProductItemModel,
   hhProductItemModel,
-  ProductItemModel,
+  wpsProductItemModel,
   puProductItemModel,
 } from "../models/Inventory.js";
 
@@ -98,7 +94,7 @@ export const getProductItemModel = (vendor) => {
       model = puProductItemModel;
       break;
     case "WPS":
-      model = ProductItemModel;
+      model = wpsProductItemModel;
       break;
     case "HH":
       model = hhProductItemModel;

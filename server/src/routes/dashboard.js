@@ -1,9 +1,9 @@
 import express from "express";
 import {
-  InventoryModel,
-  puInventoryModel,
-  hhInventoryModel,
-  lsInventoryModel,
+  lsProductItemModel,
+  hhProductItemModel,
+  wpsProductItemModel,
+  puProductItemModel,
 } from "../models/Inventory.js";
 
 const router = express.Router();
@@ -11,15 +11,15 @@ const router = express.Router();
 const getData = async (model) => {
   try {
     const noChangesTotal = await model.countDocuments({
-      status: "No changes",
+      update_status: "no changes",
     });
     const updatedTotal = await model.countDocuments({
-      status: "Updated",
+      update_status: "updated",
     });
     const createdTotal = await model.countDocuments({
-      status: "Created",
+      update_status: "created",
     });
-    const errorTotal = await model.countDocuments({ status: "Error" });
+    const errorTotal = await model.countDocuments({ update_status: "error" });
     const total = await model.count();
     return {
       noChangesTotal,
@@ -60,10 +60,10 @@ const totalData = (data) => {
 
 router.get("/info", async (req, res) => {
   try {
-    const wpsData = await getData(InventoryModel);
-    const puData = await getData(puInventoryModel);
-    const hhData = await getData(hhInventoryModel);
-    const lsData = await getData(lsInventoryModel);
+    const wpsData = await getData(wpsProductItemModel);
+    const puData = await getData(puProductItemModel);
+    const hhData = await getData(hhProductItemModel);
+    const lsData = await getData(lsProductItemModel);
     const data = totalData([wpsData, puData, hhData, lsData]);
     res.json({ data, wpsData, puData, hhData, lsData });
   } catch (error) {

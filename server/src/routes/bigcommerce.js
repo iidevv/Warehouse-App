@@ -1,6 +1,6 @@
 import express from "express";
-import { createInventoryProduct } from "../sync-products/inventory-manager.js";
 import { bigCommerceInstance } from "../instances/index.js";
+import { createInventoryProduct } from "./inventory.js";
 
 const router = express.Router();
 

@@ -1,3 +1,4 @@
+import { CronJob } from "cron";
 import { bigCommerceInstance } from "../instances/index.js";
 import { sendNotification } from "../routes/tg-notifications.js";
 
@@ -21,7 +22,7 @@ const activateHook = async (id) => {
   }
 };
 
-export const updateHooks = async (hookIds) => {
+const updateHooks = async (hookIds) => {
   const hooksPromises = hookIds.map(async (id) => {
     try {
       const { is_active } = await checkHook(id);
@@ -42,3 +43,16 @@ export const updateHooks = async (hookIds) => {
     sendNotification(`Hooks update error ${error}`);
   }
 };
+
+export const updateAllHooks = new CronJob({
+  cronTime: "0 7 * * *",
+  onTick: async () => {
+    try {
+      await updateHooks([26765181]);
+    } catch (error) {
+      sendNotification(`Error during updating: ${error}`);
+    }
+  },
+  timeZone: "America/Los_Angeles",
+  start: false,
+});

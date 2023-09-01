@@ -97,25 +97,6 @@ export const setToggleIsFetching = (isFetching) => {
   };
 };
 
-export const deleteProduct = (vendor, id) => {
-  return (dispatch) => {
-    dispatch(setToggleIsFetching(true));
-
-    const inventoryPromise = inventoryAPI.deleteProduct(vendor, id);
-    const dmgProductPromise = dmgProductAPI.deleteProduct(id);
-
-    Promise.all([inventoryPromise, dmgProductPromise])
-      .then(() => {
-        dispatch(setToggleIsFetching(false));
-        dispatch(getProducts(vendor));
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        dispatch(setToggleIsFetching(false));
-      });
-  };
-};
-
 export const getProducts = (vendor, name, page, status, search) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));

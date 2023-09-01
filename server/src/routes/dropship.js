@@ -5,7 +5,10 @@ import {
   puInstance,
   wpsInstance,
 } from "../instances/index.js";
-import { InventoryModel, puInventoryModel } from "../models/Inventory.js";
+import {
+  wpsProductItemModel,
+  puProductItemModel,
+} from "../models/Inventory.js";
 import { OrdersModel } from "../models/Orders.js";
 
 const router = express.Router();
@@ -85,9 +88,7 @@ const convertStateNameToAbbreviation = (stateName) => {
 const checkAndFormatPUOrderItems = async (orderItems) => {
   const itemsPromises = orderItems.map(async (item) => {
     try {
-      const puDbProduct = await puInventoryModel.findOne({
-        variants: { $elemMatch: { vendor_id: item.sku } },
-      });
+      const puDbProduct = await puProductItemModel.findOne({ sku: item.sku });
       let puProduct;
 
       if (puDbProduct == null) {
@@ -162,9 +163,7 @@ const createPUOrder = async (id, shipping, items) => {
 const checkAndFormatWPSOrderItems = async (orderItems) => {
   const itemsPromises = orderItems.map(async (item) => {
     try {
-      const wpsDbProduct = await InventoryModel.findOne({
-        variants: { $elemMatch: { bigcommerce_id: item.variant_id } },
-      });
+      const wpsDbProduct = await wpsProductItemModel.findOne({ sku: item.sku });
       let wpsProduct;
       if (wpsDbProduct == null) {
         wpsProduct = await wpsInstance.get(`/items?filter[sku]=${item.sku}`);

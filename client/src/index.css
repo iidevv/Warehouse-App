@@ -18,6 +18,32 @@
   .has-submenu:hover ul {
     @apply block;
   }
+
+  .truncate-wrapper {
+    position: relative;
+  }
+
+  .truncate-wrapper:hover .truncate {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    overflow: visible;
+    white-space: normal;
+    word-wrap: break-word;
+    z-index: 10;
+    max-width: 100%;
+    background-color: #fff;
+  }
+
+  .truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+    display: block;
+  }
+
   .h-screen-80 {
     height: 80vh;
   }

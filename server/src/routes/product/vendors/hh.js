@@ -1,10 +1,9 @@
 import { JSDOM } from "jsdom";
 import axios from "axios";
 
+import { readInventoryFile } from "../../../ftp/index.js";
 import { removeDuplicateWords, standardizeSize } from "../common.js";
-import { readInventoryFile } from "../../../sync-products/ftp.js";
 import { generateProductName } from "../../../common/index.js";
-
 const fetchData = async (link) => {
   const { data } = await axios.get(`https://helmethouse.com${link}`);
   return data;

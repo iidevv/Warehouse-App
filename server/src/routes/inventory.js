@@ -1,90 +1,58 @@
 import express from "express";
-import {
-  createNewDate,
-  getInventoryModel,
-  getProductItemModel,
-} from "./../common/index.js";
+import { getProductItemModel } from "./../common/index.js";
 const router = express.Router();
 
-export const getInventoryProducts = async (
-  vendor,
-  vendor_id,
-  name,
-  page,
-  pageSize,
-  status,
-  search,
-  isUserRequest = false
-) => {
-  const Model = getInventoryModel(vendor);
-  if ((vendor_id, name)) {
-    const product = await Model.findOne({
-      vendor_id,
-      product_name: name,
-    });
-    return product;
-  } else {
-    let query = {};
-    if (status) {
-      query.status = status;
-    }
-    if (search) {
-      query.product_name = { $regex: search, $options: "i" };
-    }
+export const getInventoryProducts = async (vendor, page = 1, query = {}) => {
+  const Model = getProductItemModel(vendor);
 
-    const total = await Model.countDocuments(query);
-    const totalPages = Math.ceil(total / pageSize);
-    const skip = (page - 1) * pageSize;
+  const options = {
+    page: page,
+    limit: 20,
+    lean: true,
+    leanWithId: false,
+  };
 
-    const sort = isUserRequest ? { last_updated: -1 } : { inserted_at: 1 };
+  const products = await Model.paginate(query, options);
 
-    const Inventory = await Model.find(query)
-      .sort(sort)
-      .skip(skip)
-      .limit(pageSize);
-    return {
-      products: Inventory,
-      total: total,
-      totalPages: totalPages,
-      currentPage: page,
-    };
-  }
+  return {
+    products: products.docs,
+    total: products.totalDocs,
+    page: products.page,
+    nextPage: products.nextPage,
+    prevPage: products.prevPage,
+    totalPages: products.totalPages,
+  };
 };
 
-export const addInventoryProduct = async (vendor, productData) => {
-  const Model = getInventoryModel(vendor);
-  const {
-    vendor_id,
-    bigcommerce_id,
-    price,
-    variants,
-    product_name,
-    last_updated,
-    status,
-    create_type = "sku",
-    create_value = "",
-  } = productData;
-  const Inventory = await Model.findOne({
-    product_name,
-  });
+export const createInventoryProduct = async (
+  vendorProduct,
+  product,
+  status
+) => {
+  try {
+    await Promise.all(
+      product.data.variants.map(async (item) => {
+        const data = {
+          item_id: item.id,
+          product_id: product.data.id,
+          product_name: product.data.name,
+          sku: item.sku,
+          inventory_level: item.inventory_level,
+          price: item.price,
+          sale_price: item.sale_price,
+          update_status: status.toLowerCase(),
+          update_log: "",
+          discontinued: false,
+        };
+        await addProductItem(vendorProduct.vendor, data);
+      })
+    );
 
-  if (Inventory) throw new Error("Product already exists!");
-
-  const newProduct = new Model({
-    vendor,
-    vendor_id,
-    bigcommerce_id,
-    price,
-    variants,
-    product_name,
-    last_updated,
-    status,
-    create_type,
-    create_value,
-  });
-  await newProduct.save();
-
-  return newProduct;
+    return "Product synced!";
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
 
 export const addProductItem = async (vendor, data) => {
@@ -125,59 +93,6 @@ export const addProductItem = async (vendor, data) => {
   return newProduct;
 };
 
-export const updateInventoryProduct = async (vendor, updatedProductData) => {
-  const Model = getInventoryModel(vendor);
-  try {
-    const product = await Model.findOne({
-      vendor_id: updatedProductData.id,
-      product_name: updatedProductData.product_name,
-    });
-    if (product) {
-      if (product.price !== updatedProductData.price) {
-        product.price = updatedProductData.price;
-      }
-
-      if (product.status !== updatedProductData.status) {
-        product.status = updatedProductData.status;
-      }
-
-      for (const updatedVariant of updatedProductData.variants) {
-        // Find the matching variant in the product
-        const productVariantIndex = product.variants.findIndex(
-          (variant) => variant.vendor_id == updatedVariant.id
-        );
-
-        if (productVariantIndex !== -1) {
-          if (
-            product.variants[productVariantIndex].variant_price !==
-            updatedVariant.price
-          ) {
-            product.variants[productVariantIndex].variant_price =
-              updatedVariant.price;
-          }
-
-          if (
-            product.variants[productVariantIndex].inventory_level !==
-            updatedVariant.inventory_level
-          ) {
-            product.variants[productVariantIndex].inventory_level =
-              updatedVariant.inventory_level;
-          }
-        }
-      }
-
-      product.last_updated = createNewDate();
-      await product.save();
-      return { Message: "updated!" };
-    } else {
-      console.log(`Product not found: ${updatedProductData.product_name}`);
-      return { Error: "Product not found" };
-    }
-  } catch (error) {
-    return { Error: err };
-  }
-};
-
 // get
 router.get("/products", async (req, res) => {
   const vendor = req.query.vendor;
@@ -209,32 +124,11 @@ router.get("/products", async (req, res) => {
 router.post("/products", async (req, res) => {
   const vendor = req.query.vendor;
   try {
-    const addedProduct = await addInventoryProduct(vendor, req.body);
+    const addedProduct = await addProductItem(vendor, req.body);
     res.json(addedProduct);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-});
-
-// update
-router.put("/products", async (req, res) => {
-  const vendor = req.query.vendor;
-  try {
-    const response = await updateInventoryProduct(vendor, req.body);
-    res.json(response);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-// delete
-router.delete("/products", async (req, res) => {
-  const Model = getInventoryModel(req.query.vendor);
-  const bigcommerce_id = req.query.id;
-  const Inventory = await Model.findOneAndDelete({ bigcommerce_id });
-  if (!Inventory) return res.json({ message: "Product doesn't exists!" });
-
-  res.json({ message: "Deleted Successfully" });
 });
 
 export { router as inventoryRouter };
