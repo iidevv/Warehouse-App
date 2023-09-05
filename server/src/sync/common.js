@@ -1,4 +1,8 @@
-import { executeWithRetry, getProductItemModel } from "../common/index.js";
+import {
+  executeWithRetry,
+  getInventoryStatus,
+  getProductItemModel,
+} from "../common/index.js";
 import { getInventory, getPrice } from "../common/pu.js";
 import { downloadInventoryFile, readInventoryFile } from "../ftp/index.js";
 import { bigCommerceInstance, wpsInstance } from "../instances/index.js";
@@ -43,6 +47,7 @@ const setProductsForSync = async (vendor, query) => {
     await updateProductItemModel.insertMany(batch);
   }
 };
+
 const resetProductsForSync = async () => {
   try {
     await updateProductItemModel.collection.drop();
@@ -51,10 +56,10 @@ const resetProductsForSync = async () => {
   }
 };
 
-export const getSyncedProducts = async (vendor, page = 1, query = {}) => {
+export const getSyncedProducts = async (vendor, query = {}, page = 1) => {
   let Model;
-
   // if Sync with params
+
   if (Object.keys(query).length) {
     Model = updateProductItemModel;
   } else {
@@ -166,6 +171,8 @@ const updateInventoryProducts = async (vendor, productsForUpdate) => {
       update: {
         sku: product.sku,
         inventory_level: product.inventory_level,
+        inventory_status: getInventoryStatus(product.inventory_level),
+        update_status: product.update_status,
         price: product.price,
         discontinued: product.discontinued,
       },

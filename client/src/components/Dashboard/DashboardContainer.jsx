@@ -21,14 +21,14 @@ class DashboardContainer extends React.Component {
     this.props.getProducts(this.vendor);
     this.props.getStatus(this.vendor);
   }
-  onPageChanged = (page, query) => {
-    this.props.getProducts(this.vendor, page, query);
+  onPageChanged = (query, page) => {
+    this.props.getProducts(this.vendor, query, page);
   };
-  onFilterChanged = (page, query) => {
-    this.props.getProducts(this.vendor, page, query);
+  onFilterChanged = (query) => {
+    this.props.getProducts(this.vendor, query);
   };
-  onUpdateProducts = (query) => {
-    this.props.updateProducts(this.vendor, query);
+  onUpdateProducts = (query, bulk) => {
+    this.props.updateProducts(this.vendor, query, bulk);
   };
 
   render() {
@@ -38,12 +38,12 @@ class DashboardContainer extends React.Component {
         <Dashboard
           vendor={this.vendor}
           products={this.props.products}
+          pagination={this.props.pagination}
+          query={this.props.query}
           total={this.props.total}
           onUpdateProducts={this.onUpdateProducts}
           onPageChanged={this.onPageChanged}
           onFilterChanged={this.onFilterChanged}
-          currentPage={this.props.currentPage}
-          totalPages={this.props.totalPages}
           status={this.props.status}
         />
       </div>
@@ -57,8 +57,8 @@ let mapStateToProps = (state) => {
     products: state.inventory.products,
     isFetching: state.inventory.isFetching,
     total: state.inventory.total,
-    currentPage: state.inventory.currentPage,
-    totalPages: state.inventory.totalPages,
+    pagination: state.inventory.pagination,
+    query: state.inventory.query,
     status: state.inventory.status,
   };
 };

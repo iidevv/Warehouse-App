@@ -120,30 +120,25 @@ export const chatgptAPI = {
 };
 
 export const inventoryAPI = {
-  getProducts(vendor, name, page, status, search) {
+  getProducts(vendor, query, page) {
     return instance
       .get(`/inventory/products/`, {
         params: {
           vendor,
-          name,
+          query,
           page,
-          status,
-          search,
         },
       })
       .then((response) => {
         return response.data;
       });
   },
-  updateProducts(vendor, vendor_id, name, status) {
+  updateProducts(vendor, query, bulk) {
     return instance
-      .get(`/inventory/sync/`, {
-        params: {
-          vendor,
-          vendor_id,
-          name,
-          status,
-        },
+      .patch(`/inventory/sync/`, {
+        vendor,
+        query,
+        bulk,
       })
       .then((response) => {
         return response.data;

@@ -3,16 +3,21 @@ import { inventoryAPI, dmgProductAPI } from "../../api/api";
 const SET_VENDOR = "SET_VENDOR";
 const SET_PRODUCTS = "SET_PRODUCTS";
 const SET_PRODUCTS_TOTAL = "SET_PRODUCTS_TOTAL";
-const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
-const SET_TOTAL_PAGES = "SET_TOTAL_PAGES";
+const SET_PAGINATION = "SET_PAGINATION";
+const SET_QUERY = "SET_QUERY";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 const SET_STATUS = "SET_STATUS";
 
 let initialState = {
   products: [],
   total: 0,
-  currentPage: 1,
-  totalPages: 0,
+  pagination: {
+    page: 1,
+    nextPage: null,
+    prevPage: null,
+    totalPages: 0,
+  },
+  query: {},
   isFetching: true,
   status: true,
 };
@@ -29,20 +34,20 @@ const inventoryReducer = (state = initialState, action) => {
         ...state,
         total: action.total,
       };
-    case SET_CURRENT_PAGE:
+    case SET_PAGINATION:
       return {
         ...state,
-        currentPage: action.currentPage,
-      };
-    case SET_TOTAL_PAGES:
-      return {
-        ...state,
-        totalPages: action.totalPages,
+        pagination: action.pagination,
       };
     case SET_STATUS:
       return {
         ...state,
         status: action.status,
+      };
+    case SET_QUERY:
+      return {
+        ...state,
+        query: action.query,
       };
     case TOGGLE_IS_FETCHING:
       return {
@@ -69,17 +74,16 @@ export const setProductsTotal = (total) => {
   };
 };
 
-export const setCurrentPage = (currentPage) => {
+export const setPagination = (pagination) => {
+  const { page, nextPage, prevPage, totalPages } = pagination;
   return {
-    type: SET_CURRENT_PAGE,
-    currentPage,
-  };
-};
-
-export const setTotalPages = (totalPages) => {
-  return {
-    type: SET_TOTAL_PAGES,
-    totalPages,
+    type: SET_PAGINATION,
+    pagination: {
+      page,
+      nextPage,
+      prevPage,
+      totalPages,
+    },
   };
 };
 
@@ -90,6 +94,13 @@ export const setStatus = (status) => {
   };
 };
 
+export const setQuery = (query) => {
+  return {
+    type: SET_QUERY,
+    query,
+  };
+};
+
 export const setToggleIsFetching = (isFetching) => {
   return {
     type: TOGGLE_IS_FETCHING,
@@ -97,18 +108,16 @@ export const setToggleIsFetching = (isFetching) => {
   };
 };
 
-export const getProducts = (vendor, name, page, status, search) => {
+export const getProducts = (vendor, query, page) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    inventoryAPI
-      .getProducts(vendor, name, page, status, search)
-      .then((data) => {
-        dispatch(setProducts(data.products));
-        dispatch(setProductsTotal(data.total));
-        dispatch(setTotalPages(data.totalPages));
-        dispatch(setCurrentPage(data.currentPage));
-        dispatch(setToggleIsFetching(false));
-      });
+    inventoryAPI.getProducts(vendor, query, page).then((data) => {
+      dispatch(setProducts(data.products));
+      dispatch(setPagination(data.pagination));
+      dispatch(setProductsTotal(data.total));
+      dispatch(setQuery(data.query));
+      dispatch(setToggleIsFetching(false));
+    });
   };
 };
 
@@ -120,15 +129,13 @@ export const getStatus = () => {
   };
 };
 
-export const updateProducts = (vendor, vendor_id, name, status) => {
+export const updateProducts = (vendor, query, bulk) => {
   return (dispatch) => {
     dispatch(setStatus(true));
-    inventoryAPI
-      .updateProducts(vendor, vendor_id, name, status)
-      .then((data) => {
-        dispatch(getProducts(vendor, vendor_id, name, status));
-        dispatch(setStatus(false));
-      });
+    inventoryAPI.updateProducts(vendor, query, bulk).then((data) => {
+      dispatch(getProducts(vendor, {}));
+      dispatch(setStatus(false));
+    });
   };
 };
 

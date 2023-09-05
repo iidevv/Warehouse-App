@@ -1,26 +1,37 @@
 import express from "express";
-import { getProductItemModel } from "./../common/index.js";
+import { getInventoryStatus, getProductItemModel } from "./../common/index.js";
 const router = express.Router();
 
-export const getInventoryProducts = async (vendor, page = 1, query = {}) => {
+export const getInventoryProducts = async (vendor, query = {}, page = 1) => {
   const Model = getProductItemModel(vendor);
+
+  if (query.sku) {
+    const matches = query.sku.match(/^\/(.*?)\/([gimsuy]*)$/);
+    if (matches) {
+      const [, pattern, flags] = matches;
+      query.sku = new RegExp(pattern, flags);
+    }
+  }
 
   const options = {
     page: page,
     limit: 20,
     lean: true,
     leanWithId: false,
+    sort: { updatedAt: 1 },
   };
 
   const products = await Model.paginate(query, options);
-
   return {
     products: products.docs,
+    pagination: {
+      page: products.page,
+      nextPage: products.nextPage,
+      prevPage: products.prevPage,
+      totalPages: products.totalPages,
+    },
     total: products.totalDocs,
-    page: products.page,
-    nextPage: products.nextPage,
-    prevPage: products.prevPage,
-    totalPages: products.totalPages,
+    query,
   };
 };
 
@@ -35,11 +46,10 @@ export const createInventoryProduct = async (
         const data = {
           item_id: item.id,
           product_id: product.data.id,
-          product_name: product.data.name,
           sku: item.sku,
           inventory_level: item.inventory_level,
+          inventory_status: getInventoryStatus(item.inventory_level),
           price: item.price,
-          sale_price: item.sale_price,
           update_status: status.toLowerCase(),
           update_log: "",
           discontinued: false,
@@ -60,11 +70,10 @@ export const addProductItem = async (vendor, data) => {
   const {
     item_id,
     product_id,
-    product_name,
     sku,
     inventory_level,
+    inventory_status,
     price,
-    sale_price,
     update_status,
     update_log,
     discontinued,
@@ -79,11 +88,10 @@ export const addProductItem = async (vendor, data) => {
     vendor,
     item_id,
     product_id,
-    product_name,
     sku,
     inventory_level,
+    inventory_status,
     price,
-    sale_price,
     update_status,
     update_log,
     discontinued,
@@ -95,25 +103,10 @@ export const addProductItem = async (vendor, data) => {
 
 // get
 router.get("/products", async (req, res) => {
-  const vendor = req.query.vendor;
-  const vendor_id = req.query.id;
-  const name = "";
-  const page = parseInt(req.query.page) || 1;
-  const pageSize = parseInt(req.query.pageSize) || 20;
-  const status = req.query.status || "";
-  const search = req.query.search || "";
+  const { vendor, query, page } = req.query;
 
   try {
-    const products = await getInventoryProducts(
-      vendor,
-      vendor_id,
-      name,
-      page,
-      pageSize,
-      status,
-      search,
-      true
-    );
+    const products = await getInventoryProducts(vendor, query, page);
     res.json(products);
   } catch (error) {
     res.status(400).json({ message: error.message });

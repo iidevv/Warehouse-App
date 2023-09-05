@@ -14,16 +14,16 @@ const Dashboard = (props) => {
     };
     return date.toLocaleString("en-US", options);
   };
-  const handlePageClick = (page, query) => {
-    props.onPageChanged(page, query);
+  const handlePageClick = (query, page) => {
+    props.onPageChanged(query, page);
   };
 
   const [statusFilter, setStatusFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [isInitialSearch, setIsInitialSearch] = useState(true);
 
-  const handleUpdateClick = (item_id) => {
-    props.onUpdateProducts(item_id);
+  const handleUpdateClick = (query = {}, bulk = false) => {
+    props.onUpdateProducts(query, bulk);
   };
 
   const handleFilterChange = (event) => {
@@ -38,35 +38,38 @@ const Dashboard = (props) => {
 
   useEffect(() => {
     if (isInitialSearch) return;
-    props.onFilterChanged("", "", statusFilter, searchFilter);
+    const query = {};
+    if (statusFilter) query.update_status = statusFilter;
+    if (searchFilter) query.sku = new RegExp(searchFilter, "i");
+    console.log(query);
+    props.onFilterChanged(query);
   }, [statusFilter, searchFilter, isInitialSearch]);
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
-
-    let leftSide = props.currentPage - 2;
-    let rightSide = props.currentPage + 2;
+    let leftSide = props.pagination.page - 2;
+    let rightSide = props.pagination.page + 2;
 
     if (leftSide < 1) {
       rightSide += 1 - leftSide;
       leftSide = 1;
     }
-    if (rightSide > props.totalPages) {
-      leftSide -= rightSide - props.totalPages;
-      rightSide = props.totalPages;
+    if (rightSide > props.pagination.totalPages) {
+      leftSide -= rightSide - props.pagination.totalPages;
+      rightSide = props.pagination.totalPages;
     }
 
-    for (let i = 1; i <= props.totalPages; i++) {
+    for (let i = 1; i <= props.pagination.totalPages; i++) {
       if (
         i === 1 ||
-        i === props.totalPages ||
+        i === props.pagination.totalPages ||
         (i >= leftSide && i <= rightSide)
       ) {
         pageNumbers.push(
           <button
             key={i}
-            disabled={props.currentPage === i}
-            onClick={() => handlePageClick()}
+            disabled={props.pagination.page === i}
+            onClick={() => handlePageClick(props.query, i)}
             type="button"
             className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 disabled:text-black"
           >
@@ -95,12 +98,12 @@ const Dashboard = (props) => {
         </h2>
         <button
           onClick={() => {
-            handleUpdateClick();
+            handleUpdateClick({}, true);
           }}
           disabled={props.status}
           className="py-2 px-4 disabled:opacity-50 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
         >
-          {props.status ? "Processing" : "Update"}
+          {props.status ? "Processing" : "Bulk update"}
         </button>
       </div>
       <div className="flex flex-row items-stretch w-full mb-6">
@@ -134,7 +137,7 @@ const Dashboard = (props) => {
                 scope="col"
                 className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
               >
-                Name
+                Last update
               </th>
               <th
                 scope="col"
@@ -142,12 +145,7 @@ const Dashboard = (props) => {
               >
                 Updates Status
               </th>
-              <th
-                scope="col"
-                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
-              >
-                Last update
-              </th>
+
               <th
                 scope="col"
                 className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
@@ -185,20 +183,15 @@ const Dashboard = (props) => {
                           {m.sku}
                         </p>
                       </td>
-                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200 truncate-wrapper">
-                        <p className="text-gray-900 whitespace-no-wrap truncate">
-                          {m.product_name}
+                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
+                        <p className="text-gray-900 whitespace-no-wrap">
+                          {createNewDate(m.updatedAt)}
                         </p>
                       </td>
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
                         <p className="text-gray-900 whitespace-no-wrap">
                           {m.update_status}{" "}
                           {m.update_log ? `(${m.update_log})` : ""}
-                        </p>
-                      </td>
-                      <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {createNewDate(m.updatedAt)}
                         </p>
                       </td>
                       <td className="px-5 py-1 lg:py-5 text-sm bg-white lg:border-b border-gray-200">
@@ -219,9 +212,9 @@ const Dashboard = (props) => {
                       <td className="relative px-5 pb-4 lg:py-5 text-sm bg-white border-b-8 lg:border-b border-gray-100">
                         <button
                           className="text-blue-600 hover:text-indigo-900"
-                          data-product-id={m.item_id}
+                          data-product-sku={m.sku}
                           onClick={() => {
-                            handleUpdateClick(m.item_id);
+                            handleUpdateClick({ sku: m.sku });
                           }}
                         >
                           Update
@@ -238,8 +231,11 @@ const Dashboard = (props) => {
         <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">
           <div className="flex items-center">
             <button
-              onClick={() => handlePageClick("", props.currentPage - 1)}
-              disabled={props.currentPage === 1 ? true : false}
+              // eslint-disable-next-line no-undef
+              onClick={() =>
+                handlePageClick(props.query, props.pagination.prevPage)
+              }
+              disabled={props.pagination.prevPage ? false : true}
               type="button"
               className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-l border-t border-b rounded-l-xl hover:bg-gray-100"
             >
@@ -256,8 +252,11 @@ const Dashboard = (props) => {
             <div className="hidden lg:flex">{renderPageNumbers()}</div>
             <button
               type="button"
-              disabled={props.currentPage === props.totalPages ? true : false}
-              onClick={() => handlePageClick("", props.currentPage + 1)}
+              disabled={props.pagination.nextPage ? false : true}
+              // eslint-disable-next-line no-undef
+              onClick={() =>
+                handlePageClick(props.query, props.pagination.nextPage)
+              }
               className="disabled:bg-gray-100 w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
             >
               <svg

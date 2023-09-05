@@ -10,13 +10,13 @@ import { chatgptRouter } from "./routes/chatgpt.js";
 import { authenticate } from "./routes/user.js";
 import cookieParser from "cookie-parser";
 import { puExternalProductRouter } from "./routes/external/pu-product.js";
+import { externalDeleteProductRouter } from "./routes/external/delete-product.js";
 import { puDropshipRouter } from "./routes/pu-dropship.js";
 import { dropshipOrderRouter } from "./routes/dropship.js";
 import { dashboardRouter } from "./routes/dashboard.js";
 import { wpsDropshipRouter } from "./routes/wps-dropship.js";
-import { externalOptimizationRouter } from "./routes/external/optimization.js";
+import { externalOptimizationRouter } from "./routes/external/imgs-optimization.js";
 import { processingRouter } from "./routes/external/processing.js";
-import { ProductAvailabilityRouter } from "./routes/external/productAvailabilityChecker.js";
 import { bulkActionRouter } from "./routes/external/bulk-actions.js";
 import { testActionRouter } from "./routes/external/test-action.js";
 import { catalogRouter } from "./routes/catalog/catalog.js";
@@ -43,8 +43,8 @@ app.use(express.json());
 
 app.use("/external", puExternalProductRouter);
 app.use("/external", externalOptimizationRouter);
+app.use("/external", externalDeleteProductRouter);
 app.use("/external", processingRouter);
-app.use("/external", ProductAvailabilityRouter);
 app.use("/external", bulkActionRouter);
 app.use("/external", testActionRouter);
 

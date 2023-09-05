@@ -45,10 +45,11 @@ const updateHooks = async (hookIds) => {
 };
 
 export const updateAllHooks = new CronJob({
-  cronTime: "0 7 * * *",
+  cronTime: "0 6 * * *",
   onTick: async () => {
     try {
-      await updateHooks([26765181]);
+      // imgs optimization, delete product
+      await updateHooks([26765181, 27186306]);
     } catch (error) {
       sendNotification(`Error during updating: ${error}`);
     }

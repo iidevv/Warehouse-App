@@ -1,5 +1,4 @@
 import express from "express";
-import { sendNotification } from "../routes/tg-notifications.js";
 import {
   afterUpdateProducts,
   beforeUpdateProducts,
@@ -20,8 +19,8 @@ export const syncProducts = async (vendor, query, bulk = false) => {
     try {
       const { syncedProducts, nextPage } = await getSyncedProducts(
         vendor,
-        page,
-        query
+        query,
+        page
       );
       const vendorProducts = await getVendorProducts(vendor, syncedProducts);
       const productsForUpdate = await compareProducts(
@@ -48,9 +47,9 @@ export const syncProducts = async (vendor, query, bulk = false) => {
 };
 
 router.patch("/sync", async (req, res) => {
-  const { vendor, query } = req.body;
+  const { vendor, query, bulk } = req.body;
   try {
-    const response = await syncProducts(vendor, query);
+    const response = await syncProducts(vendor, query, bulk);
     res.send(response);
   } catch (error) {
     res.status(500).json({ error: error });
