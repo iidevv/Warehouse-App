@@ -22,6 +22,7 @@ import { testActionRouter } from "./routes/external/test-action.js";
 import { catalogRouter } from "./routes/catalog/catalog.js";
 import { productRouter } from "./routes/product/product.js";
 import { SyncRouter } from "./sync/index.js";
+import { productMappingRouter } from "./sync/product-mapping.js";
 
 import "./cron/index.js";
 import "./sync/common.js";
@@ -47,6 +48,7 @@ app.use("/external", externalDeleteProductRouter);
 app.use("/external", processingRouter);
 app.use("/external", bulkActionRouter);
 app.use("/external", testActionRouter);
+app.use("/external", productMappingRouter);
 
 app.use("/api/images", express.static(path.join(__dirname, "../optimized")));
 

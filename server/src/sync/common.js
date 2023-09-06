@@ -8,6 +8,7 @@ import { downloadInventoryFile, readInventoryFile } from "../ftp/index.js";
 import { bigCommerceInstance, wpsInstance } from "../instances/index.js";
 import { puSearchInstance, puSearchLogin } from "../instances/pu-search.js";
 import { updateProductItemModel } from "../models/Inventory.js";
+import { updateStatusModel } from "../models/updateStatus.js";
 import { sendNotification } from "../routes/tg-notifications.js";
 
 export const beforeUpdateProducts = async (vendor, query = {}) => {
@@ -23,6 +24,11 @@ export const beforeUpdateProducts = async (vendor, query = {}) => {
   if (vendor == "PU") {
     await puSearchLogin();
   }
+  try {
+    await setUpdateStatus(true, `Updating ${vendor} products`);
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const afterUpdateProducts = async (
@@ -34,6 +40,11 @@ export const afterUpdateProducts = async (
   sendNotification(
     `${vendor} products updated. \n Total: ${processedProducts}, \n Query: ${query}`
   );
+  try {
+    await setUpdateStatus(false, `${vendor} products updated (${processedProducts})`);
+  } catch (error) {
+    throw error;
+  }
 };
 
 const setProductsForSync = async (vendor, query) => {
@@ -51,6 +62,35 @@ const setProductsForSync = async (vendor, query) => {
 const resetProductsForSync = async () => {
   try {
     await updateProductItemModel.collection.drop();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const setUpdateStatus = async (isUpdating, updateStatus) => {
+  try {
+    const doc = await updateStatusModel.findOneAndUpdate(
+      {
+        _id: "64f8ba198ab49ac6b3604b5b",
+      },
+      {
+        is_updating: isUpdating,
+        update_status: updateStatus,
+      },
+      { new: true }
+    );
+    return { is_updating: doc.is_updating, update_status: doc.update_status };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUpdateStatus = async () => {
+  try {
+    const doc = await updateStatusModel.findOne({
+      _id: "64f8ba198ab49ac6b3604b5b",
+    });
+    return { is_updating: doc.is_updating, update_status: doc.update_status };
   } catch (error) {
     throw error;
   }
@@ -95,7 +135,7 @@ export const compareProducts = async (syncedProducts, vendorProducts, bulk) => {
     if (!vendorProduct) {
       vendorProduct = product;
       vendorProduct.update_status = "error";
-      vendorProduct.update_log = "product not found";
+      vendorProduct.update_log = "vendor product not found";
       vendorProduct.inventory_level = 0;
       productsForUpdate.push(vendorProduct);
       return;
@@ -172,7 +212,7 @@ const updateInventoryProducts = async (vendor, productsForUpdate) => {
         sku: product.sku,
         inventory_level: product.inventory_level,
         inventory_status: getInventoryStatus(product.inventory_level),
-        update_status: product.update_status,
+        update_log: product.update_log,
         price: product.price,
         discontinued: product.discontinued,
       },

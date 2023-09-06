@@ -33,63 +33,6 @@ export const dmgProductAPI = {
   },
 };
 
-export const wpsProductsAPI = {
-  getProducts(name, cursor) {
-    return instance
-      .get(`/wps/products/`, {
-        params: {
-          name,
-          cursor,
-        },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  getItems(searchby, keyword, cursor) {
-    return instance
-      .get(`/wps/items/`, {
-        params: {
-          searchby,
-          keyword,
-          cursor,
-        },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-};
-
-export const wpsProductAPI = {
-  getProduct(id) {
-    return instance
-      .get(`/wps/product/`, {
-        params: {
-          id,
-        },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-};
-
-export const puProductsAPI = {
-  getProducts(name, offset) {
-    return instance
-      .get(`/pu/products/`, {
-        params: {
-          name,
-          offset,
-        },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-};
-
 export const puProductAPI = {
   getProduct(id, search) {
     return instance
@@ -139,42 +82,6 @@ export const inventoryAPI = {
         vendor,
         query,
         bulk,
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  updateProductsStatus() {
-    return instance.get(`/inventory/sync-status/`).then((response) => {
-      return response.data;
-    });
-  },
-};
-
-export const puInventoryAPI = {
-  getProducts(name, page, status, search) {
-    return instance
-      .get(`/pu-inventory/products/`, {
-        params: {
-          name,
-          page,
-          status,
-          search,
-        },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  updateProducts(vendor_id, name, status) {
-    return instance
-      .get(`/inventory/sync/`, {
-        params: {
-          vendor: "PU",
-          vendor_id,
-          name,
-          status,
-        },
       })
       .then((response) => {
         return response.data;

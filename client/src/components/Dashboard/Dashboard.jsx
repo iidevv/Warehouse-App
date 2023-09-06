@@ -18,8 +18,11 @@ const Dashboard = (props) => {
     props.onPageChanged(query, page);
   };
 
+  const [updateQuery, setUpdateQuery] = useState({});
   const [statusFilter, setStatusFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+  const [stockFilter, setStockFilter] = useState("");
+  const [discontinuedFilter, setDiscontinuedFilter] = useState("");
   const [isInitialSearch, setIsInitialSearch] = useState(true);
 
   const handleUpdateClick = (query = {}, bulk = false) => {
@@ -29,10 +32,20 @@ const Dashboard = (props) => {
   const handleFilterChange = (event) => {
     const target = event.target;
     if (isInitialSearch) setIsInitialSearch(false);
-    if (target.type === "select-one") {
-      setStatusFilter(target.value);
-    } else if (target.type === "text") {
-      setSearchFilter(target.value);
+    switch (target.id) {
+      case "status":
+        setStatusFilter(target.value);
+        break;
+      case "search":
+        setSearchFilter(target.value);
+        break;
+      case "stock":
+        setStockFilter(target.value);
+        break;
+      case "discontinued":
+        setDiscontinuedFilter(target.value);
+      default:
+        break;
     }
   };
 
@@ -41,9 +54,17 @@ const Dashboard = (props) => {
     const query = {};
     if (statusFilter) query.update_status = statusFilter;
     if (searchFilter) query.sku = new RegExp(searchFilter, "i");
-    console.log(query);
+    if (stockFilter) query.inventory_status = stockFilter;
+    if (discontinuedFilter) query.discontinued = discontinuedFilter;
+    setUpdateQuery(query);
     props.onFilterChanged(query);
-  }, [statusFilter, searchFilter, isInitialSearch]);
+  }, [
+    statusFilter,
+    searchFilter,
+    stockFilter,
+    discontinuedFilter,
+    isInitialSearch,
+  ]);
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
@@ -93,21 +114,34 @@ const Dashboard = (props) => {
   return (
     <div className="m-5 lg:w-full">
       <div className="flex flex-row items-center w-full mb-6">
-        <h2 className="text-2xl leading-tight mr-6">
-          {props.vendor} Products ({props.total})
-        </h2>
+        <div className="d-flex flex-col mr-6">
+          <h2 className="text-2xl leading-tight">
+            {props.vendor} Products ({props.total})
+          </h2>
+          <small>Last status: {props.status.update_status}</small>
+        </div>
+        <button
+          onClick={() => {
+            handleUpdateClick(updateQuery);
+          }}
+          disabled={props.total == 0 && props.status.update_status}
+          className="py-2 px-4 mr-2 disabled:opacity-50 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
+        >
+          {props.status.is_updating ? "Processing" : `update (${props.total})`}
+        </button>
         <button
           onClick={() => {
             handleUpdateClick({}, true);
           }}
-          disabled={props.status}
+          disabled={props.status.is_updating}
           className="py-2 px-4 disabled:opacity-50 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
         >
-          {props.status ? "Processing" : "Bulk update"}
+          {props.status.is_updating ? "Processing" : "Bulk update"}
         </button>
       </div>
       <div className="flex flex-row items-stretch w-full mb-6">
         <select
+          id="status"
           onChange={handleFilterChange}
           className="rounded-lg border-transparent mr-4 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
         >
@@ -116,11 +150,31 @@ const Dashboard = (props) => {
           <option value="created">Created</option>
           <option value="updated">Updated</option>
         </select>
+        <select
+          id="stock"
+          onChange={handleFilterChange}
+          className="rounded-lg border-transparent mr-4 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+        >
+          <option value="">Stock</option>
+          <option value="low">low</option>
+          <option value="medium">medium </option>
+          <option value="high">high</option>
+        </select>
+        <select
+          id="discontinued"
+          onChange={handleFilterChange}
+          className="rounded-lg border-transparent mr-4 border border-gray-300 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+        >
+          <option value="">Discontinued</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
         <input
+          id="search"
           onChange={handleFilterChange}
           className="rounded-lg border-transparent appearance-none border border-gray-300 w-full lg:w-72 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           type="text"
-          placeholder="search..."
+          placeholder="search sku"
         />
       </div>
       <div className="inline-block min-w-full rounded-lg shadow">

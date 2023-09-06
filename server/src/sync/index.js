@@ -4,6 +4,7 @@ import {
   beforeUpdateProducts,
   compareProducts,
   getSyncedProducts,
+  getUpdateStatus,
   getVendorProducts,
   updateProducts,
 } from "./common.js";
@@ -57,7 +58,12 @@ router.patch("/sync", async (req, res) => {
 });
 
 router.get("/sync-status", async (req, res) => {
-  res.send({ updating: false });
+  try {
+    const { is_updating, update_status } = await getUpdateStatus();
+    res.send({ is_updating, update_status });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 export { router as SyncRouter };

@@ -48,21 +48,18 @@ export const puSearchInstance = async (payload) => {
   }
 
   try {
-    const response = await axios
-      .post(searchUrl, payload, {
-        jar: cookieJar,
-        withCredentials: true,
-      })
-      .catch((err) => console.log(err));
+    const response = await axios.post(searchUrl, payload, {
+      jar: cookieJar,
+      withCredentials: true,
+    });
     if (
-      response.data.result.hits &&
+      response.data.result.hits.length &&
       !response.data.result.hits.every((hit) => hit.access)
     ) {
       isLogged = false;
       await puSearchLogin();
       throw new Error("No access.");
     }
-    console.log(response.data.result.hits[0].access);
     return response;
   } catch (error) {
     sendNotification(`PU instance. Request error: ${error.message}`);

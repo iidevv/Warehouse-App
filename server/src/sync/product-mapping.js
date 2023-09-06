@@ -8,7 +8,9 @@ const router = express.Router();
 
 const findBigcommerceProduct = async (sku) => {
   try {
-    const response = bigCommerceInstance.get(`/catalog/variants?${sku}`);
+    const response = await bigCommerceInstance.get(
+      `/catalog/variants?sku=${sku}`
+    );
     if (response.data[0]) {
       return response.data[0];
     } else {
@@ -64,7 +66,7 @@ export const productMapping = async (vendor, query) => {
         page
       );
 
-      const requestPromises = syncedProducts.forEach(async (syncedProduct) => {
+      const requestPromises = syncedProducts.map(async (syncedProduct) => {
         try {
           const bigcommerceProduct = await findBigcommerceProduct(
             syncedProduct.sku
@@ -75,34 +77,37 @@ export const productMapping = async (vendor, query) => {
               bigcommerceProduct
             );
             updatedProducts++;
+            return result;
           }
         } catch (error) {
           throw error;
         }
       });
 
-      Promise.all(requestPromises);
+      await Promise.all(requestPromises).catch((err) => console.log(err));
 
-      processedProducts += vendorProducts.length;
+      processedProducts += syncedProducts.length;
       hasNextPage = nextPage;
+      console.log(`Updated: ${updatedProducts}`);
       page++;
     } catch (error) {
       console.error("Error mapping products:", error);
       throw error;
     }
   }
+  sendNotification(`Products mapped: ${updatedProducts}`);
   return {
-    updated: processedProducts,
+    updated: updatedProducts,
   };
 };
 
 router.patch("/product-mapping", async (req, res) => {
-  const { vendor } = req.body;
+  const { vendor, query } = req.body;
   try {
     const response = await productMapping(vendor, query);
     res.send(response);
   } catch (error) {
-    res.status(500).json({ error: error });
+    res.status(500).json({ error });
   }
 });
 

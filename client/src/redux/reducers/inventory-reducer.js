@@ -19,7 +19,10 @@ let initialState = {
   },
   query: {},
   isFetching: true,
-  status: true,
+  status: {
+    is_updating: true,
+    update_status: "",
+  },
 };
 
 const inventoryReducer = (state = initialState, action) => {
@@ -124,17 +127,21 @@ export const getProducts = (vendor, query, page) => {
 export const getStatus = () => {
   return (dispatch) => {
     inventoryAPI.updateProductsStatus().then((data) => {
-      dispatch(setStatus(data.status));
+      dispatch(setStatus(data));
     });
   };
 };
 
 export const updateProducts = (vendor, query, bulk) => {
   return (dispatch) => {
-    dispatch(setStatus(true));
+    dispatch(
+      setStatus({
+        is_updating: true,
+      })
+    );
     inventoryAPI.updateProducts(vendor, query, bulk).then((data) => {
       dispatch(getProducts(vendor, {}));
-      dispatch(setStatus(false));
+      dispatch(getStatus());
     });
   };
 };

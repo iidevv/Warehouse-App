@@ -18,7 +18,7 @@ export const getInventoryProducts = async (vendor, query = {}, page = 1) => {
     limit: 20,
     lean: true,
     leanWithId: false,
-    sort: { updatedAt: 1 },
+    sort: { updatedAt: -1 },
   };
 
   const products = await Model.paginate(query, options);
