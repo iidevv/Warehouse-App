@@ -124,7 +124,7 @@ const Dashboard = (props) => {
           onClick={() => {
             handleUpdateClick(updateQuery);
           }}
-          disabled={props.total == 0 && props.status.update_status}
+          disabled={props.total == 0 || props.status.update_status}
           className="py-2 px-4 mr-2 disabled:opacity-50 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
         >
           {props.status.is_updating ? "Processing" : `update (${props.total})`}
