@@ -33,21 +33,6 @@ export const dmgProductAPI = {
   },
 };
 
-export const puProductAPI = {
-  getProduct(id, search) {
-    return instance
-      .get(`/pu/product/`, {
-        params: {
-          id,
-          search,
-        },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-};
-
 export const chatgptAPI = {
   getText(s) {
     return instance
@@ -184,12 +169,13 @@ export const catalogAPI = {
   },
 };
 
-export const hhProductsAPI = {
-  getProducts(name, page) {
+export const categoryMappingAPI = {
+  getCategories(vendor, query, page) {
     return instance
-      .get(`/hh/products/`, {
+      .get(`/category/mapping/`, {
         params: {
-          name,
+          vendor,
+          query,
           page,
         },
       })
@@ -197,54 +183,14 @@ export const hhProductsAPI = {
         return response.data;
       });
   },
-};
-
-export const hhProductAPI = {
-  getProduct(link) {
+  updateCategory(vendor, data) {
     return instance
-      .get(`/hh/product/`, {
-        params: {
-          link,
-        },
+      .put(`/category/mapping/`, {
+        vendor,
+        data,
       })
       .then((response) => {
         return response.data;
       });
-  },
-};
-
-export const hhInventoryAPI = {
-  getProducts(name, page, status, search) {
-    return instance
-      .get(`/hh-inventory/products/`, {
-        params: {
-          name,
-          page,
-          status,
-          search,
-        },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  updateProducts(vendor_id, name, status) {
-    return instance
-      .get(`/inventory/sync/`, {
-        params: {
-          vendor_id,
-          name,
-          status,
-          vendor: "HH",
-        },
-      })
-      .then((response) => {
-        return response.data;
-      });
-  },
-  updateProductsStatus() {
-    return instance.get(`/inventory/sync-status/`).then((response) => {
-      return response.data;
-    });
   },
 };

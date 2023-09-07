@@ -26,6 +26,7 @@ import { productMappingRouter } from "./sync/product-mapping.js";
 
 import "./cron/index.js";
 import "./sync/common.js";
+import { categoryMapRouter } from "./routes/category-mapping.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,6 +67,7 @@ app.use("/api/auth", userRouter);
 app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
 app.use("/api/inventory", SyncRouter);
+app.use("/api/category", categoryMapRouter);
 app.use("/api/catalog", catalogRouter);
 app.use("/api/catalog", productRouter);
 app.use("/api/dropship", dropshipOrderRouter);

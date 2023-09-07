@@ -96,6 +96,20 @@ const SideBar = (props) => {
                   <span className="mx-4 text-sm font-normal">Catalogs</span>
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to="/category-mapping?vendor=PU"
+                  onClick={handleSetMenuActive}
+                  className={({ isPending, isActive }) =>
+                    isActive ? "active-menu-link" : "menu-link"
+                  }
+                >
+                  <span className="mx-4 text-sm font-normal">
+                    Category Mapping
+                  </span>
+                </NavLink>
+              </li>
+
               <li className="has-submenu">
                 <span className="menu-link mx-4 text-sm font-normal">
                   Dropshipping

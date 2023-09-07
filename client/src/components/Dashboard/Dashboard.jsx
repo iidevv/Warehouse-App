@@ -44,6 +44,7 @@ const Dashboard = (props) => {
         break;
       case "discontinued":
         setDiscontinuedFilter(target.value);
+        break;
       default:
         break;
     }

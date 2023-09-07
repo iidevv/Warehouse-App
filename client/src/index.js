@@ -20,6 +20,7 @@ import ProductContainer from "./components/Product/productContainer";
 import CatalogContainer from "./components/Catalog/CatalogContainer";
 import DashboardContainer from "./components/Dashboard/DashboardContainer";
 import Catalogs from "./routes/Catalogs";
+import CategoryMappingContainer from "./components/CategoryMapping/CategoryMappingContainer";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = Cookies.get("userID") ? true : false;
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "/catalogs",
         element: <Catalogs />,
+      },
+      {
+        path: "/category-mapping",
+        element: <CategoryMappingContainer />,
       },
       {
         path: "/product/:id",
