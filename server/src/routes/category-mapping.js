@@ -82,7 +82,7 @@ export const getCategories = async (vendor, query = {}, page = 1) => {
     lean: true,
     leanWithId: false,
   };
-  
+
   if (query.vendor_name) {
     const matches = query.vendor_name.match(/^\/(.*?)\/([gimsuy]*)$/);
     if (matches) {
@@ -116,10 +116,8 @@ router.get("/mapping", async (req, res) => {
 });
 
 router.put("/mapping", async (req, res) => {
-  const { vendor, vendor_id, id, name, url } = req.body.data;
-  if (!vendor || !id || !name || !url) {
-    return res.status(500).json({ error: `Please provide all fields` });
-  }
+  const { vendor, data } = req.body;
+  const { vendor_id, id, name, url } = data;
   try {
     const Model = getCategoryMappingModel(vendor);
     const response = await Model.findOneAndUpdate(
@@ -132,7 +130,7 @@ router.put("/mapping", async (req, res) => {
         url,
       }
     );
-    res.json({ response });
+    res.json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

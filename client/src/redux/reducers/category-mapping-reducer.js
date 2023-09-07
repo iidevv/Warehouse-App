@@ -7,13 +7,12 @@ const SET_QUERY = "SET_QUERY";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 const SET_STATUS = "SET_STATUS";
 const SET_DMG_CATEGORIES = "SET_DMG_CATEGORIES";
-const SET_DMG_CURRENT_CATEGORIES = "SET_DMG_CURRENT_CATEGORIES";
+const SET_CATEGORY = "SET_CATEGORY";
 
 let initialState = {
   categories: [],
   total: 0,
   dmg_categories: [],
-  dmg_current_categories: [],
   pagination: {
     page: 1,
     nextPage: null,
@@ -51,7 +50,25 @@ const categoryMappingReducer = (state = initialState, action) => {
         ...state,
         isFetching: action.isFetching,
       };
+    case SET_DMG_CATEGORIES:
+      return {
+        ...state,
+        dmg_categories: action.categories,
+      };
+    case SET_CATEGORY:
+      console.log("Current categories:", state.categories);
+      console.log("Action category:", action.category);
 
+      const updatedCategories = [...state.categories].map((cat) =>
+        cat.id === action.category.id ? action.category : cat
+      );
+
+      console.log("Updated categories:", updatedCategories);
+
+      return {
+        ...state,
+        categories: updatedCategories,
+      };
     default:
       return state;
   }
@@ -105,6 +122,20 @@ export const setToggleIsFetching = (isFetching) => {
   };
 };
 
+export const setDMGCategories = (categories) => {
+  return {
+    type: SET_DMG_CATEGORIES,
+    categories,
+  };
+};
+
+export const setCategory = (category) => {
+  return {
+    type: SET_CATEGORY,
+    category,
+  };
+};
+
 export const getCategories = (vendor, query, page) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
@@ -118,35 +149,22 @@ export const getCategories = (vendor, query, page) => {
   };
 };
 
-export const setDMGCategories = (categories) => {
-  return {
-    type: SET_DMG_CATEGORIES,
-    dmg_categories: categories,
-  };
-};
-
-export const setDMGCurrentCategories = (categories) => {
-  return {
-    type: SET_DMG_CURRENT_CATEGORIES,
-    dmg_current_categories: categories,
-  };
-};
-
 export const searchDMGCategories = (query) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
     dmgProductAPI.getCategories(query).then((data) => {
-      dispatch(setCategories(data.data.data));
+      dispatch(setDMGCategories(data.data.data));
       dispatch(setToggleIsFetching(false));
     });
   };
 };
 
 export const updateCategory = (vendor, data) => {
+  console.log(data);
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    categoryMappingAPI.updateCategory(vendor, data).then((data) => {
-      dispatch(getCategories(vendor, {}));
+    categoryMappingAPI.updateCategory(vendor, data).then((updatedCategory) => {
+      dispatch(setCategory(updatedCategory));
       dispatch(setToggleIsFetching(false));
     });
   };

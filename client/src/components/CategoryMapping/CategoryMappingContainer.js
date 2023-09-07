@@ -44,6 +44,7 @@ class categoryMappingContainer extends React.Component {
           pagination={this.props.pagination}
           query={this.props.query}
           total={this.props.total}
+          dmg_categories={this.props.dmg_categories}
           onUpdateCategory={this.onUpdateCategory}
           onSearchDMGCategories={this.onSearchDMGCategories}
           onPageChanged={this.onPageChanged}
@@ -62,6 +63,7 @@ let mapStateToProps = (state) => {
     total: state.categoryMapping.total,
     pagination: state.categoryMapping.pagination,
     query: state.categoryMapping.query,
+    dmg_categories: state.categoryMapping.dmg_categories,
   };
 };
 
