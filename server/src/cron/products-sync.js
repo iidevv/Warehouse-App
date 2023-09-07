@@ -24,7 +24,7 @@ export const syncAllProducts = new CronJob({
 export const syncLowStockProducts = new CronJob({
   cronTime: "0 10,13,16,19,21 * * *",
   onTick: async () => {
-    query = {
+    const query = {
       inventory_status: "low",
     };
 
