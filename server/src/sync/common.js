@@ -36,7 +36,6 @@ export const afterUpdateProducts = async (
   query = {},
   processedProducts
 ) => {
-
   query = JSON.stringify(query, null, 2);
   sendNotification(
     `${vendor} products updated. \n Total: ${processedProducts}, \n Query: ${query}`
@@ -154,7 +153,6 @@ export const compareProducts = async (syncedProducts, vendorProducts, bulk) => {
       productsForUpdate.push(vendorProduct);
       return;
     }
-
     if (
       product.inventory_level !== vendorProduct.inventory_level ||
       product.price !== vendorProduct.price ||
@@ -166,7 +164,6 @@ export const compareProducts = async (syncedProducts, vendorProducts, bulk) => {
       vendorProduct.update_status = "no changes";
       vendorProduct.update_log = "";
     }
-
     productsForUpdate.push(vendorProduct);
   });
 
@@ -216,6 +213,7 @@ const updateInventoryProducts = async (vendor, productsForUpdate) => {
         sku: product.sku,
         inventory_level: product.inventory_level,
         inventory_status: getInventoryStatus(product.inventory_level),
+        update_status: product.update_status,
         update_log: product.update_log,
         price: product.price,
         discontinued: product.discontinued,

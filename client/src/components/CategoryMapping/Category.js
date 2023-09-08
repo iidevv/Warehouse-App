@@ -18,17 +18,16 @@ const DMGCategoriesSearch = (props) => {
   return (
     <>
       <div className="flex mb-3 relative flex-col lg:flex-row">
-
-      <button
-            type="button"
-            className="text-left px-4 py-2 text-sm text-white bg-red-600 hover:bg-gray-700"
-            id=""
-            data-name=""
-            data-url=""
-            onClick={handleButtonClick}
-          >
-            Reset
-          </button>
+        <button
+          type="button"
+          className="text-left px-4 py-2 text-sm text-white bg-red-600 hover:bg-gray-700"
+          id=""
+          data-name=""
+          data-url=""
+          onClick={handleButtonClick}
+        >
+          Reset
+        </button>
         <div
           id="dropdown-search"
           className="z-10 absolute top-full bg-white divide-y divide-gray-100 shadow w-full lg:w-96"
