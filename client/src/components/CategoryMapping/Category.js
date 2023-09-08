@@ -11,6 +11,7 @@ const DMGCategoriesSearch = (props) => {
       name: event.target.dataset.name,
       url: event.target.dataset.url,
     };
+
     props.onUpdateCategory(data);
     props.setIsOpen(false);
   };
@@ -76,7 +77,6 @@ const DMGCategoriesSearch = (props) => {
 };
 
 const Category = (props) => {
-  console.log(props.category);
   const [isOpen, setIsOpen] = useState(false);
   const handleChangeRidingStyle = (e) => {
     const data = {
@@ -156,7 +156,7 @@ const Category = (props) => {
         {isOpen && (
           <DMGCategoriesSearch
             onUpdateCategory={props.onUpdateCategory}
-            vendor_id={props.category?.vendor_id}
+            category={props.category}
             dmg_categories={props.dmg_categories}
             onSearchDMGCategories={props.onSearchDMGCategories}
             setIsOpen={setIsOpen}
