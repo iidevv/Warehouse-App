@@ -41,7 +41,9 @@ export const syncProducts = async (vendor, query, bulk = false) => {
       throw error;
     }
   }
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   await afterUpdateProducts(vendor, query, processedProducts);
+
   return {
     updated: processedProducts,
   };

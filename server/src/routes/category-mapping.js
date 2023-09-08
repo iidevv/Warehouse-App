@@ -128,6 +128,9 @@ router.put("/mapping", async (req, res) => {
         id,
         name,
         url,
+      },
+      {
+        new: true,
       }
     );
     res.json(response);

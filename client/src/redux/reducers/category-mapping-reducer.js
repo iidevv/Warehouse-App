@@ -59,9 +59,11 @@ const categoryMappingReducer = (state = initialState, action) => {
       console.log("Current categories:", state.categories);
       console.log("Action category:", action.category);
 
-      const updatedCategories = [...state.categories].map((cat) =>
-        cat.id === action.category.id ? action.category : cat
-      );
+      const updatedCategories = [...state.categories].map((cat) => {
+        return cat.vendor_id === action.category.vendor_id
+          ? action.category
+          : cat;
+      });
 
       console.log("Updated categories:", updatedCategories);
 
