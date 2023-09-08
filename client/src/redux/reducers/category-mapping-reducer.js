@@ -8,6 +8,8 @@ const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 const SET_STATUS = "SET_STATUS";
 const SET_DMG_CATEGORIES = "SET_DMG_CATEGORIES";
 const SET_CATEGORY = "SET_CATEGORY";
+const DELETE_CATEGORY = "DELETE_CATEGORY";
+const CREATE_CATEGORY = "CREATE_CATEGORY";
 
 let initialState = {
   categories: [],
@@ -56,20 +58,26 @@ const categoryMappingReducer = (state = initialState, action) => {
         dmg_categories: action.categories,
       };
     case SET_CATEGORY:
-      console.log("Current categories:", state.categories);
-      console.log("Action category:", action.category);
-
       const updatedCategories = [...state.categories].map((cat) => {
-        return cat.vendor_id === action.category.vendor_id
-          ? action.category
-          : cat;
+        return cat._id === action.category._id ? action.category : cat;
       });
-
-      console.log("Updated categories:", updatedCategories);
-
       return {
         ...state,
         categories: updatedCategories,
+      };
+    case DELETE_CATEGORY:
+      const deleteCategories = [...state.categories].filter((cat) => {
+        return cat._id !== action.category._id;
+      });
+      return {
+        ...state,
+        categories: deleteCategories,
+      };
+    case CREATE_CATEGORY:
+      const createCategories = [action.category, ...state.categories];
+      return {
+        ...state,
+        categories: createCategories,
       };
     default:
       return state;
@@ -138,6 +146,20 @@ export const setCategory = (category) => {
   };
 };
 
+export const removeCategory = (category) => {
+  return {
+    type: DELETE_CATEGORY,
+    category,
+  };
+};
+
+export const putCategory = (category) => {
+  return {
+    type: CREATE_CATEGORY,
+    category,
+  };
+};
+
 export const getCategories = (vendor, query, page) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
@@ -162,7 +184,6 @@ export const searchDMGCategories = (query) => {
 };
 
 export const updateCategory = (vendor, data) => {
-  console.log(data);
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
     categoryMappingAPI.updateCategory(vendor, data).then((updatedCategory) => {
@@ -172,4 +193,24 @@ export const updateCategory = (vendor, data) => {
   };
 };
 
+export const createCategory = (vendor, data) => {
+  console.log(data);
+  return (dispatch) => {
+    dispatch(setToggleIsFetching(true));
+    categoryMappingAPI.createCategory(vendor, data).then((category) => {
+      console.log(category);
+      dispatch(putCategory(category));
+      dispatch(setToggleIsFetching(false));
+    });
+  };
+};
+export const deleteCategory = (vendor, data) => {
+  return (dispatch) => {
+    dispatch(setToggleIsFetching(true));
+    categoryMappingAPI.deleteCategory(vendor, data).then((category) => {
+      dispatch(removeCategory(data));
+      dispatch(setToggleIsFetching(false));
+    });
+  };
+};
 export default categoryMappingReducer;

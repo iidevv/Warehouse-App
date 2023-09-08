@@ -98,6 +98,12 @@ const CategoryMapping = (props) => {
                 scope="col"
                 className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
               >
+                Riding style
+              </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
                 Vendor category
               </th>
               <th
@@ -106,6 +112,12 @@ const CategoryMapping = (props) => {
               >
                 DMG category
               </th>
+              <th
+                scope="col"
+                className="px-5 py-3 text-sm font-normal text-left text-gray-800 uppercase bg-white border-b border-gray-200"
+              >
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -113,7 +125,9 @@ const CategoryMapping = (props) => {
               props.categories.map((category, i) => (
                 <Category
                   key={i}
+                  onCreateCategory={props.onCreateCategory}
                   onUpdateCategory={props.onUpdateCategory}
+                  onDeleteCategory={props.onDeleteCategory}
                   category={category}
                   dmg_categories={props.dmg_categories}
                   onSearchDMGCategories={props.onSearchDMGCategories}
@@ -124,7 +138,6 @@ const CategoryMapping = (props) => {
         <div className="flex flex-col items-center px-5 py-5 bg-white xs:flex-row xs:justify-between">
           <div className="flex items-center">
             <button
-              // eslint-disable-next-line no-undef
               onClick={() =>
                 handlePageClick(props.query, props.pagination.prevPage)
               }

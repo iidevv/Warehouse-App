@@ -9,6 +9,8 @@ import {
   setCategories,
   setToggleIsFetching,
   updateCategory,
+  createCategory,
+  deleteCategory,
   searchDMGCategories,
 } from "./../../redux/reducers/category-mapping-reducer";
 
@@ -33,6 +35,12 @@ class categoryMappingContainer extends React.Component {
   onUpdateCategory = (data) => {
     this.props.updateCategory(this.vendor, data);
   };
+  onCreateCategory = (data) => {
+    this.props.createCategory(this.vendor, data);
+  };
+  onDeleteCategory = (data) => {
+    this.props.deleteCategory(this.vendor, data);
+  };
 
   render() {
     return (
@@ -45,6 +53,8 @@ class categoryMappingContainer extends React.Component {
           query={this.props.query}
           total={this.props.total}
           dmg_categories={this.props.dmg_categories}
+          onCreateCategory={this.onCreateCategory}
+          onDeleteCategory={this.onDeleteCategory}
           onUpdateCategory={this.onUpdateCategory}
           onSearchDMGCategories={this.onSearchDMGCategories}
           onPageChanged={this.onPageChanged}
@@ -73,6 +83,8 @@ export default compose(
     setCategories,
     setToggleIsFetching,
     updateCategory,
+    createCategory,
+    deleteCategory,
     searchDMGCategories,
   })
 )(categoryMappingContainer);

@@ -74,6 +74,7 @@ export const standardizeSize = (sizeStr) => {
     "3x": "3XL",
     "3xl": "3XL",
     xxxl: "3XL",
+    "3X-Large": "3XL",
     "triple xl": "3XL",
 
     "4x": "4XL",
@@ -177,7 +178,7 @@ export const extractColorAndSize = (name) => {
     "sz 06",
     "GREY - SIZE 7",
     "slate blue/black sz 38",
-    "grey md"
+    "grey md",
   ];
 
   data.map((name) => {

@@ -193,4 +193,26 @@ export const categoryMappingAPI = {
         return response.data;
       });
   },
+  deleteCategory(vendor, data) {
+    return instance
+      .delete(`/category/mapping/`, {
+        data: {
+          vendor,
+          data,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+  createCategory(vendor, data) {
+    return instance
+      .post(`/category/mapping/`, {
+        vendor,
+        data,
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
 };

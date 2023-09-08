@@ -81,6 +81,7 @@ export const getCategories = async (vendor, query = {}, page = 1) => {
     limit: 20,
     lean: true,
     leanWithId: false,
+    sort: { vendor_name: 1 },
   };
 
   if (query.vendor_name) {
@@ -117,22 +118,61 @@ router.get("/mapping", async (req, res) => {
 
 router.put("/mapping", async (req, res) => {
   const { vendor, data } = req.body;
-  const { vendor_id, id, name, url } = data;
+  const { _id, id, name, url, riding_style } = data;
+  console.log(_id);
   try {
     const Model = getCategoryMappingModel(vendor);
     const response = await Model.findOneAndUpdate(
       {
-        vendor_id,
+        _id,
       },
       {
         id,
         name,
         url,
+        riding_style,
       },
       {
         new: true,
       }
     );
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/mapping", async (req, res) => {
+  const { vendor, data } = req.body;
+  const { vendor_id, vendor_url, vendor_name, id, name, url, riding_style } =
+    data;
+  try {
+    const Model = getCategoryMappingModel(vendor);
+
+    const response = await Model.create({
+      vendor_id,
+      vendor_name,
+      vendor_url,
+      id,
+      name,
+      url,
+      riding_style,
+    });
+    res.json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete("/mapping", async (req, res) => {
+  const { vendor, data } = req.body;
+  const { _id } = data;
+  try {
+    const Model = getCategoryMappingModel(vendor);
+    const response = await Model.deleteOne({
+      _id,
+    });
     res.json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
