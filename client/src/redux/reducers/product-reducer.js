@@ -14,6 +14,7 @@ const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
 const FIND_AND_REPLACE = "FIND_AND_REPLACE";
 const REMOVE_ADDITIONAL_IMAGE = "REMOVE_ADDITIONAL_IMAGE";
 const SET_PRODUCT_CREATE_DATA = "SET_PRODUCT_CREATE_DATA";
+const SET_SEO = "SET_SEO";
 
 let initialState = {
   productData: {
@@ -24,7 +25,6 @@ let initialState = {
   categories: [],
   current_categories: [],
   content: {
-    page_title: "",
     search_keywords: "",
     meta_keywords: "",
     meta_description: "",
@@ -59,6 +59,11 @@ const productReducer = (state = initialState, action) => {
           },
         };
       }
+    case SET_SEO:
+      return {
+        ...state,
+        content: action.data,
+      };
     case SET_INFO_ALERT:
       return {
         ...state,
@@ -243,6 +248,13 @@ export const setHandleContentChange = (id, value, isGpt) => {
   };
 };
 
+export const setSEO = (data) => {
+  return {
+    type: SET_SEO,
+    data,
+  };
+};
+
 export const setProductCreateData = (type, value) => {
   return {
     type: SET_PRODUCT_CREATE_DATA,
@@ -384,16 +396,17 @@ export const getProduct = (vendor, id, search, link) => {
   };
 };
 
-export const getChatgptContent = (contentField, text) => {
+export const getChatgptContent = (title, description) => {
   return (dispatch) => {
-    dispatch(setHandleContentChange(contentField, "Generating...", true));
+    dispatch(setToggleIsFetching(true));
     chatgptAPI
-      .getText(text)
+      .createSEO(title, description)
       .then((data) => {
-        dispatch(setHandleContentChange(contentField, data, true));
+        dispatch(setSEO(data));
+        dispatch(setToggleIsFetching(false));
       })
       .catch((err) => {
-        dispatch(setHandleContentChange(contentField, `Error: ${err}`, true));
+        dispatch(setToggleIsFetching(false));
       });
   };
 };

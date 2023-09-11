@@ -21,22 +21,7 @@ const Product = (props) => {
     props.onHandleContentChange(event.target.id, event.target.value);
   };
   const handleChatgptContent = () => {
-    props.onGetChatgptContent(
-      "search_keywords",
-      searchKeywordsPrompt(props.product.name, props.product.description)
-    );
-    props.onGetChatgptContent(
-      "meta_keywords",
-      metaKeywordsPrompt(props.product.name, props.product.description)
-    );
-    props.onGetChatgptContent(
-      "meta_description",
-      metaDescriptionPrompt(props.product.name, props.product.description)
-    );
-    props.onGetChatgptContent(
-      "description",
-      descriptionPrompt(props.product.name, props.product.description)
-    );
+    props.onGetChatgptContent(props.product.name, props.product.description);
   };
 
   const handleChangeName = (event) => {
@@ -182,19 +167,6 @@ const Product = (props) => {
         <h3 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 mb-6">
           SEO & Description
         </h3>
-        <label className="block mb-4 cursor-pointer">
-          <p className="block text-sm font-medium text-gray-700 mb-2">
-            Page title (Custom title for the product page. If not defined, the
-            product name will be used as the meta title.)
-          </p>
-          <input
-            type="text"
-            id="page_title"
-            value={props.content.page_title}
-            onChange={handleContentChange}
-            className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          />
-        </label>
         <label className="block mb-4 cursor-pointer">
           <p className="block text-sm font-medium text-gray-700 mb-2">
             Search keywords (A comma-separated list of keywords that can be used

@@ -99,8 +99,8 @@ class ProductContainer extends React.Component {
   onHandleChangeVariantName = (id, name) => {
     this.props.changeVariantName(id, name);
   };
-  onGetChatgptContent = (contentField, text) => {
-    this.props.getChatgptContent(contentField, text);
+  onGetChatgptContent = (title, description) => {
+    this.props.getChatgptContent(title, description);
   };
   onFindAndReplace = (find, replace) => {
     this.props.findAndReplace(find, replace);

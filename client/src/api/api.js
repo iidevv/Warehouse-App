@@ -34,12 +34,11 @@ export const dmgProductAPI = {
 };
 
 export const chatgptAPI = {
-  getText(s) {
+  createSEO(title, description) {
     return instance
-      .get(`/gpt/create-text/`, {
-        params: {
-          s,
-        },
+      .post(`/gpt/create-seo/`, {
+        title,
+        description,
       })
       .then((response) => {
         return response.data;
