@@ -110,6 +110,7 @@ export const getProductItemModel = (vendor) => {
 };
 
 export const getInventoryStatus = (inventory_level) => {
+  if (inventory_level == 0) return "none";
   if (inventory_level <= 3) return "low";
   if (inventory_level <= 8) return "medium";
   return "high";

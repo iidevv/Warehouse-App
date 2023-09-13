@@ -15,7 +15,7 @@ const ProductItemSchema = new mongoose.Schema(
     inventory_status: {
       type: String,
       required: true,
-      enum: ["low", "medium", "high"],
+      enum: ["none", "low", "medium", "high"],
       index: true,
     },
     price: { type: Number, required: true, min: 0 },
