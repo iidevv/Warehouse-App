@@ -8,36 +8,6 @@ import { getInventoryModel, getProductItemModel } from "../../common/index.js";
 
 const router = express.Router();
 
-async function executeWithRetry(fn, maxRetries = 3, delay = 10000) {
-  let retries = 0;
-  while (retries < maxRetries) {
-    try {
-      return await fn();
-    } catch (error) {
-      retries++;
-      console.error(`Attempt ${retries} failed. Retrying...`, error);
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-  throw new Error("Max retries reached.");
-}
-
-// Helper function to process array items in parallel with a limited concurrency
-async function asyncForEach(array, callback, concurrency = 5) {
-  const queue = [...array];
-  const promises = [];
-  while (queue.length) {
-    while (promises.length < concurrency && queue.length) {
-      const item = queue.shift();
-      promises.push(callback(item));
-    }
-    await Promise.race(promises).then((completed) => {
-      promises.splice(promises.indexOf(completed), 1);
-    });
-  }
-  return Promise.all(promises);
-}
-
 const createOption = async (productId, optionName, optionValues, sortOrder) => {
   console.log(optionValues);
   try {

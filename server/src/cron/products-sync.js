@@ -42,7 +42,7 @@ export const syncMediumStockProducts = new CronJob({
   cronTime: "0 13 * * *",
   onTick: async () => {
     const query = {
-      inventory_status: { $in: ["medium", "low"] },
+      inventory_status: { $in: ["medium", "none"] },
     };
 
     try {

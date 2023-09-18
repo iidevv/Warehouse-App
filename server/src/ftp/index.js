@@ -43,7 +43,7 @@ export const parseXLSX = async (buffer) => {
 
 // main
 
-export const downloadInventoryFile = async (vendor, fileFormat) => {
+export const downloadInventoryFile = async (vendor, fileFormat = "csv") => {
   let remotePath = "";
   let Ftp;
 
@@ -94,7 +94,6 @@ export const downloadInventoryFile = async (vendor, fileFormat) => {
     sendNotification(`File deletion error: ${err}`);
     return false;
   }
-
   // Continue with the file download.
   try {
     await new Promise((resolve, reject) => {
