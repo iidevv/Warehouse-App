@@ -36,10 +36,10 @@ export const afterUpdateProducts = async (
   query = {},
   processedProducts
 ) => {
-  query = JSON.stringify(query, null, 2);
-  sendNotification(
-    `${vendor} products updated. \n Total: ${processedProducts}, \n Query: ${query}`
-  );
+  // query = JSON.stringify(query, null, 2);
+  // sendNotification(
+  //   `${vendor} products updated. \n Total: ${processedProducts}, \n Query: ${query}`
+  // );
   try {
     await setUpdateStatus(
       false,
