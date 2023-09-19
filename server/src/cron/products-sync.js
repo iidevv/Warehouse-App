@@ -1,5 +1,6 @@
 import { CronJob } from "cron";
 import { syncProducts } from "../sync/index.js";
+import { sendNotification } from "../routes/tg-notifications.js";
 
 const vendorsForSync = async (query) => {
   await syncProducts("WPS", query);
