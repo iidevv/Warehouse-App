@@ -7,10 +7,17 @@ const router = express.Router();
 
 const getWPSCatalog = async (offset = "", search = "") => {
   try {
-    const catalog = {};
-    const response = await wpsInstance.get(
+    let catalog = {};
+    let response = await wpsInstance.get(
       `/items?include=inventory,images&filter[name][pre]=${search}&page[cursor]=${offset}`
     );
+
+    if (!response.data.data.length) {
+      response = await wpsInstance.get(
+        `/items?include=inventory,images&filter[sku][pre]=${search}&page[cursor]=${offset}`
+      );
+    }
+
     catalog.data = response.data.data.map((item) => {
       return {
         id: item.id,
