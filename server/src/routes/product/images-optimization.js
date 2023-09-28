@@ -2,6 +2,7 @@ import express from "express";
 import axios from "axios";
 import sharp from "sharp";
 import fs from "fs";
+import path from "path";
 import { sendNotification } from "../tg-notifications.js";
 const router = express.Router();
 
