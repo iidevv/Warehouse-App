@@ -78,7 +78,7 @@ export const deleteOptimizedImages = () => {
 router.put("/images-optimization/", async (req, res) => {
   const product = req.body;
   try {
-    const response = processProduct(product);
+    const response = await processProduct(product);
     res.json(response);
   } catch (error) {
     sendNotification(`Failed to process product: ${error}`);
