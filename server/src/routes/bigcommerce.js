@@ -1,6 +1,7 @@
 import express from "express";
 import { bigCommerceInstance } from "../instances/index.js";
 import { createInventoryProduct } from "./inventory.js";
+import { deleteOptimizedImages } from "./product/images-optimization.js";
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.post("/create", async (req, res) => {
       product
     );
     let result = await createInventoryProduct(product, message, "Created");
-
+    await deleteOptimizedImages();
     res.json({ message, result });
   } catch (error) {
     console.log(error);

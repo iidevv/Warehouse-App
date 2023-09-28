@@ -27,6 +27,7 @@ import { productMappingRouter } from "./sync/product-mapping.js";
 import "./cron/index.js";
 import "./sync/common.js";
 import { categoryMapRouter } from "./routes/category-mapping.js";
+import { imagesOptimizationRouter } from "./routes/product/images-optimization.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,6 +71,7 @@ app.use("/api/inventory", SyncRouter);
 app.use("/api/category", categoryMapRouter);
 app.use("/api/catalog", catalogRouter);
 app.use("/api/catalog", productRouter);
+app.use("/api/catalog", imagesOptimizationRouter);
 app.use("/api/dropship", dropshipOrderRouter);
 app.use("/api/pu-dropship", puDropshipRouter);
 app.use("/api/wps-dropship", wpsDropshipRouter);

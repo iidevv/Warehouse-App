@@ -168,6 +168,16 @@ export const catalogAPI = {
   },
 };
 
+export const optimizationAPI = {
+  optimizeProductImages(product) {
+    return instance
+      .put(`/catalog/images-optimization`, product)
+      .then((response) => {
+        return response.data;
+      });
+  },
+};
+
 export const categoryMappingAPI = {
   getCategories(vendor, query, page) {
     return instance

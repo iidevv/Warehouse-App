@@ -24,6 +24,7 @@ import {
   findAndReplace,
   removeAdditionalImage,
   setProductCreateData,
+  optimizeImages,
 } from "../../redux/reducers/product-reducer";
 
 class ProductContainer extends React.Component {
@@ -113,6 +114,10 @@ class ProductContainer extends React.Component {
     console.log(type, value);
   };
 
+  onHandleOptimizeImages = (product) => {
+    this.props.optimizeImages(product);
+  };
+
   render() {
     return (
       <>
@@ -134,6 +139,7 @@ class ProductContainer extends React.Component {
           onHandleRemoveAdditionalImage={this.onHandleRemoveAdditionalImage}
           onGetChatgptContent={this.onGetChatgptContent}
           onSetProductCreateData={this.onSetProductCreateData}
+          onHandleOptimizeImages={this.onHandleOptimizeImages}
           categories={this.props.categories}
           current_categories={this.props.current_categories}
           create_type={this.props.create_type}
@@ -177,6 +183,7 @@ export default compose(
     findAndReplace,
     removeAdditionalImage,
     setProductCreateData,
+    optimizeImages,
   }),
   withRouter
 )(ProductContainer);

@@ -1,9 +1,4 @@
-import {
-  dmgProductAPI,
-  catalogAPI,
-  chatgptAPI,
-  optimizationAPI,
-} from "./../../api/api";
+import { puProductAPI, dmgProductAPI, chatgptAPI } from "./../../api/api";
 
 const SET_PRODUCT_PAGE = "SET_PRODUCT_PAGE";
 const SET_INFO_ALERT = "SET_INFO_ALERT";
@@ -19,8 +14,6 @@ const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
 const FIND_AND_REPLACE = "FIND_AND_REPLACE";
 const REMOVE_ADDITIONAL_IMAGE = "REMOVE_ADDITIONAL_IMAGE";
 const SET_PRODUCT_CREATE_DATA = "SET_PRODUCT_CREATE_DATA";
-const SET_SEO = "SET_SEO";
-
 let initialState = {
   productData: {
     name: "",
@@ -30,6 +23,7 @@ let initialState = {
   categories: [],
   current_categories: [],
   content: {
+    page_title: "",
     search_keywords: "",
     meta_keywords: "",
     meta_description: "",
@@ -39,7 +33,7 @@ let initialState = {
   create_value: "",
 };
 
-const productReducer = (state = initialState, action) => {
+const puProductReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_PRODUCT_PAGE:
       return {
@@ -52,7 +46,9 @@ const productReducer = (state = initialState, action) => {
           ...state,
           content: {
             ...state.content,
-            description: action.payload.value,
+            [action.payload.id]:
+              action.payload.value +
+              ("<br> " + state.productData.description || ""),
           },
         };
       } else {
@@ -64,11 +60,6 @@ const productReducer = (state = initialState, action) => {
           },
         };
       }
-    case SET_SEO:
-      return {
-        ...state,
-        content: action.data,
-      };
     case SET_INFO_ALERT:
       return {
         ...state,
@@ -253,13 +244,6 @@ export const setHandleContentChange = (id, value, isGpt) => {
   };
 };
 
-export const setSEO = (data) => {
-  return {
-    type: SET_SEO,
-    data,
-  };
-};
-
 export const setProductCreateData = (type, value) => {
   return {
     type: SET_PRODUCT_CREATE_DATA,
@@ -390,10 +374,10 @@ export const createBigcommerceProduct = (data) => {
   };
 };
 
-export const getProduct = (vendor, id, search, link) => {
+export const getProduct = (id, search) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    catalogAPI.getProduct(vendor, id, search, link).then((data) => {
+    puProductAPI.getProduct(id, search).then((data) => {
       dispatch(setProduct(data));
       dispatch(setHandleContentChange("description", data.description));
       dispatch(setToggleIsFetching(false));
@@ -401,29 +385,20 @@ export const getProduct = (vendor, id, search, link) => {
   };
 };
 
-export const optimizeImages = (product) => {
+export const getChatgptContent = (contentField, text) => {
   return (dispatch) => {
     dispatch(setToggleIsFetching(true));
-    optimizationAPI.optimizeProductImages(product).then((data) => {
-      dispatch(setProduct(data));
+    chatgptAPI.getText(text).then((data) => {
+      dispatch(
+        setHandleContentChange(
+          contentField,
+          data.replace(/(^\W+|\W+$)/g, ""),
+          true
+        )
+      );
       dispatch(setToggleIsFetching(false));
     });
   };
 };
 
-export const getChatgptContent = (title, description) => {
-  return (dispatch) => {
-    dispatch(setToggleIsFetching(true));
-    chatgptAPI
-      .createSEO(title, description)
-      .then((data) => {
-        dispatch(setSEO(data));
-        dispatch(setToggleIsFetching(false));
-      })
-      .catch((err) => {
-        dispatch(setToggleIsFetching(false));
-      });
-  };
-};
-
-export default productReducer;
+export default puProductReducer;

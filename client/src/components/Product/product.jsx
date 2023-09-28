@@ -33,6 +33,10 @@ const Product = (props) => {
   const handleSetProductCreateData = (event) => {
     props.onSetProductCreateData("search", event.target.value);
   };
+
+  const handleOptimizeImages = (product) => {
+    props.onHandleOptimizeImages(product);
+  };
   return (
     <div className="container">
       {props.product.search_available && (
@@ -94,6 +98,16 @@ const Product = (props) => {
                   </div>
                 );
               })}
+          </div>
+          <div className="p-1">
+            <button
+              onClick={() => {
+                handleOptimizeImages(props.product);
+              }}
+              className="disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-base flex items-center justify-center leading-none text-white font-semibold bg-blue-800 py-4 px-2 hover:bg-gray-700"
+            >
+              Optimize images
+            </button>
           </div>
         </div>
         <div className="lg:w-1/2  lg:ml-6 lg:mt-0 mt-6 bg-white shadow-lg px-4 lg:px-8 py-10">
