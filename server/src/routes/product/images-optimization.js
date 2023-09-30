@@ -36,7 +36,8 @@ const processProduct = async (product) => {
 
 const optimizeImage = async (url) => {
   const originalFilename = path.basename(url).split("?")[0];
-  const newFilename = `optimized_${originalFilename}`;
+  const originalDirname = path.dirname(url).split("/").pop();
+  const newFilename = `optimized_${originalDirname}_${originalFilename}`;
 
   try {
     const { data: buffer } = await axios.get(url, {
