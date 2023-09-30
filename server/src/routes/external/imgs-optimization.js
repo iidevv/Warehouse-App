@@ -41,7 +41,7 @@ async function processProduct(product) {
             .jpeg({ quality: 90 })
             .toBuffer();
 
-          const optimizedImagePath = `${productName}_${index}.jpg`;
+          const optimizedImagePath = `${productName}_${image.id}.jpg`;
 
           await fs.promises.writeFile(
             `./optimized/${optimizedImagePath}`,
