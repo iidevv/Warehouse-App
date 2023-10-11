@@ -3,7 +3,7 @@ import logoHH from "../assets/vendors/HH.jpg";
 import logoWPS from "../assets/vendors/WPS.jpg";
 import logoPU from "../assets/vendors/PU.jpg";
 import logoLS from "../assets/vendors/LS.jpg";
-import logoTR from "../assets/vendors/TR.jpg";
+import logoTURN from "../assets/vendors/TURN.jpg";
 
 const Catalogs = () => {
   const data = [
@@ -28,19 +28,20 @@ const Catalogs = () => {
       image_url: logoLS,
     },
     {
-      name: "Tucker",
-      url: "/catalog?vendor=TR",
-      image_url: logoTR,
+      name: "Turn 14",
+      url: "/catalog?vendor=TURN",
+      image_url: logoTURN,
     },
   ];
   return (
     <div className="container">
-      <div class="mb-6">
-        <h1 class="text-2xl leading-tight">Catalogs</h1>
+      <div className="mb-6">
+        <h1 className="text-2xl leading-tight">Catalogs</h1>
       </div>
       <div className="grid grid-cols-1 lg:grid-1/3 lg:grid-cols-3 gap-10 w-full mb-10">
-        {data.map((vendor) => (
+        {data.map((vendor, i) => (
           <a
+            key={i}
             className="relative w-full px-4 py-6 bg-white shadow-lg border-2 border-white hover:border-blue-500"
             href={vendor.url}
           >
