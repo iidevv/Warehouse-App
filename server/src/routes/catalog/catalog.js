@@ -2,6 +2,7 @@ import express from "express";
 import { hhInstance, puInstance, wpsInstance } from "../../instances/index.js";
 import { lsInstance } from "../../instances/ls-instance.js";
 import { getInventory, getPrice } from "../../common/pu.js";
+import { turnSearch } from "../../instances/turn-search.js";
 
 const router = express.Router();
 
@@ -205,6 +206,10 @@ const getLSCatalog = async (offset = 0, search = "") => {
   }
 };
 
+const getTURNCatalog = async (offset = 0, search = "") => {
+  return turnSearch(offset, search);
+};
+
 export const getCatalog = async (vendor, offset, search) => {
   let response;
   switch (vendor) {
@@ -219,6 +224,9 @@ export const getCatalog = async (vendor, offset, search) => {
       break;
     case "LS":
       response = await getLSCatalog(offset, search);
+      break;
+    case "TURN":
+      response = await getTURNCatalog(offset, search);
       break;
     default:
       response = { error: "Unsupported vendor." };

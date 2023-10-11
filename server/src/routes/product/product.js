@@ -3,6 +3,7 @@ import { getWPSProduct } from "./vendors/wps.js";
 import { getPUProduct } from "./vendors/pu.js";
 import { getHHProduct } from "./vendors/hh.js";
 import { getLSProduct } from "./vendors/ls.js";
+import { getTURNProduct } from "./vendors/turn.js";
 const router = express.Router();
 
 const getProduct = async (vendor, id, search, link) => {
@@ -19,6 +20,9 @@ const getProduct = async (vendor, id, search, link) => {
       break;
     case "LS":
       response = await getLSProduct(id, search);
+      break;
+    case "TURN":
+      response = await getTURNProduct(id, search);
       break;
     default:
       response = { error: "Unsupported vendor." };
