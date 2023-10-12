@@ -200,7 +200,7 @@ const updateProductsBigcommerce = async (productsForBigcommerceUpdate) => {
     return response.data.length;
   } catch (error) {
     sendNotification(`updateProductsBigcommerce error: ${error}`);
-    // throw error;
+    throw error;
   }
 };
 const updateInventoryProducts = async (vendor, productsForUpdate) => {

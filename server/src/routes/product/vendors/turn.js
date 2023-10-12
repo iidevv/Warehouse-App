@@ -1,16 +1,17 @@
 import { generateProductName } from "../../../common/index.js";
-import { puSearchInstance } from "../../../instances/pu-search.js";
 import { createOptions, removeDuplicateWords } from "../common.js";
 import { turnInstance } from "../../../instances/turn-instance.js";
-import util from "util";
+import { turnSearch } from "../../../instances/turn-search.js";
 
 const fetchData = async (id, search) => {
   try {
-    const product = await turnInstance.get(`/items/${id}`);
-    const data = await turnInstance.get(`/items/data/${id}`);
+    const product = await Promise.all([
+      turnInstance.get(`/items/${id}`),
+      turnInstance.get(`/items/data/${id}`),
+    ]);
     return {
-      product: product.data.data,
-      data: data.data.data,
+      product: product[0].data.data,
+      data: product[1].data.data[0],
     };
   } catch (error) {
     console.log(error);
@@ -19,20 +20,29 @@ const fetchData = async (id, search) => {
 };
 
 const createProduct = (obj) => {
-  console.log(obj.product);
+  const description = obj.data.descriptions
+    .map((text) => {
+      return `<p><strong>${text.type}</strong><br> ${text.description}</p>`;
+    })
+    .join("");
+
   const variants = [];
   return {
     vendor: "TURN",
     vendor_id: obj.product.id,
-    name: generateProductName(obj.product.attributes.brand, obj.product.attributes.part_description),
+    name: generateProductName(
+      obj.product.attributes.brand,
+      obj.product.attributes.part_description
+    ),
     type: "physical",
     weight: 0,
     price: 0,
-    description: "",
+    description: description,
     brand_name: obj.product.attributes.brand,
     inventory_tracking: "variant",
     variants: variants,
     images: [],
+    search_available: true,
   };
 };
 

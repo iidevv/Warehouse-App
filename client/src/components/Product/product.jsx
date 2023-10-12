@@ -131,7 +131,7 @@ const Product = (props) => {
               {props.product.weight ? `Weight: ${props.product.weight}` : ""}
             </p>
           </div>
-          <div className="mb-6">
+          <div className="mb-6 overflow-hidden">
             <p className="block text-sm font-medium text-gray-700 mb-2">
               Vendor description:
             </p>

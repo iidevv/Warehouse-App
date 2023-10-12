@@ -43,9 +43,9 @@ const searchLogin = async (page) => {
 
 const getUrlForPage = (search, page, useKeyword = false) => {
   const searchParam = useKeyword ? "vmmKeyword" : "vmmPart";
-  return `https://turn14.com/search/index.php?${searchParam}=${search}&start=${
-    page * ITEMS_PER_PAGE
-  }`;
+  const start = page === 1 ? 0 : page * ITEMS_PER_PAGE;
+  const url = `https://turn14.com/search/index.php?${searchParam}=${search}&start=${start}`;
+  return url;
 };
 
 const getItems = async (page) => {
@@ -106,7 +106,7 @@ const getTotalPages = async (page) => {
       return null;
     }
   }
-  throw new Error("Cannot determine the total pages.");
+  return null;
 };
 
 export const turnSearch = async (offset = 1, search = "") => {
@@ -129,7 +129,6 @@ export const turnSearch = async (offset = 1, search = "") => {
 
   await page.goto(getUrlForPage(search, offset));
   const noResults = await page.$("div[data-itemcode]");
-
   if (noResults === null) {
     await page.goto(getUrlForPage(search, offset, true));
   }
