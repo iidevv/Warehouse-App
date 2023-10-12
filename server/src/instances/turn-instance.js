@@ -9,14 +9,13 @@ export const turnInstance = axios.create({
   baseURL: "https://api.turn14.com/v1/",
 });
 
-const getNewToken = () => {
-  turnInstance.post("/v1/token", {
+const getNewToken = async () => {
+  const response = await turnInstance.post("/token", {
+    grant_type: "client_credentials",
     client_id: clientId,
     client_secret: accessToken,
-    grant_type: "client_credentials",
   });
-  
-  console.log(response.data);
+
   return response.data.access_token;
 };
 

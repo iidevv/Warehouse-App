@@ -4,6 +4,7 @@ config();
 
 const url = "https://turn14.com/";
 let page;
+
 const ITEMS_PER_PAGE = 25;
 const CLOSE_DELAY = 300000;
 
