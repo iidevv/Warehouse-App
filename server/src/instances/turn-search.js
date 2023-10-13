@@ -26,7 +26,8 @@ let browserInstance;
 
 const initializeBrowser = async () => {
   if (!browserInstance) {
-    browserInstance = await puppeteer.launch({ headless: true });
+    // { headless: false } for debugging
+    browserInstance = await puppeteer.launch();
   }
   return browserInstance;
 };
