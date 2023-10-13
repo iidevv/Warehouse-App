@@ -27,7 +27,9 @@ let browserInstance;
 const initializeBrowser = async () => {
   if (!browserInstance) {
     // { headless: false } for debugging
-    browserInstance = await puppeteer.launch();
+    browserInstance = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
   }
   return browserInstance;
 };
