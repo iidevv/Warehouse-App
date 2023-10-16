@@ -1,10 +1,13 @@
-import { delay } from "../common/index.js";
+import { delay, executeWithRetry } from "../common/index.js";
 import { turnInstance } from "../instances/turn-instance.js";
 import { turnMiddleLayerModel } from "../models/turnMiddleLayer.js";
 
 const getItemsData = async (page = 1) => {
   try {
-    const response = await turnInstance.get(`/items/data?page=${page}`);
+    const response = await executeWithRetry(async () => {
+      const result = await turnInstance.get(`/items/data?page=${page}`);
+      return result;
+    });
     return response.data.data;
   } catch (error) {
     throw error;
@@ -123,7 +126,7 @@ export const addItemsToDatabase = async () => {
 
 export const addItemsDataToDatabase = async () => {
   let totalPages = 1137;
-  let page = 40;
+  let page = 60;
   try {
     for (let i = page; i <= totalPages; i++) {
       const items = await getItemsData(page);
