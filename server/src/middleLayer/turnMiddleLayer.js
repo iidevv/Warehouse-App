@@ -59,16 +59,14 @@ const getItems = async (page = 1) => {
 };
 
 const createItemsInBatch = async (items) => {
-  const itemsToCreate = items
-    .map((item) => ({
-      id: item.id,
-      name: item.attributes.product_name,
-      sku: item.attributes.part_number,
-      category: `${item.attributes.category} > ${item.attributes.subcategory}`,
-      brand: item.attributes.brand,
-      upc: item.attributes?.barcode,
-    }))
-    .filter((item) => item.id.match(/[A-Za-z]/));
+  const itemsToCreate = items.map((item) => ({
+    id: item.id,
+    name: item.attributes.product_name,
+    sku: item.attributes.part_number,
+    category: `${item.attributes.category} > ${item.attributes.subcategory}`,
+    brand: item.attributes.brand,
+    upc: item.attributes?.barcode,
+  }));
   try {
     await turnMiddleLayerModel.insertMany(itemsToCreate, { ordered: false });
     return itemsToCreate.length;
@@ -76,6 +74,7 @@ const createItemsInBatch = async (items) => {
     if (error.code === 11000) {
       console.log("Duplicate key error");
     } else {
+      console.log(`Error create items: ${error}`);
       throw error;
     }
   }
@@ -103,7 +102,7 @@ const createItems = async (items) => {
 
 export const addItemsToDatabase = async () => {
   let totalPages = 513;
-  let page = 22;
+  let page = 1;
   let totalItemsCreated = 0;
   for (let i = page; i <= totalPages; i++) {
     const items = await getItems(page);
@@ -112,6 +111,8 @@ export const addItemsToDatabase = async () => {
     await delay(200);
     page++;
     console.log(`${page} / items: ${itemsCreated}`);
+    if (items !== itemsCreated) {
+    }
   }
   console.log(`Total items created: ${totalItemsCreated}`);
 };
