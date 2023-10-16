@@ -12,6 +12,7 @@ const turnMiddleLayer = new mongoose.Schema({
   upc: String,
   images: Array,
   video: String,
+  discontinued: { type: Boolean, default: false },
 });
 
 export const turnMiddleLayerModel = mongoose.model(
