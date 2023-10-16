@@ -20,13 +20,14 @@ const updateItemsDataInBatch = async (items) => {
       : [];
     const description = item.descriptions
       ? item.descriptions
-          .filter((desc) => desc.title && desc.description)
+          .filter((desc) => desc.type && desc.description)
           .map(
-            ({ title, description }) =>
-              `<p><strong>${title}</strong> ${description}</p>`
+            ({ type, description }) =>
+              `<p><strong>${type}</strong> ${description}</p>`
           )
           .join("")
       : "";
+
     const videoFile = item.files
       ? item.files.find((file) => file.type === "Video")
       : null;
