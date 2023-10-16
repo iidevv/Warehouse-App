@@ -34,7 +34,6 @@ const updateItemsDataInBatch = async (items) => {
     const videoUrl = videoFile?.links[0]?.url || "";
     const videoCodeMatch = videoUrl.match(/v=([\w-]+)/);
     const video = videoCodeMatch ? videoCodeMatch[1] : null;
-
     const { id, ...updateData } = {
       id: item.id,
       images,
@@ -120,7 +119,7 @@ export const addItemsToDatabase = async () => {
 
 export const addItemsDataToDatabase = async () => {
   let totalPages = 1137;
-  let page = 1;
+  let page = 21;
   for (let i = page; i <= totalPages; i++) {
     const items = await getItemsData(page);
     await updateItems(items, updateItemsDataInBatch);
