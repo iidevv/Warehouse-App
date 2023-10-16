@@ -5,6 +5,8 @@ import {
   puProductItemModel,
 } from "../models/Inventory.js";
 
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 // Helper function to process array items in parallel with a limited concurrency
 export const asyncForEach = async (array, callback, concurrency = 5) => {
   const queue = [...array];
