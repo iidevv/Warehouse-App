@@ -123,7 +123,7 @@ export const addItemsToDatabase = async () => {
 
 export const addItemsDataToDatabase = async () => {
   let totalPages = 1137;
-  let page = 21;
+  let page = 40;
   try {
     for (let i = page; i <= totalPages; i++) {
       const items = await getItemsData(page);
