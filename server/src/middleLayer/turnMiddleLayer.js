@@ -102,14 +102,14 @@ const createItems = async (items) => {
 };
 
 export const addItemsToDatabase = async () => {
-  let totalPages = 512;
-  let page = 1;
+  let totalPages = 513;
+  let page = 22;
   let totalItemsCreated = 0;
   for (let i = page; i <= totalPages; i++) {
     const items = await getItems(page);
     const itemsCreated = await createItems(items);
     totalItemsCreated += itemsCreated;
-    await delay(1000);
+    await delay(200);
     page++;
     console.log(`${page} / items: ${itemsCreated}`);
   }
