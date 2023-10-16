@@ -106,7 +106,7 @@ const createItems = async (items) => {
 
 export const addItemsToDatabase = async () => {
   let totalPages = 513;
-  let page = 338;
+  let page = 1;
   for (let i = page; i <= totalPages; i++) {
     const items = await getItems(page);
     await createItems(items);
