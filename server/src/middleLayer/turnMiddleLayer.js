@@ -18,11 +18,15 @@ const updateItemsDataInBatch = async (items) => {
           .filter((file) => file.type === "Image")
           .map((file) => file.links[0]?.url)
       : [];
-
     const description = item.descriptions
-      ? item.descriptions.map((desc) => desc.description).join(" ")
+      ? item.descriptions
+          .filter((desc) => desc.title && desc.description)
+          .map(
+            ({ title, description }) =>
+              `<p><strong>${title}</strong> ${description}</p>`
+          )
+          .join("")
       : "";
-
     const videoFile = item.files
       ? item.files.find((file) => file.type === "Video")
       : null;
@@ -102,7 +106,7 @@ const createItems = async (items) => {
 
 export const addItemsToDatabase = async () => {
   let totalPages = 513;
-  let page = 1;
+  let page = 338;
   for (let i = page; i <= totalPages; i++) {
     const items = await getItems(page);
     await createItems(items);
