@@ -86,7 +86,6 @@ const updateItems = async (items, f) => {
   const batchSize = 50;
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
-    console.log("before f");
     await f(batch);
     await delay(200);
   }
@@ -119,9 +118,7 @@ export const addItemsDataToDatabase = async () => {
   let page = 1;
   for (let i = page; i <= totalPages; i++) {
     const items = await getItemsData(page);
-    console.log("get");
     await updateItems(items, updateItemsDataInBatch);
-    console.log("update");
     await delay(200);
     console.log(page);
     page++;
