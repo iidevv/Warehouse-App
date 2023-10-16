@@ -87,11 +87,15 @@ const createItemsInBatch = async (items) => {
 };
 
 const updateItems = async (items, f) => {
-  const batchSize = 50;
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-    await f(batch);
-    await delay(200);
+  try {
+    const batchSize = 50;
+    for (let i = 0; i < items.length; i += batchSize) {
+      const batch = items.slice(i, i + batchSize);
+      await f(batch);
+      await delay(200);
+    }
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -120,11 +124,15 @@ export const addItemsToDatabase = async () => {
 export const addItemsDataToDatabase = async () => {
   let totalPages = 1137;
   let page = 21;
-  for (let i = page; i <= totalPages; i++) {
-    const items = await getItemsData(page);
-    await updateItems(items, updateItemsDataInBatch);
-    await delay(200);
-    console.log(page);
-    page++;
+  try {
+    for (let i = page; i <= totalPages; i++) {
+      const items = await getItemsData(page);
+      await updateItems(items, updateItemsDataInBatch);
+      await delay(200);
+      console.log(page);
+      page++;
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
