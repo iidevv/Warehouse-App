@@ -124,9 +124,8 @@ export const addItemsToDatabase = async () => {
   console.log(`Total items created: ${totalItemsCreated}`);
 };
 
-export const addItemsDataToDatabase = async () => {
+export const addItemsDataToDatabase = async (page) => {
   let totalPages = 1137;
-  let page = 60;
   try {
     for (let i = page; i <= totalPages; i++) {
       const items = await getItemsData(page);
