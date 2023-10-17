@@ -123,15 +123,18 @@ export const addItemsToDatabase = async () => {
   }
   console.log(`Total items created: ${totalItemsCreated}`);
 };
-
 export const addItemsDataToDatabase = async (page) => {
   let totalPages = 1137;
   try {
     for (let i = page; i <= totalPages; i++) {
+      const startTime = Date.now();
       const items = await getItemsData(page);
       await updateItems(items, updateItemsDataInBatch);
       await delay(200);
-      console.log(page);
+      const endTime = Date.now();
+
+      const elapsedTime = (endTime - startTime) / 1000;
+      console.log(`Page: ${page}, Elapsed Time: ${elapsedTime} seconds`);
       page++;
     }
   } catch (error) {
