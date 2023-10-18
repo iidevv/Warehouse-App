@@ -1,4 +1,8 @@
-import { delay, executeWithRetry } from "../common/index.js";
+import {
+  delay,
+  executeWithRetry,
+  getPriceWithPercentage,
+} from "../common/index.js";
 import { turnInstance } from "../instances/turn-instance.js";
 import { turnMiddleLayerModel } from "../models/turnMiddleLayer.js";
 
@@ -11,6 +15,54 @@ const getItemsData = async (page = 1) => {
     return response.data.data;
   } catch (error) {
     throw error;
+  }
+};
+
+const getItems = async (page = 1) => {
+  try {
+    const response = await turnInstance.get(`/items?page=${page}`);
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getPrices = async (page = 1) => {
+  try {
+    const response = await turnInstance.get(`/pricing?page=${page}`);
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getInventory = async (page = 1) => {
+  try {
+    const response = await turnInstance.get(`/inventory?page=${page}`);
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const createItemsInBatch = async (items) => {
+  const itemsToCreate = items.map((item) => ({
+    id: item.id,
+    name: item.attributes.product_name,
+    sku: item.attributes.part_number,
+    category: `${item.attributes.category} > ${item.attributes.subcategory}`,
+    brand: item.attributes.brand,
+    upc: item.attributes?.barcode,
+  }));
+  try {
+    await turnMiddleLayerModel.insertMany(itemsToCreate, { ordered: false });
+  } catch (error) {
+    if (error.code === 11000) {
+      console.log("Duplicate key error");
+    } else {
+      console.log(`Error create items: ${error}`);
+      throw error;
+    }
   }
 };
 
@@ -59,33 +111,69 @@ const updateItemsDataInBatch = async (items) => {
   }
 };
 
-const getItems = async (page = 1) => {
+const updateItemsPricesInBatch = async (items) => {
+  const operations = items.map((item) => {
+    const priceLookup = item.attributes.pricelists.reduce((acc, item) => {
+      acc[item.name] = item.price;
+      return acc;
+    }, {});
+
+    const price =
+      priceLookup["MAP"] ||
+      getPriceWithPercentage(priceLookup["Jobber"], 30) ||
+      priceLookup["Retail"] ||
+      0;
+
+    const discontinued = !item.attributes.can_purchase;
+
+    const updateData = {
+      price,
+      discontinued,
+    };
+
+    if (price == 0) {
+      updateData.inventory_level = 0;
+    }
+
+    return {
+      updateOne: {
+        filter: { id: item.id },
+        update: { $set: updateData },
+        upsert: true,
+      },
+    };
+  });
+
   try {
-    const response = await turnInstance.get(`/items?page=${page}`);
-    return response.data.data;
+    await turnMiddleLayerModel.bulkWrite(operations);
   } catch (error) {
     throw error;
   }
 };
 
-const createItemsInBatch = async (items) => {
-  const itemsToCreate = items.map((item) => ({
-    id: item.id,
-    name: item.attributes.product_name,
-    sku: item.attributes.part_number,
-    category: `${item.attributes.category} > ${item.attributes.subcategory}`,
-    brand: item.attributes.brand,
-    upc: item.attributes?.barcode,
-  }));
+const updateItemsInventoryInBatch = async (items) => {
+  const operations = items.map((item) => {
+    const inventory_level = Object.values(item.attributes.inventory).reduce(
+      (acc, currentValue) => acc + currentValue,
+      0
+    );
+    const { id, ...updateData } = {
+      id: item.id,
+      inventory_level,
+    };
+
+    return {
+      updateOne: {
+        filter: { id },
+        update: { $set: updateData },
+        upsert: true,
+      },
+    };
+  });
   try {
-    await turnMiddleLayerModel.insertMany(itemsToCreate, { ordered: false });
+    await turnMiddleLayerModel.bulkWrite(operations);
   } catch (error) {
-    if (error.code === 11000) {
-      console.log("Duplicate key error");
-    } else {
-      console.log(`Error create items: ${error}`);
-      throw error;
-    }
+    throw error;
   }
 };
 
@@ -111,9 +199,8 @@ const createItems = async (items) => {
   }
 };
 
-export const addItemsToDatabase = async () => {
+export const addItemsToDatabase = async (page) => {
   let totalPages = 513;
-  let page = 1;
   for (let i = page; i <= totalPages; i++) {
     const items = await getItems(page);
     await createItems(items);
@@ -135,6 +222,48 @@ export const addItemsDataToDatabase = async (page) => {
 
       const elapsedTime = (endTime - startTime) / 1000;
       console.log(`Page: ${page}, Elapsed Time: ${elapsedTime} seconds`);
+      page++;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addItemsPricesToDatabase = async (page) => {
+  let totalPages = 513;
+  try {
+    for (let i = page; i <= totalPages; i++) {
+      const startTime = Date.now();
+      const items = await getPrices(page);
+      await updateItems(items, updateItemsPricesInBatch);
+      await delay(200);
+      const endTime = Date.now();
+
+      const elapsedTime = (endTime - startTime) / 1000;
+      console.log(
+        `Page: ${page}, Elapsed Time: ${elapsedTime} seconds | Prices`
+      );
+      page++;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addItemsInventoryToDatabase = async (page) => {
+  let totalPages = 513;
+  try {
+    for (let i = page; i <= totalPages; i++) {
+      const startTime = Date.now();
+      const items = await getInventory(page);
+      await updateItems(items, updateItemsInventoryInBatch);
+      await delay(200);
+      const endTime = Date.now();
+
+      const elapsedTime = (endTime - startTime) / 1000;
+      console.log(
+        `Page: ${page}, Elapsed Time: ${elapsedTime} seconds | Inventory`
+      );
       page++;
     }
   } catch (error) {

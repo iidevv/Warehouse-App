@@ -7,6 +7,10 @@ import {
 
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+export const getPriceWithPercentage = (price, percentage) => {
+  return price * (1 + percentage / 100);
+};
+
 // Helper function to process array items in parallel with a limited concurrency
 export const asyncForEach = async (array, callback, concurrency = 5) => {
   const queue = [...array];
