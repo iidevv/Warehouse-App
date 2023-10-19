@@ -10,6 +10,8 @@ class IndexContainer extends React.Component {
     this.props.getTotals();
   }
 
+  // vendor connection point
+
   render() {
     return (
       <>
@@ -20,6 +22,7 @@ class IndexContainer extends React.Component {
           puData={this.props.puData}
           hhData={this.props.hhData}
           lsData={this.props.lsData}
+          turnData={this.props.turnData}
         />
       </>
     );
@@ -27,11 +30,14 @@ class IndexContainer extends React.Component {
 }
 
 let mapStateToProps = (state) => {
+  // vendor connection point
+
   return {
     wpsData: state.dashboard.wpsData,
     puData: state.dashboard.puData,
     hhData: state.dashboard.hhData,
     lsData: state.dashboard.lsData,
+    turnData: state.dashboard.turnData,
     data: state.dashboard.data,
     isFetching: state.dashboard.isFetching,
   };

@@ -1,10 +1,6 @@
 import express from "express";
 import { bigCommerceInstance, wpsInstance } from "../../instances/index.js";
-import { createOptions, standardizeSize } from "../product/common.js";
-import { addProductItem, getInventoryProducts } from "../inventory.js";
-import { sendNotification } from "../tg-notifications.js";
-import { puSearchInstance } from "../../instances/pu-search.js";
-import { getInventoryModel, getProductItemModel } from "../../common/index.js";
+
 
 const router = express.Router();
 

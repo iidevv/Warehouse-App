@@ -109,40 +109,6 @@ const SideBar = (props) => {
                   </span>
                 </NavLink>
               </li>
-
-              <li className="has-submenu">
-                <span className="menu-link mx-4 text-sm font-normal">
-                  Dropshipping
-                </span>
-                <ul>
-                  <li>
-                    <NavLink
-                      to="/dropship-pu"
-                      onClick={handleSetMenuActive}
-                      className={({ isPending, isActive }) =>
-                        isActive ? "active-menu-link" : "menu-link"
-                      }
-                    >
-                      <span className="mx-4 text-sm font-normal">
-                        PU Dropship
-                      </span>
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to="/dropship-wps"
-                      onClick={handleSetMenuActive}
-                      className={({ isPending, isActive }) =>
-                        isActive ? "active-menu-link" : "menu-link"
-                      }
-                    >
-                      <span className="mx-4 text-sm font-normal">
-                        WPS Dropship
-                      </span>
-                    </NavLink>
-                  </li>
-                </ul>
-              </li>
               {/* <li>
                 <NavLink
                   to="/settings"

@@ -8,6 +8,7 @@ import { downloadInventoryFile, readInventoryFile } from "../ftp/index.js";
 import { bigCommerceInstance, wpsInstance } from "../instances/index.js";
 import { puSearchInstance, puSearchLogin } from "../instances/pu-search.js";
 import { updateProductItemModel } from "../models/Inventory.js";
+import { turnMiddleLayerModel } from "../models/turnMiddleLayer.js";
 import { updateStatusModel } from "../models/updateStatus.js";
 import { sendNotification } from "../routes/tg-notifications.js";
 
@@ -233,6 +234,8 @@ export const getVendorProducts = async (vendor, syncedProducts) => {
   const skus = syncedProducts.map((product) => product.sku);
   let products;
 
+  // vendor connection point
+
   switch (vendor) {
     case "PU":
       products = await getPuProducts(skus);
@@ -246,13 +249,15 @@ export const getVendorProducts = async (vendor, syncedProducts) => {
     case "LS":
       products = await getLSProducts(skus);
       break;
+    case "TURN":
+      products = await getTURNProducts(skus);
     default:
       break;
   }
   return products;
 };
 
-// vendors
+// vendor connection point
 
 // wps 10 products limit helper
 async function getAllWPSProducts(skus) {
@@ -391,6 +396,26 @@ const getLSProducts = async (skus) => {
         discontinued: product["Is Discontinued"] === "True" ? true : false,
       };
     });
+    return products;
+  } catch (error) {
+    sendNotification(`${skus.join(", ")}. Error: ${error}`);
+    throw error;
+  }
+};
+
+const getTURNProducts = async (skus) => {
+  try {
+    const productsFromDb = await turnMiddleLayerModel
+      .find({ sku: { $in: skus } })
+      .lean();
+
+    const products = productsFromDb.map((product) => ({
+      sku: product.sku,
+      inventory_level: product.inventory_level,
+      price: product.price,
+      discontinued: product.discontinued,
+    }));
+
     return products;
   } catch (error) {
     sendNotification(`${skus.join(", ")}. Error: ${error}`);

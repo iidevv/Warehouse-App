@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
-const turnMiddleLayer = new mongoose.Schema({
+const turnMiddleLayerSchema = new mongoose.Schema({
   id: { type: String, unique: true },
   sku: { type: String, index: true },
   brand: String,
@@ -15,7 +16,9 @@ const turnMiddleLayer = new mongoose.Schema({
   discontinued: { type: Boolean, default: false },
 });
 
+turnMiddleLayerSchema.plugin(paginate);
+
 export const turnMiddleLayerModel = mongoose.model(
   "turn-middle-layer",
-  turnMiddleLayer
+  turnMiddleLayerSchema
 );

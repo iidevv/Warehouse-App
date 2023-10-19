@@ -4,6 +4,7 @@ import {
   hhProductItemModel,
   wpsProductItemModel,
   puProductItemModel,
+  turnProductItemModel,
 } from "../models/Inventory.js";
 
 const router = express.Router();
@@ -58,14 +59,17 @@ const totalData = (data) => {
   return totalData;
 };
 
+// vendor connection point
+
 router.get("/info", async (req, res) => {
   try {
     const wpsData = await getData(wpsProductItemModel);
     const puData = await getData(puProductItemModel);
     const hhData = await getData(hhProductItemModel);
     const lsData = await getData(lsProductItemModel);
+    const turnData = await getData(turnProductItemModel);
     const data = totalData([wpsData, puData, hhData, lsData]);
-    res.json({ data, wpsData, puData, hhData, lsData });
+    res.json({ data, wpsData, puData, hhData, lsData, turnData });
   } catch (error) {
     console.log(error);
   }

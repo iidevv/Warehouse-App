@@ -33,6 +33,13 @@ const ProductItemSchema = new mongoose.Schema(
 
 ProductItemSchema.plugin(paginate);
 
+export const updateProductItemModel = mongoose.model(
+  "update-product-items",
+  ProductItemSchema
+);
+
+// vendor connection point
+
 export const wpsProductItemModel = mongoose.model(
   "wps-product-items",
   ProductItemSchema
@@ -49,8 +56,7 @@ export const lsProductItemModel = mongoose.model(
   "ls-product-items",
   ProductItemSchema
 );
-
-export const updateProductItemModel = mongoose.model(
-  "update-product-items",
+export const turnProductItemModel = mongoose.model(
+  "turn-product-items",
   ProductItemSchema
 );

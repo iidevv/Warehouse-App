@@ -2,6 +2,7 @@ import Widget from "./Widget";
 import WidgetTotal from "./WidgetTotal";
 
 const Index = (props) => {
+  // vendor connection point
   const data = [
     {
       name: "Western Power Sports",
@@ -23,11 +24,11 @@ const Index = (props) => {
       url: "/products?vendor=LS",
       data: props.lsData,
     },
-    // {
-    //   name: "Tucker",
-    //   url: "/products?vendor=TR",
-    //   data: props.trData,
-    // },
+    {
+      name: "Turn 14",
+      url: "/products?vendor=TURN",
+      data: props.turnData,
+    },
   ];
   return (
     <>

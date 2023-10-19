@@ -6,6 +6,8 @@ import { getLSProduct } from "./vendors/ls.js";
 import { getTURNProduct } from "./vendors/turn.js";
 const router = express.Router();
 
+// vendor connection point
+
 const getProduct = async (vendor, id, search, link) => {
   let response;
   switch (vendor) {

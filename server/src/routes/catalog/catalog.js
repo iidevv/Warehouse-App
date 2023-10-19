@@ -1,10 +1,12 @@
-import express from "express";
+import express, { query } from "express";
 import { hhInstance, puInstance, wpsInstance } from "../../instances/index.js";
 import { lsInstance } from "../../instances/ls-instance.js";
 import { getInventory, getPrice } from "../../common/pu.js";
-import { turnSearch } from "../../instances/turn-search.js";
+import { turnMiddleLayerModel } from "../../models/turnMiddleLayer.js";
 
 const router = express.Router();
+
+// vendor connection point
 
 const getWPSCatalog = async (offset = "", search = "") => {
   try {
@@ -207,8 +209,56 @@ const getLSCatalog = async (offset = 0, search = "") => {
 };
 
 const getTURNCatalog = async (offset = 0, search = "") => {
-  return turnSearch(offset, search);
+  if (!offset) offset = 1;
+
+  try {
+    const catalog = {};
+    let products;
+
+    const query = search
+      ? {
+          $or: [
+            { name: { $regex: search, $options: "i" } },
+            { sku: { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const options = {
+      page: offset,
+      limit: 20,
+      lean: true,
+      leanWithId: false,
+      sort: { updatedAt: -1 },
+      select: "id name sku images price inventory_level", // Only fetch required fields
+    };
+
+    products = await turnMiddleLayerModel.paginate(query, options);
+
+    catalog.data = products.docs.map((item) => ({
+      id: item.id,
+      name: item.name,
+      url: `/product/${item.id}?vendor=TURN`,
+      sku: item.sku,
+      image_url: item.images[0] || null,
+      price: item.price,
+      inventory: item.inventory_level,
+    }));
+
+    catalog.meta = {
+      current: products.page,
+      next: products.nextPage,
+      prev: products.prevPage,
+      total: products.totalDocs,
+    };
+
+    return catalog;
+  } catch (error) {
+    throw error;
+  }
 };
+
+// vendor connection point
 
 export const getCatalog = async (vendor, offset, search) => {
   let response;

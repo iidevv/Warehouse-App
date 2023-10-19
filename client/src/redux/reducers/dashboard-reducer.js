@@ -1,10 +1,14 @@
 import { dashboardAPI } from "../../api/api";
 
 const SET_DATA = "SET_DATA";
+
+// vendor connection point
+
 const SET_DATA_WPS = "SET_DATA_WPS";
 const SET_DATA_PU = "SET_DATA_PU";
 const SET_DATA_HH = "SET_DATA_HH";
 const SET_DATA_LS = "SET_DATA_LS";
+const SET_DATA_TURN = "SET_DATA_TURN";
 const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 
 let initialState = {
@@ -30,6 +34,13 @@ let initialState = {
     total: 0,
   },
   lsData: {
+    noChangesTotal: 0,
+    updatedTotal: 0,
+    createdTotal: 0,
+    errorTotal: 0,
+    total: 0,
+  },
+  turnData: {
     noChangesTotal: 0,
     updatedTotal: 0,
     createdTotal: 0,
@@ -72,6 +83,11 @@ const dashboardReducer = (state = initialState, action) => {
       return {
         ...state,
         lsData: { ...action.data },
+      };
+    case SET_DATA_TURN:
+      return {
+        ...state,
+        turnData: { ...action.data },
       };
     case TOGGLE_IS_FETCHING:
       return {
@@ -119,6 +135,13 @@ export const setDataLS = (data) => {
   };
 };
 
+export const setDataTURN = (data) => {
+  return {
+    type: SET_DATA_TURN,
+    data,
+  };
+};
+
 export const setToggleIsFetching = (isFetching) => {
   return {
     type: TOGGLE_IS_FETCHING,
@@ -135,6 +158,7 @@ export const getTotals = () => {
       dispatch(setDataPU(data.puData));
       dispatch(setDataHH(data.hhData));
       dispatch(setDataLS(data.lsData));
+      dispatch(setDataTURN(data.turnData));
       dispatch(setToggleIsFetching(false));
     });
   };

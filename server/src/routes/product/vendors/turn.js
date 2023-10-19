@@ -1,71 +1,112 @@
-import { delay, generateProductName } from "../../../common/index.js";
-import { createOptions, removeDuplicateWords } from "../common.js";
-import { turnInstance } from "../../../instances/turn-instance.js";
-import { turnSearch } from "../../../instances/turn-search.js";
+import { turnMiddleLayerModel } from "../../../models/turnMiddleLayer.js";
+import { extractColorAndSize, standardizeSize } from "../common.js";
 
-const fetchData = async (id, search) => {
+const extractDescriptionOrName = (description, name) => {
+  const regex = /<strong>product description - short<\/strong>\s*(.*?)<\/p>/i;
+  const match = description.match(regex);
+
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+  return name;
+};
+
+const createOptions = (name, description, brand) => {
+  const options = [];
+  const extractedNameOrDescription = extractDescriptionOrName(
+    description,
+    name
+  );
+  const extractedOptions = extractColorAndSize(extractedNameOrDescription);
+  if (extractedOptions.options) {
+    options.push({
+      option_display_name: `${brand} options`,
+      label: extractedOptions.options,
+    });
+  }
+  if (extractedOptions.color) {
+    options.push({
+      option_display_name: `Color`,
+      label: extractedOptions.color,
+    });
+  }
+  if (extractedOptions.size) {
+    options.push({
+      option_display_name: `Size`,
+      label: standardizeSize(extractedOptions.size),
+    });
+  }
+  return options;
+};
+
+const fetchData = async (id, search = "") => {
   try {
-    const product = await Promise.all([
-      turnInstance.get(`/items/${id}`),
-      turnInstance.get(`/items/data/${id}`),
-    ]);
-    const productData = {
-      ...product[0].data.data,
-      ...product[1].data.data[0],
-    };
-
-    let variants = [];
+    let products;
     if (search) {
-      let responseVariants = await turnSearch(1, search);
-      responseVariants = responseVariants.data.filter(
-        (item) => item.id != productData.id
-      );
-
-      const delayBetweenRequests = 200;
-
-      const variantsData = [];
-
-      for (const variant of responseVariants) {
-        const variantData = await turnInstance.get(`/items/data/${variant.id}`);
-        variantsData.push(variantData.data.data[0]);
-        await delay(delayBetweenRequests);
-      }
-      variants = variantsData;
+      products = await turnMiddleLayerModel
+        .find({
+          $or: [
+            { name: { $regex: search, $options: "i" } },
+            { sku: { $regex: search, $options: "i" } },
+          ],
+        })
+        .limit(50)
+        .lean();
+    } else {
+      products = await turnMiddleLayerModel.find({ id: id }).lean();
     }
     return {
-      product: productData,
-      variants: variants,
+      info: products[0],
+      variants: products,
     };
   } catch (error) {
-    console.log(error);
-    return error;
+    console.error("Error fetching TURN data:", error);
+    throw error;
   }
 };
 
 const createProduct = (obj) => {
-  console.log(obj);
-  const description = obj.product.descriptions
-    .map((text) => {
-      return `<p><strong>${text.type}</strong><br> ${text.description}</p>`;
-    })
-    .join("");
+  const data = obj.info;
 
-  const variants = [];
+  const description = data.description;
+
+  const variants = obj.variants.map((item) => {
+    const options = createOptions(item.name, item.description, data.brand);
+    return {
+      id: item.id,
+      sku: item.sku,
+      upc: item.upc,
+      option_values: options,
+      price: item.price,
+      inventory_level: item.inventory_level,
+      image_url: item.images[0] || null,
+      is_default: true,
+    };
+  });
+
+  const allVariantImages = obj.variants.flatMap((variant) => variant.images);
+
+  const uniqueImages = [...new Set([...data.images, ...allVariantImages])];
+
+  const images = uniqueImages.map((imageUrl, index) => ({
+    is_additional: index > 0,
+    is_thumbnail: index === 0,
+    sort_order: index,
+    image_url: imageUrl,
+  }));
+
   return {
     vendor: "TURN",
-    vendor_id: obj.product.id,
-    name: generateProductName(
-      obj.product.attributes.brand,
-      obj.product.attributes.part_description
-    ),
+    vendor_id: data.id,
+    name: data.name,
     type: "physical",
     weight: 0,
-    price: 0,
+    price: data.price,
     description: description,
-    brand_name: obj.product.attributes.brand,
+    brand_name: data.brand,
     inventory_tracking: "variant",
     variants: variants,
-    images: [],
+    images: images,
     search_available: true,
   };
 };

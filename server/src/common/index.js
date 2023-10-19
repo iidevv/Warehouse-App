@@ -3,6 +3,7 @@ import {
   hhProductItemModel,
   wpsProductItemModel,
   puProductItemModel,
+  turnProductItemModel,
 } from "../models/Inventory.js";
 
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -71,27 +72,7 @@ export const generateProductName = (brand, name) => {
   return name;
 };
 
-export const getInventoryModel = (vendor) => {
-  let model;
-  switch (vendor) {
-    case "PU":
-      model = puInventoryModel;
-      break;
-    case "WPS":
-      model = InventoryModel;
-      break;
-    case "HH":
-      model = hhInventoryModel;
-      break;
-    case "LS":
-      model = lsInventoryModel;
-      break;
-
-    default:
-      break;
-  }
-  return model;
-};
+// vendor connection point
 
 export const getProductItemModel = (vendor) => {
   let model;
@@ -107,6 +88,9 @@ export const getProductItemModel = (vendor) => {
       break;
     case "LS":
       model = lsProductItemModel;
+      break;
+    case "TURN":
+      model = turnProductItemModel;
       break;
 
     default:
