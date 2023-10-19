@@ -44,6 +44,15 @@ export const chatgptAPI = {
         return response.data;
       });
   },
+  normalizeNames(variants) {
+    return instance
+      .put(`/gpt/normalize-names/`, {
+        variants,
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
 };
 
 export const inventoryAPI = {

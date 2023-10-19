@@ -245,6 +245,7 @@ const Product = (props) => {
         onHandleRemoveVariant={props.onHandleRemoveVariant}
         onHandleRemoveVariantImage={props.onHandleRemoveVariantImage}
         onHandleChangeVariantName={props.onHandleChangeVariantName}
+        onHandleNormalizeNames={props.onHandleNormalizeNames}
       />
     </div>
   );

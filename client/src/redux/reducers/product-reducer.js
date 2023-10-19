@@ -13,6 +13,7 @@ const TOGGLE_IS_FETCHING = "TOGGLE_IS_FETCHING";
 const SET_CONTENT = "SET_CONTENT";
 const CHANGE_NAME = "CHANGE_NAME";
 const REMOVE_VARIANT = "REMOVE_VARIANT";
+const SET_VARIANTS = "SET_VARIANTS";
 const REMOVE_VARIANTS = "REMOVE_VARIANTS";
 const REMOVE_VARIANT_IMAGE = "REMOVE_VARIANT_IMAGE";
 const CHANGE_VARIANT_NAME = "CHANGE_VARIANT_NAME";
@@ -197,6 +198,15 @@ const productReducer = (state = initialState, action) => {
           images: updatedImagesRemoveOne,
         },
       };
+
+    case SET_VARIANTS:
+      return {
+        ...state,
+        productData: {
+          ...state.productData,
+          variants: action.payload.variants,
+        },
+      };
     case REMOVE_VARIANTS:
       const updatedImagesRemove = state.productData.images.filter(
         (image) => !action.payload.variantIds.includes(image.variant_id)
@@ -315,6 +325,15 @@ export const removeVariant = (id, variant_id) => {
   };
 };
 
+export const setVariants = (variants) => {
+  return {
+    type: SET_VARIANTS,
+    payload: {
+      variants,
+    },
+  };
+};
+
 export const removeVariants = (ids, variantIds) => {
   return {
     type: REMOVE_VARIANTS,
@@ -406,6 +425,16 @@ export const optimizeImages = (product) => {
     dispatch(setToggleIsFetching(true));
     optimizationAPI.optimizeProductImages(product).then((data) => {
       dispatch(setProduct(data));
+      dispatch(setToggleIsFetching(false));
+    });
+  };
+};
+
+export const normalizeNames = (variants) => {
+  return (dispatch) => {
+    dispatch(setToggleIsFetching(true));
+    chatgptAPI.normalizeNames(variants).then((data) => {
+      dispatch(setVariants(data));
       dispatch(setToggleIsFetching(false));
     });
   };

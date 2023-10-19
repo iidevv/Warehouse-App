@@ -59,10 +59,56 @@ export const createSEOContent = async (title, description) => {
   }
 };
 
+export const normalizeNames = async (variants) => {
+  const body = JSON.stringify(variants);
+  const prompt = `
+  Convert the following array so that the names are the corrent names of the variations.
+  Rules:
+  1. Response format JSON, without any comments just array
+  
+  Example: [
+    {
+      "option_display_name": "Racequip options",
+      "label": " RaceQuip Black SFI-1 1-L Pants 5XL"
+    }
+  ] split to
+  [
+    {
+      "option_display_name": "Color",
+      "label": "Black"
+    },
+    {
+      "option_display_name": "Size",
+      "label": "5XL"
+    }
+  ]
+
+  Array: ${body}
+  `;
+
+  try {
+    const gpt4Response = await gpt4(prompt);
+    console.log(gpt4Response);
+    return JSON.parse(gpt4Response);
+  } catch (error) {
+    throw error;
+  }
+};
+
 router.post("/create-seo", async (req, res) => {
   let { title, description } = req.body;
   try {
     const response = await createSEOContent(title, description);
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
+
+router.put("/normalize-names", async (req, res) => {
+  let { variants } = req.body;
+  try {
+    const response = await normalizeNames(variants);
     res.json(response);
   } catch (error) {
     res.status(500).json({ error: error });
