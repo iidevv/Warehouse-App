@@ -1,41 +1,51 @@
 import { turnMiddleLayerModel } from "../../../models/turnMiddleLayer.js";
 import { extractColorAndSize, standardizeSize } from "../common.js";
 
-const extractDescriptionOrName = (description, name) => {
-  const regex = /<strong>product description - short<\/strong>\s*(.*?)<\/p>/i;
-  const match = description.match(regex);
-
-  if (match && match[1]) {
-    return match[1].trim();
-  }
-  return name;
-};
-
 const createOptions = (name, description, brand) => {
+
   const options = [];
-  const extractedNameOrDescription = extractDescriptionOrName(
-    description,
-    name
-  );
-  const extractedOptions = extractColorAndSize(extractedNameOrDescription);
-  if (extractedOptions.options) {
+
+  const colorRegex =
+    /\b(red|blue|green|yellow|black|white|gray|orange|pink|purple|brown|gold|silver|teal|indigo|violet|tan|cyan|olive|maroon|navy|aquamarine|turquoise|goldenrod|peach|mauve|chartreuse)\b/i;
+
+  const sizeRegexWords =
+    /\b(extralarge|double xl|triple xl|quad xl|quint xl|extra-extra small|small|extra small|x-small|medium|large|extra large|x-large|xx-large|extra-extra-extra large|extra-extra large|small-medium|extra large\/2x large|xxl|xxs|xs|sm|s|md|m|med|lg|l|xl|xxlarge|xlarge|2xl|2x|3xl|3x|4xl|4x|5xl|5x|6xl|6x|yl|s-m|xl\/2xl)\b/i;
+
+  const sizeRegexNumbers = /(?<=\b|\s)\d{1,2}x?(?=\b|\s)/i;
+
+  const shortDescriptionRegex = /<strong>.*?<\/strong>(.*?)<\/p>/i;
+  const shortDescMatch = description.match(shortDescriptionRegex);
+  const targetDescription =
+    (shortDescMatch && shortDescMatch[1] && shortDescMatch[1].trim()) || name;
+
+  const colorMatch = targetDescription.match(colorRegex);
+  let sizeMatch = targetDescription.match(sizeRegexWords);
+
+  if (!sizeMatch) {
+    sizeMatch = targetDescription.match(sizeRegexNumbers);
+  }
+
+  // if (colorMatch) {
+  //   options.push({
+  //     option_display_name: `Color`,
+  //     label: colorMatch[0],
+  //   });
+  // }
+
+  // if (sizeMatch) {
+  //   options.push({
+  //     option_display_name: `Size`,
+  //     label: shortDescMatch[1],
+  //   });
+  // }
+
+  if (options.length === 0) {
     options.push({
       option_display_name: `${brand} options`,
-      label: extractedOptions.options,
+      label: shortDescMatch[1] || name,
     });
   }
-  if (extractedOptions.color) {
-    options.push({
-      option_display_name: `Color`,
-      label: extractedOptions.color,
-    });
-  }
-  if (extractedOptions.size) {
-    options.push({
-      option_display_name: `Size`,
-      label: standardizeSize(extractedOptions.size),
-    });
-  }
+
   return options;
 };
 
