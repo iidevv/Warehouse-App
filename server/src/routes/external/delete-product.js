@@ -4,8 +4,10 @@ import { sendNotification } from "../tg-notifications.js";
 
 const router = express.Router();
 
+// vendor connection point
+
 const findProduct = async (productId) => {
-  const vendors = ["WPS", "PU", "HH", "LS"];
+  const vendors = ["WPS", "PU", "HH", "LS", "TURN"];
 
   for (const vendor of vendors) {
     try {
