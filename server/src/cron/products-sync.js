@@ -2,11 +2,14 @@ import { CronJob } from "cron";
 import { syncProducts } from "../sync/index.js";
 import { sendNotification } from "../routes/tg-notifications.js";
 
+// vendor connection point
+
 const vendorsForSync = async (query) => {
   await syncProducts("WPS", query);
   await syncProducts("PU", query);
   await syncProducts("HH", query);
   await syncProducts("LS", query);
+  await syncProducts("TURN", query);
 };
 
 export const syncAllProducts = new CronJob({

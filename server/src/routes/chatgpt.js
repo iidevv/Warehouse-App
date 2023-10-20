@@ -88,7 +88,6 @@ export const normalizeNames = async (variants) => {
 
   try {
     const gpt4Response = await gpt4(prompt);
-    console.log(gpt4Response);
     return JSON.parse(gpt4Response);
   } catch (error) {
     throw error;
