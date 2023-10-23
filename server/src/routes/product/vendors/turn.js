@@ -1,8 +1,42 @@
 import { turnMiddleLayerModel } from "../../../models/turnMiddleLayer.js";
 import { extractColorAndSize, standardizeSize } from "../common.js";
 
-const createOptions = (name, description, brand) => {
+const removeDuplicates = (strings) => {
+  if (strings.length === 1) return strings;
+  const stringsLength = strings.length;
 
+  // Сразу создаем splitWords и инициализируем duplicatesCounter
+  const splitWords = [];
+  let longestArrayLength = 0;
+  const duplicatesCounter = [];
+
+  strings.forEach((string) => {
+    const words = string.split(" ");
+
+    splitWords.push(words);
+
+    if (words.length > longestArrayLength) {
+      longestArrayLength = words.length;
+    }
+
+    words.forEach((word, index) => {
+      if (!duplicatesCounter[index]) {
+        duplicatesCounter[index] = word === splitWords[0][index] ? 1 : 0;
+      } else if (word === splitWords[0][index]) {
+        duplicatesCounter[index]++;
+      }
+    });
+  });
+
+  return strings.map((string) => {
+    const words = string.split(" ");
+    return words
+      .filter((word, index) => duplicatesCounter[index] !== stringsLength)
+      .join(" ");
+  });
+};
+
+const createOptions = (name, description, brand) => {
   const options = [];
 
   const colorRegex =
@@ -42,7 +76,7 @@ const createOptions = (name, description, brand) => {
   if (options.length === 0) {
     options.push({
       option_display_name: `${brand} options`,
-      label: shortDescMatch[1] || name,
+      label: shortDescMatch[1].trim() || name,
     });
   }
 
@@ -94,6 +128,28 @@ const createProduct = (obj) => {
     };
   });
 
+  const stringOptions = variants.map((variant) => {
+    const eachOption = variant.option_values
+      .map((option) => {
+        return option.label;
+      })
+      .join(", ");
+    return eachOption;
+  });
+  const cleanStringOptions = removeDuplicates(stringOptions);
+  const cleanVariants = variants.map((variant, i) => {
+    return {
+      ...variant,
+      option_values: [
+        {
+          option_display_name: variant.option_values[0].option_display_name,
+          label: cleanStringOptions[i],
+        },
+      ],
+    };
+  });
+  console.log(cleanVariants);
+
   const allVariantImages = obj.variants.flatMap((variant) => variant.images);
 
   const uniqueImages = [...new Set([...data.images, ...allVariantImages])];
@@ -115,7 +171,7 @@ const createProduct = (obj) => {
     description: description,
     brand_name: data.brand,
     inventory_tracking: "variant",
-    variants: variants,
+    variants: cleanVariants,
     images: images,
     search_available: true,
   };

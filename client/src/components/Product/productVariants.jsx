@@ -145,17 +145,17 @@ const ProductVariants = (props) => {
         <div className="overflow-hidden block pb-4">
           <div className="bg-white shadow-lg pb-4 flex gap-2">
             <button
-              onClick={handleNormalizeNames}
-              className="flex items-center py-2 px-4 gpt-btn focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
-            >
-              <img className="w-6 h-6 mr-2" src={chatgpt} />
-              <span>Normalize names</span>
-            </button>
-            <button
               onClick={handleRemoveSelectedVariants}
               className="m-1 py-2 px-4 z-20 bg-red-600 hover:bg-red-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
             >
               Remove Selected
+            </button>
+            <button
+              onClick={handleNormalizeNames}
+              className="flex items-center py-2 px-4 m-1 gpt-btn focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
+            >
+              <img className="w-6 h-6 mr-2" src={chatgpt} />
+              <span>Normalize names</span>
             </button>
           </div>
         </div>
