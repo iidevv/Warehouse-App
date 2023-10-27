@@ -19,6 +19,6 @@ const turnMiddleLayerSchema = new mongoose.Schema({
 turnMiddleLayerSchema.plugin(paginate);
 
 export const turnMiddleLayerModel = mongoose.model(
-  "turn-middle-layer",
+  "turn-middle-layers",
   turnMiddleLayerSchema
 );
