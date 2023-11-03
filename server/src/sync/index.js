@@ -38,7 +38,7 @@ export const syncProducts = async (vendor, query, bulk = false) => {
       page++;
     } catch (error) {
       console.error("Error updating products:", error);
-      throw error;
+      throw { vendor, query, page, error };
     }
   }
   await new Promise((resolve) => setTimeout(resolve, 2000));

@@ -51,7 +51,7 @@ export const updateAllHooks = new CronJob({
       // imgs optimization, delete product
       await updateHooks([26765181, 27186306]);
     } catch (error) {
-      sendNotification(`Error during updating: ${error}`);
+      sendNotification(`Error during updating hooks: ${error}`);
     }
   },
   timeZone: "America/Los_Angeles",

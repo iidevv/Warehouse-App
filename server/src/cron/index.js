@@ -16,6 +16,7 @@ if (useHttps) {
   syncAllProducts.start();
   syncMediumStockProducts.start();
   syncLowStockProducts.start();
+  
   updateAllHooks.start();
   syncTurnLayerPrices.start();
   syncTurnLayerInventory.start();

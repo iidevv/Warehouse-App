@@ -22,7 +22,7 @@ export const syncAllProducts = new CronJob({
     try {
       await vendorsForSync();
     } catch (error) {
-      sendNotification(`Error during updating: ${error}`);
+      sendNotification(`Error during updating syncAllProducts: ${error}`);
     }
   },
   timeZone: "America/Los_Angeles",
@@ -39,7 +39,7 @@ export const syncLowStockProducts = new CronJob({
     try {
       await vendorsForSync(query);
     } catch (error) {
-      sendNotification(`Error during updating: ${error}`);
+      sendNotification(`Error during updating syncLowStockProducts: ${error}`);
     }
   },
   timeZone: "America/Los_Angeles",
@@ -56,7 +56,7 @@ export const syncMediumStockProducts = new CronJob({
     try {
       await vendorsForSync(query);
     } catch (error) {
-      sendNotification(`Error during updating: ${error}`);
+      sendNotification(`Error during updating syncMediumStockProducts: ${error}`);
     }
   },
   timeZone: "America/Los_Angeles",
