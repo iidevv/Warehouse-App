@@ -182,16 +182,10 @@ export const updateProducts = async (vendor, productsForUpdate) => {
 
       // Check if price is NaN or zero and set inventory_level accordingly
       if (isNaN(product.price) || product.price === 0) {
-        sendNotification(
-          `Product SKU ${product.sku} has an invalid or zero price. Setting price and inventory level to zero.`
-        );
         product.price = 0;
         product.inventory_level = 0;
       } else if (isNaN(product.inventory_level)) {
         // If price is valid but inventory_level is NaN, only set inventory_level to zero
-        sendNotification(
-          `Product SKU ${product.sku} has an invalid inventory level. Setting to zero.`
-        );
         product.inventory_level = 0;
       }
 
