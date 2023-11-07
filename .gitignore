@@ -5,3 +5,4 @@ client/node_modules/
 client/build/
 server/node_modules/
 server/optimized/
+server/inventory_updates/
