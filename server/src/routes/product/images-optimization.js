@@ -4,7 +4,16 @@ import sharp from "sharp";
 import fs from "fs";
 import path from "path";
 import { sendNotification } from "../tg-notifications.js";
+import { config } from "dotenv";
+
+config();
+
 const router = express.Router();
+const useHttps = process.env.USE_HTTPS === "true";
+
+const domain = useHttps
+  ? "https://warehouse.discountmotogear.com/"
+  : "http://localhost:3001/";
 
 const processProduct = async (product) => {
   if (!fs.existsSync("optimized")) {
@@ -16,18 +25,18 @@ const processProduct = async (product) => {
   for (let image of product.images) {
     const optimizedPath = await optimizeImage(image.image_url);
     optimizedImagePaths[image.image_url] = optimizedPath;
-    image.image_url = `https://warehouse.discountmotogear.com/api/images/${optimizedPath}`;
+    image.image_url = `${domain}api/images/${optimizedPath}`;
   }
 
   for (let variant of product.variants) {
     if (optimizedImagePaths[variant.image_url]) {
-      variant.image_url = `https://warehouse.discountmotogear.com/api/images/${
+      variant.image_url = `${domain}api/images/${
         optimizedImagePaths[variant.image_url]
       }`;
     } else {
       const optimizedPath = await optimizeImage(variant.image_url);
       optimizedImagePaths[variant.image_url] = optimizedPath;
-      variant.image_url = `https://warehouse.discountmotogear.com/api/images/${optimizedPath}`;
+      variant.image_url = `${domain}api/images/${optimizedPath}`;
     }
   }
 
@@ -35,10 +44,11 @@ const processProduct = async (product) => {
 };
 
 const optimizeImage = async (url) => {
-  const originalFilename = path.basename(url).split("?")[0];
   const originalDirname = path.dirname(url).split("/").pop();
-  const newFilename = `optimized_${originalDirname}_${originalFilename}`;
-
+  const originalFilename = path.basename(url).split("?")[0];
+  const extension = originalFilename.split(".").pop();
+  const optimizedFileName = `${originalFilename.replace(/[^a-zA-Z0-9]/g, '')}.${extension}`;
+  const newFilename = `optimized_${originalDirname}_${optimizedFileName}`;
   try {
     const { data: buffer } = await axios.get(url, {
       responseType: "arraybuffer",

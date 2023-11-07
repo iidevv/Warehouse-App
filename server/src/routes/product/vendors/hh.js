@@ -227,6 +227,7 @@ export const getHHProduct = async (link) => {
     const product = createProduct(productData, variantsData, link);
     return product;
   } catch (error) {
+    console.log(error);
     return { error: error };
   }
 };

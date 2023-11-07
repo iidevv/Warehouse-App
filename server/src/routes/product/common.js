@@ -91,8 +91,8 @@ export const standardizeSize = (sizeStr) => {
     "s-m": "S-M",
     "xl/2xl": "XL-2XL",
   };
-  console.log(sizeStr);
-  console.log(sizes[sizeStr.toLowerCase()]);
+  // console.log(sizeStr);
+  // console.log(sizes[sizeStr.toLowerCase()]);
   return sizes[sizeStr.toLowerCase()] || sizeStr;
 };
 
