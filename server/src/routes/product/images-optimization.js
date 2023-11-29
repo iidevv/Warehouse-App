@@ -73,8 +73,17 @@ const optimizeImage = async (url) => {
 };
 
 export const deleteOptimizedImages = () => {
+  const directory = "optimized";
+
+  if (!fs.existsSync(directory)) {
+    console.log(`Directory '${directory}' not found.`);
+    return;
+  }
+  
   const prefix = "optimized";
   const files = fs.readdirSync("optimized");
+
+  
   for (let file of files) {
     if (file.startsWith(prefix)) {
       try {

@@ -212,7 +212,10 @@ const createProduct = (obj, variantsData, link) => {
   if (obj.videoCode) {
     product.videos = [
       {
+        title: `${generateProductName(obj.brand, obj.title)} - video`,
         video_id: obj.videoCode,
+        description: "",
+        sort_order: 0,
       },
     ];
   }
