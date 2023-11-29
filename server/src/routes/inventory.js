@@ -1,16 +1,16 @@
 import express from "express";
-import { getInventoryStatus, getProductItemModel } from "./../common/index.js";
+import {
+  getInventoryStatus,
+  getProductItemModel,
+  getRegExpFromString,
+} from "./../common/index.js";
 const router = express.Router();
 
 export const getInventoryProducts = async (vendor, query = {}, page = 1) => {
   const Model = getProductItemModel(vendor);
 
   if (query.sku) {
-    const matches = query.sku.match(/^\/(.*?)\/([gimsuy]*)$/);
-    if (matches) {
-      const [, pattern, flags] = matches;
-      query.sku = new RegExp(pattern, flags);
-    }
+    query.sku = getRegExpFromString(query.sku);
   }
 
   const options = {

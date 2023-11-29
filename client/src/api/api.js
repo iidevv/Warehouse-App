@@ -70,6 +70,7 @@ export const inventoryAPI = {
       });
   },
   updateProducts(vendor, query, bulk) {
+    console.log(vendor, query, bulk);
     return instance
       .patch(`/inventory/sync/`, {
         vendor,

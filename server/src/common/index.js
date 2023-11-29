@@ -12,6 +12,16 @@ export const getPriceWithPercentage = (price, percentage) => {
   return price * (1 + percentage / 100);
 };
 
+// convertToRegEx
+export const getRegExpFromString = (string = "") => {
+  const matches = string.match(/^\/(.*?)\/([gimsuy]*)$/);
+  if (matches) {
+    const [, pattern, flags] = matches;
+    string = new RegExp(pattern, flags);
+  }
+  return string;
+};
+
 // Helper function to process array items in parallel with a limited concurrency
 export const asyncForEach = async (array, callback, concurrency = 5) => {
   const queue = [...array];

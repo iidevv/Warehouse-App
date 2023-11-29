@@ -8,10 +8,15 @@ import {
   getVendorProducts,
   updateProducts,
 } from "./common.js";
+import { getRegExpFromString } from "../common/index.js";
 
 const router = express.Router();
 
 export const syncProducts = async (vendor, query, bulk = false) => {
+  if (query.sku) {
+    query.sku = getRegExpFromString(query.sku);
+  }
+
   await beforeUpdateProducts(vendor, query);
   let processedProducts = 0;
   let page = 1;

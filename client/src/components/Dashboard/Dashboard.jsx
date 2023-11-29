@@ -54,7 +54,7 @@ const Dashboard = (props) => {
     if (isInitialSearch) return;
     const query = {};
     if (statusFilter) query.update_status = statusFilter;
-    if (searchFilter) query.sku = new RegExp(searchFilter, "i");
+    if (searchFilter) query.sku = new RegExp(searchFilter, "i").toString();
     if (stockFilter) query.inventory_status = stockFilter;
     if (discontinuedFilter) query.discontinued = discontinuedFilter;
     setUpdateQuery(query);
