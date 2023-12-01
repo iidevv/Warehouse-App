@@ -65,8 +65,9 @@ const setProductsForSync = async (vendor, query) => {
 
 const resetProductsForSync = async () => {
   try {
-    await updateProductItemModel.collection.drop();
+    await updateProductItemModel.deleteMany({});
   } catch (error) {
+    sendNotification(`resetProductsForSync: ${error}`);
     throw error;
   }
 };
