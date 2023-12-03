@@ -13,7 +13,7 @@ import { getRegExpFromString } from "../common/index.js";
 const router = express.Router();
 
 export const syncProducts = async (vendor, query, bulk = false) => {
-  if (query.sku) {
+  if (query?.sku) {
     query.sku = getRegExpFromString(query.sku);
   }
 

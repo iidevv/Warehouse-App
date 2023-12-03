@@ -23,8 +23,9 @@ const vendorsForSync = async (query) => {
 export const syncAllProducts = new CronJob({
   cronTime: "0 6 * * *",
   onTick: async () => {
+    const query = {};
     try {
-      await vendorsForSync();
+      await vendorsForSync(query);
     } catch (error) {
       sendNotification(`Error during updating syncAllProducts: ${error}`);
     }
