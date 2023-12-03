@@ -1,18 +1,22 @@
 import { CronJob } from "cron";
 import { syncProducts } from "../sync/index.js";
 import { sendNotification } from "../routes/tg-notifications.js";
+import { createNewDate } from "../common/index.js";
 
 // vendor connection point
 
 const vendorsForSync = async (query) => {
-  try {
-    await syncProducts("WPS", query);
-    await syncProducts("PU", query);
-    await syncProducts("HH", query);
-    await syncProducts("LS", query);
-    await syncProducts("TURN", query);
-  } catch (error) {
-    throw error;
+  const vendors = ["WPS", "PU", "HH", "LS", "TURN"];
+  const time = createNewDate();
+  for (const vendor of vendors) {
+    try {
+      await syncProducts(vendor, query);
+    } catch (error) {
+      sendNotification(
+        `Error syncing with ${vendor} (${time}):`,
+        error
+      );
+    }
   }
 };
 
@@ -56,7 +60,9 @@ export const syncMediumStockProducts = new CronJob({
     try {
       await vendorsForSync(query);
     } catch (error) {
-      sendNotification(`Error during updating syncMediumStockProducts: ${error}`);
+      sendNotification(
+        `Error during updating syncMediumStockProducts: ${error}`
+      );
     }
   },
   timeZone: "America/Los_Angeles",
