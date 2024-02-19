@@ -6,3 +6,4 @@ client/build/
 server/node_modules/
 server/optimized/
 server/inventory_updates/
+server/feeds/

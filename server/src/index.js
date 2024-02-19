@@ -26,6 +26,7 @@ import "./cron/index.js";
 import "./sync/common.js";
 import { categoryMapRouter } from "./routes/category-mapping.js";
 import { imagesOptimizationRouter } from "./routes/product/images-optimization.js";
+import { amazonRouter } from "./routes/channels/amazon/amazon.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +61,9 @@ app.use(
     credentials: true,
   })
 );
+
+app.use("/api/channels/amazon", amazonRouter);
+
 
 app.use("/api/auth", userRouter);
 
