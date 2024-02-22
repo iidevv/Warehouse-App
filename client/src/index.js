@@ -21,6 +21,8 @@ import CatalogContainer from "./components/Catalog/CatalogContainer";
 import DashboardContainer from "./components/Dashboard/DashboardContainer";
 import Catalogs from "./routes/Catalogs";
 import CategoryMappingContainer from "./components/CategoryMapping/CategoryMappingContainer";
+import Channels from "./routes/Channels";
+import ChannelContainer from "./components/Channel/ChannelContainer";
 
 function AuthRoute({ component: Component, ...rest }) {
   const isAuthenticated = Cookies.get("userID") ? true : false;
@@ -64,6 +66,14 @@ const router = createBrowserRouter([
       {
         path: "/catalogs",
         element: <Catalogs />,
+      },
+      {
+        path: "/channels",
+        element: <Channels />,
+      },
+      {
+        path: "/channel",
+        element: <ChannelContainer />,
       },
       {
         path: "/category-mapping",

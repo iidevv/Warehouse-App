@@ -88,6 +88,40 @@ export const inventoryAPI = {
   },
 };
 
+export const channelAPI = {
+  getProducts(vendor, query, page) {
+    return instance
+      .get(`/channel/products/`, {
+        params: {
+          vendor,
+          query,
+          page,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+  updateProducts(vendor) {
+    return instance
+      .post(`/channel/update/`, {
+        vendor,
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+  refreshProducts(vendor) {
+    return instance
+      .post(`/channel/refresh/`, {
+        vendor,
+      })
+      .then((response) => {
+        return response.data;
+      });
+  },
+};
+
 export const puDropshipAPI = {
   getOrders(from, to, page) {
     return instance

@@ -98,14 +98,14 @@ const SideBar = (props) => {
               </li>
               <li>
                 <NavLink
-                  to="/category-mapping?vendor=PU"
+                  to="/channels"
                   onClick={handleSetMenuActive}
                   className={({ isPending, isActive }) =>
                     isActive ? "active-menu-link" : "menu-link"
                   }
                 >
                   <span className="mx-4 text-sm font-normal">
-                    Category Mapping
+                    Channels
                   </span>
                 </NavLink>
               </li>

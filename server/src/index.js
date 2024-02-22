@@ -21,12 +21,12 @@ import { catalogRouter } from "./routes/catalog/catalog.js";
 import { productRouter } from "./routes/product/product.js";
 import { SyncRouter } from "./sync/index.js";
 import { productMappingRouter } from "./sync/product-mapping.js";
+import { channelRouter } from "./routes/channels/channels.js";
 
 import "./cron/index.js";
 import "./sync/common.js";
 import { categoryMapRouter } from "./routes/category-mapping.js";
 import { imagesOptimizationRouter } from "./routes/product/images-optimization.js";
-import { amazonRouter } from "./routes/channels/amazon/amazon.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,7 +62,6 @@ app.use(
   })
 );
 
-app.use("/api/channels/amazon", amazonRouter);
 
 
 app.use("/api/auth", userRouter);
@@ -70,6 +69,7 @@ app.use("/api/auth", userRouter);
 app.use(authenticate);
 app.use("/api/inventory", inventoryRouter);
 app.use("/api/inventory", SyncRouter);
+app.use("/api/channel", channelRouter);
 app.use("/api/category", categoryMapRouter);
 app.use("/api/catalog", catalogRouter);
 app.use("/api/catalog", productRouter);

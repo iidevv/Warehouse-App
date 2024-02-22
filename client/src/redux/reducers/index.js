@@ -7,10 +7,12 @@ import ordersReducer from "./orders-reducer";
 import catalogReducer from "./catalog-reducer";
 import productReducer from "./product-reducer";
 import categoryMappingReducer from "./category-mapping-reducer";
+import channelReducer from "./channel-reducer";
 
 export default combineReducers({
   dashboard: dashboardReducer,
   catalog: catalogReducer,
+  channel: channelReducer,
   product: productReducer,
   inventory: inventoryReducer,
   categoryMapping: categoryMappingReducer,
