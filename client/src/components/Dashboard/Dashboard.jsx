@@ -113,7 +113,7 @@ const Dashboard = (props) => {
     return pageNumbers;
   };
   return (
-    <div className="m-5 lg:w-full">
+    <div className="p-5 lg:w-full">
       <div className="flex flex-row items-center w-full mb-6">
         <div className="d-flex flex-col mr-6">
           <h2 className="text-2xl leading-tight">

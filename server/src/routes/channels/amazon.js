@@ -59,10 +59,9 @@ const convertToAmazonXml = async (items, type) => {
 const createXmlFile = async (xml, type) => {
   try {
     await fs.promises.writeFile(`./feeds/amazon_${type}_feed.xml`, xml);
-    console.log("File has been saved.");
     return true;
   } catch (err) {
-    console.error("Error writing file:", err);
+    sendNotification("Error createXmlFile:", err);
     return false;
   }
 };
@@ -136,7 +135,7 @@ const updateAmazonItems = async (items) => {
     const result = await amazonItemModel.bulkWrite(operations);
     return result;
   } catch (error) {
-    console.log(error);
+    sendNotification(`updateAmazonItems error: ${error}`);
   }
 };
 
@@ -156,12 +155,11 @@ const updateAllAmazonItems = async () => {
       await updateAmazonItems(items);
 
       totalPages = meta.total_pages;
-      console.log("currentPage", currentPage);
       await delay(250);
       currentPage++;
     }
   } catch (error) {
-    console.log(`updateAllAmazonItems error: ${error}`);
+    sendNotification(`updateAllAmazonItems error: ${error}`);
   }
 };
 
@@ -200,7 +198,7 @@ const uploadFeed = async (type) => {
   return response;
 };
 
-// drop files
+// add drop files
 
 export const updateAmazonProducts = async () => {
   await updateAllAmazonItems();

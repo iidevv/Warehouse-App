@@ -34,6 +34,11 @@ const channelReducer = (state = initialState, action) => {
         ...state,
         total: action.total,
       };
+    case SET_PAGINATION:
+      return {
+        ...state,
+        pagination: action.pagination,
+      };
     case SET_STATUS:
       return {
         ...state,

@@ -93,7 +93,7 @@ const Channel = (props) => {
     return pageNumbers;
   };
   return (
-    <div className="m-5 lg:w-full">
+    <div className="p-5 lg:w-full">
       <div className="flex flex-row items-center w-full mb-6">
         <div className="d-flex flex-col mr-6">
           <h2 className="text-2xl leading-tight">
@@ -116,7 +116,7 @@ const Channel = (props) => {
           disabled={props.status.is_updating}
           className="py-2 px-4 disabled:opacity-50 w-auto bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
         >
-          Refresh product list
+          Rebuild list
         </button>
       </div>
       <div className="flex flex-row items-stretch w-full mb-6">

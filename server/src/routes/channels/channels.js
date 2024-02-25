@@ -17,7 +17,7 @@ const getChannelItemModel = (vendor) => {
   return model;
 };
 
-const updateProducts = async (vendor) => {
+export const updateProducts = async (vendor) => {
   switch (vendor) {
     case "AMAZON":
       await updateAmazonProducts();
@@ -71,7 +71,7 @@ export const getChannelProducts = async (vendor, query = {}, page = 1) => {
 router.post("/update", async (req, res) => {
   const { vendor } = req.body;
   try {
-    // updateProducts(vendor);
+    updateProducts(vendor);
     res.json({ message: `Updating ${vendor} products` });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -81,7 +81,7 @@ router.post("/update", async (req, res) => {
 router.post("/refresh", async (req, res) => {
   const { vendor } = req.body;
   try {
-    // refreshProducts(vendor);
+    refreshProducts(vendor);
     res.json({ message: `Refreshing ${vendor} products` });
   } catch (error) {
     res.status(400).json({ message: error.message });
