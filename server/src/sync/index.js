@@ -9,12 +9,14 @@ import {
   updateProducts,
 } from "./common.js";
 import { getRegExpFromString } from "../common/index.js";
+import { updateProductItem } from "../routes/inventory.js";
 
 const router = express.Router();
 
 export const syncProducts = async (vendor, query, bulk = false) => {
   if (query?.sku) {
     query.sku = getRegExpFromString(query.sku);
+    await updateProductItem(vendor, query.sku);
   }
 
   await beforeUpdateProducts(vendor, query);
@@ -48,7 +50,6 @@ export const syncProducts = async (vendor, query, bulk = false) => {
   }
   await new Promise((resolve) => setTimeout(resolve, 2000));
   await afterUpdateProducts(vendor, query, processedProducts);
-
   return {
     updated: processedProducts,
   };

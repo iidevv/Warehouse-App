@@ -4,6 +4,8 @@ import {
   getProductItemModel,
   getRegExpFromString,
 } from "./../common/index.js";
+import { bigCommerceInstance } from "../instances/index.js";
+import { sendNotification } from "./tg-notifications.js";
 const router = express.Router();
 
 export const getInventoryProducts = async (vendor, query = {}, page = 1) => {
@@ -12,8 +14,6 @@ export const getInventoryProducts = async (vendor, query = {}, page = 1) => {
   if (query.sku) {
     query.sku = getRegExpFromString(query.sku);
   }
-
-  console.log(query);
 
   const options = {
     page: page,
@@ -101,6 +101,42 @@ export const addProductItem = async (vendor, data) => {
   await newProduct.save();
 
   return newProduct;
+};
+
+export const updateProductItem = async (vendor, sku) => {
+  let bigCommerceItem;
+  try {
+    bigCommerceItem = await bigCommerceInstance.get(
+      `/catalog/variants?sku=${sku}`
+    );
+    if (!bigCommerceItem.data[0].id) {
+      throw new Error("Item was not found");
+    }
+  } catch (error) {
+    sendNotification(error);
+    return;
+  }
+  const item = bigCommerceItem.data[0];
+
+  const Model = getProductItemModel(vendor);
+  const ProductItem = await Model.findOne({
+    sku,
+  });
+
+  if (!ProductItem) {
+    sendNotification(`${sku}. No matching item found in the database.`);
+    return;
+  }
+
+  if (item.id !== ProductItem.item_id) {
+    const result = await Model.updateOne({ sku }, { item_id: item.id });
+    if (result.nModified === 0) {
+      sendNotification(`No documents were updated for SKU: ${sku}`);
+    }
+    sendNotification(`${sku}. Item ID updated.`);
+  } else {
+    sendNotification(`${sku}. Item ID is the same. No update needed.`);
+  }
 };
 
 // get
