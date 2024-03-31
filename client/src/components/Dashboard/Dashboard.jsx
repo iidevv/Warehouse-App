@@ -21,6 +21,7 @@ const Dashboard = (props) => {
   const [updateQuery, setUpdateQuery] = useState({});
   const [statusFilter, setStatusFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+  const [searchIdFilter, setSearchIdFilter] = useState("");
   const [stockFilter, setStockFilter] = useState("");
   const [discontinuedFilter, setDiscontinuedFilter] = useState("");
   const [isInitialSearch, setIsInitialSearch] = useState(true);
@@ -39,6 +40,9 @@ const Dashboard = (props) => {
       case "search":
         setSearchFilter(target.value);
         break;
+      case "search_id":
+        setSearchIdFilter(target.value);
+        break;
       case "stock":
         setStockFilter(target.value);
         break;
@@ -55,6 +59,7 @@ const Dashboard = (props) => {
     const query = {};
     if (statusFilter) query.update_status = statusFilter;
     if (searchFilter) query.sku = new RegExp(searchFilter, "i").toString();
+    if (searchIdFilter) query.item_id = searchIdFilter;
     if (stockFilter) query.inventory_status = stockFilter;
     if (discontinuedFilter) query.discontinued = discontinuedFilter;
     setUpdateQuery(query);
@@ -62,6 +67,7 @@ const Dashboard = (props) => {
   }, [
     statusFilter,
     searchFilter,
+    searchIdFilter,
     stockFilter,
     discontinuedFilter,
     isInitialSearch,
@@ -114,7 +120,7 @@ const Dashboard = (props) => {
   };
   return (
     <div className="p-5 lg:w-full">
-      <div className="flex flex-row items-center w-full mb-6">
+      <div className="flex flex-col items-start gap-2 lg:gap-0 lg:flex-row lg:items-center w-full mb-6">
         <div className="d-flex flex-col mr-6">
           <h2 className="text-2xl leading-tight">
             {props.vendor} Products ({props.total})
@@ -140,7 +146,7 @@ const Dashboard = (props) => {
           Bulk update
         </button>
       </div>
-      <div className="flex flex-row items-stretch w-full mb-6">
+      <div className="flex flex-col gap-2 lg:gap-0 lg:flex-row items-stretch w-full mb-6">
         <select
           id="status"
           onChange={handleFilterChange}
@@ -173,9 +179,16 @@ const Dashboard = (props) => {
         <input
           id="search"
           onChange={handleFilterChange}
-          className="rounded-lg border-transparent appearance-none border border-gray-300 w-full lg:w-72 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          className="rounded-lg border-transparent mr-4 appearance-none border border-gray-300 w-full lg:w-72 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           type="text"
           placeholder="search sku"
+        />
+        <input
+          id="search_id"
+          onChange={handleFilterChange}
+          className="rounded-lg border-transparent appearance-none border border-gray-300 w-full lg:w-36 py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          type="text"
+          placeholder="search id"
         />
       </div>
       <div className="inline-block min-w-full rounded-lg shadow">
