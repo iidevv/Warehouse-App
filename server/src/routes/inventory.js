@@ -13,6 +13,8 @@ export const getInventoryProducts = async (vendor, query = {}, page = 1) => {
     query.sku = getRegExpFromString(query.sku);
   }
 
+  console.log(query);
+
   const options = {
     page: page,
     limit: 20,
