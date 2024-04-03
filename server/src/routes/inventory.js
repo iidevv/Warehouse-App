@@ -109,7 +109,7 @@ export const updateProductItem = async (vendor, sku) => {
     bigCommerceItem = await bigCommerceInstance.get(
       `/catalog/variants?sku=${sku}`
     );
-    if (!bigCommerceItem.data[0].id) {
+    if (!bigCommerceItem?.data[0]?.id) {
       throw new Error("Item was not found");
     }
   } catch (error) {
