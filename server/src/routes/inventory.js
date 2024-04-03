@@ -110,7 +110,8 @@ export const updateProductItem = async (vendor, sku) => {
       `/catalog/variants?sku=${sku}`
     );
     if (!bigCommerceItem?.data[0]?.id) {
-      throw new Error("Item was not found");
+      sendNotification(`${sku}. Not found.`);
+      return;
     }
   } catch (error) {
     sendNotification(error);
