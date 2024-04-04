@@ -10,6 +10,7 @@ import {
 } from "./common.js";
 import { getRegExpFromString } from "../common/index.js";
 import { updateProductItem } from "../routes/inventory.js";
+import { sendNotification } from "../routes/tg-notifications.js";
 
 const router = express.Router();
 
@@ -17,6 +18,7 @@ export const syncProducts = async (vendor, query, bulk = false) => {
   if (query?.sku) {
     query.sku = getRegExpFromString(query.sku);
     await updateProductItem(vendor, query.sku);
+    bulk = true;
   }
 
   await beforeUpdateProducts(vendor, query);
@@ -44,7 +46,7 @@ export const syncProducts = async (vendor, query, bulk = false) => {
       hasNextPage = nextPage;
       page++;
     } catch (error) {
-      console.error("Error updating products:", error);
+      sendNotification("Error updating products:", error);
       throw { vendor, query, page, error };
     }
   }

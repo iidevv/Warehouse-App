@@ -102,6 +102,8 @@ const readReportFile = async (localPath) => {
 };
 
 const processItemsInBulk = async (items) => {
+  await amazonItemModel.deleteMany({});
+  
   for (let i = 0; i < items.length; i += 100) {
     const chunk = items.slice(i, i + 100);
 
