@@ -314,7 +314,7 @@ router.get("/orders/", async (req, res) => {
         let shippingMethod = await bigCommerceInstanceV2.get(
           `/orders/${order.id}/shipping_addresses`
         );
-        order.shipping_method = shippingMethod[0].shipping_method;
+        order.shipping_method = shippingMethod[0]?.shipping_method;
         return order;
       })
     );
