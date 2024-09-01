@@ -3,6 +3,7 @@ import { hhInstance, puInstance, wpsInstance } from "../../instances/index.js";
 import { lsInstance } from "../../instances/ls-instance.js";
 import { getInventory, getPrice } from "../../common/pu.js";
 import { turnMiddleLayerModel } from "../../models/turnMiddleLayer.js";
+import { readInventoryFile } from "../../ftp/index.js";
 
 const router = express.Router();
 
@@ -258,6 +259,72 @@ const getTURNCatalog = async (offset = 0, search = "") => {
   }
 };
 
+export const getTORCCatalog = async (offset = 0, search = "") => {
+  try {
+    const catalog = {};
+
+    const items = await readInventoryFile("TORC", "csv");
+
+    if (!items) {
+      return { error: "Failed to read inventory file for TORC" };
+    }
+
+    // Filter based on the search term
+    const filteredItems = items.filter((item) =>
+      item["Description"].toLowerCase().includes(search.toLowerCase()) || item["SKU"].toLowerCase().includes(search.toLowerCase())
+    );
+
+    const pageSize = 10;
+    const start = offset * pageSize;
+    const paginatedItems = filteredItems.slice(start, start + pageSize);
+
+    catalog.data = paginatedItems.map((item) => {
+
+      const price = parseFloat(item.Price_Retail.replace('$', ''));
+
+      return {
+        id: item["SKU"],
+        name: item["Description"],
+        url: `/product/${item["SKU"]}?vendor=TORC`,
+        sku: item["SKU"],
+        image_url: null,
+        price: price,
+        inventory: item["Qty Avail Now"] || null,
+      };
+    });
+
+    const navigation = (offset, total, totalProducts) => {
+      let next = null;
+      let prev = null;
+      if (offset < total) {
+        next = offset + 1;
+      }
+
+      if (offset >= 1) {
+        prev = offset - 1;
+      }
+
+      return {
+        current: offset,
+        next,
+        prev,
+        total: totalProducts,
+      };
+    };
+
+    catalog.meta = navigation(
+      +offset,
+      Math.ceil(filteredItems.length / pageSize) - 1,
+      filteredItems.length
+    );
+
+    return catalog;
+  } catch (error) {
+    sendNotification(`getTORCCatalog Error: ${error.message}`);
+    return { error: error.message };
+  }
+};
+
 // vendor connection point
 
 export const getCatalog = async (vendor, offset, search) => {
@@ -277,6 +344,9 @@ export const getCatalog = async (vendor, offset, search) => {
       break;
     case "TURN":
       response = await getTURNCatalog(offset, search);
+      break;
+    case "TORC":
+      response = await getTORCCatalog(offset, search);
       break;
     default:
       response = { error: "Unsupported vendor." };

@@ -6,7 +6,7 @@ import { createNewDate } from "../common/index.js";
 // vendor connection point
 
 const vendorsForSync = async (query) => {
-  const vendors = ["WPS", "PU", "HH", "LS", "TURN"];
+  const vendors = ["WPS", "PU", "HH", "LS", "TURN", "TORC"];
   const time = createNewDate();
   for (const vendor of vendors) {
     try {

@@ -18,7 +18,7 @@ export const beforeUpdateProducts = async (vendor, query = {}) => {
     await setProductsForSync(vendor, query);
   }
 
-  if (vendor == "HH" || vendor == "LS") {
+  if (vendor == "HH" || vendor == "LS" || vendor == "TORC") {
     await downloadInventoryFile(vendor);
   }
 
@@ -264,6 +264,8 @@ export const getVendorProducts = async (vendor, syncedProducts) => {
       break;
     case "TURN":
       products = await getTURNProducts(skus);
+    case "TORC":
+      products = await getTORCProducts(skus);
     default:
       break;
   }
@@ -429,6 +431,35 @@ const getTURNProducts = async (skus) => {
       discontinued: product.discontinued,
     }));
 
+    return products;
+  } catch (error) {
+    sendNotification(`${skus.join(", ")}. Error: ${error}`);
+    throw error;
+  }
+};
+
+const getTORCProducts = async (skus) => {
+  try {
+    let response = await readInventoryFile("TORC");
+    let products = skus
+      .map((sku) => {
+        return response.find(
+          (product) => product && product["PartNumber"] == sku
+        );
+      })
+      .filter((product) => product !== undefined);
+
+    products = products.map((product) => {
+
+      const price = parseFloat(item.Price_Retail.replace('$', ''));
+
+      return {
+        sku: product["SKU"],
+        inventory_level: +product["Qty Avail Now"],
+        price: price,
+        discontinued: product["Status"] === "Discontinued" ? true : false,
+      };
+    });
     return products;
   } catch (error) {
     sendNotification(`${skus.join(", ")}. Error: ${error}`);

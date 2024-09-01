@@ -60,3 +60,7 @@ export const turnProductItemModel = mongoose.model(
   "turn-product-items",
   ProductItemSchema
 );
+export const torcProductItemModel = mongoose.model(
+  "torc-product-items",
+  ProductItemSchema
+);

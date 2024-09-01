@@ -23,6 +23,7 @@ class IndexContainer extends React.Component {
           hhData={this.props.hhData}
           lsData={this.props.lsData}
           turnData={this.props.turnData}
+          torcData={this.props.torcData}
         />
       </>
     );
@@ -38,6 +39,7 @@ let mapStateToProps = (state) => {
     hhData: state.dashboard.hhData,
     lsData: state.dashboard.lsData,
     turnData: state.dashboard.turnData,
+    torcData: state.dashboard.torcData,
     data: state.dashboard.data,
     isFetching: state.dashboard.isFetching,
   };

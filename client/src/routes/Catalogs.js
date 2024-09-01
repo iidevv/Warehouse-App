@@ -4,6 +4,9 @@ import logoWPS from "../assets/vendors/WPS.jpg";
 import logoPU from "../assets/vendors/PU.jpg";
 import logoLS from "../assets/vendors/LS.jpg";
 import logoTURN from "../assets/vendors/TURN.jpg";
+import logoTORC from "../assets/vendors/TORC.jpg";
+
+// vendor connection point
 
 const Catalogs = () => {
   const data = [
@@ -31,6 +34,11 @@ const Catalogs = () => {
       name: "Turn 14",
       url: "/catalog?vendor=TURN",
       image_url: logoTURN,
+    },
+    {
+      name: "TORC",
+      url: "/catalog?vendor=TORC",
+      image_url: logoTORC,
     },
   ];
   return (

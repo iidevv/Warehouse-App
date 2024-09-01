@@ -7,7 +7,7 @@ const router = express.Router();
 // vendor connection point
 
 const findProduct = async (productId) => {
-  const vendors = ["WPS", "PU", "HH", "LS", "TURN"];
+  const vendors = ["WPS", "PU", "HH", "LS", "TURN", "TORC"];
 
   for (const vendor of vendors) {
     try {

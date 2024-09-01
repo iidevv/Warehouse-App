@@ -4,6 +4,7 @@ import {
   wpsProductItemModel,
   puProductItemModel,
   turnProductItemModel,
+  torcProductItemModel,
 } from "../models/Inventory.js";
 
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -101,6 +102,9 @@ export const getProductItemModel = (vendor) => {
       break;
     case "TURN":
       model = turnProductItemModel;
+      break;
+    case "TORC":
+      model = torcProductItemModel;
       break;
 
     default:

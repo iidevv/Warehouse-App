@@ -5,6 +5,7 @@ import {
   wpsProductItemModel,
   puProductItemModel,
   turnProductItemModel,
+  torcProductItemModel,
 } from "../models/Inventory.js";
 
 const router = express.Router();
@@ -68,8 +69,9 @@ router.get("/info", async (req, res) => {
     const hhData = await getData(hhProductItemModel);
     const lsData = await getData(lsProductItemModel);
     const turnData = await getData(turnProductItemModel);
+    const torcData = await getData(torcProductItemModel);
     const data = totalData([wpsData, puData, hhData, lsData]);
-    res.json({ data, wpsData, puData, hhData, lsData, turnData });
+    res.json({ data, wpsData, puData, hhData, lsData, turnData, torcData });
   } catch (error) {
     console.log(error);
   }

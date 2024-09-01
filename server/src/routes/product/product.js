@@ -4,6 +4,7 @@ import { getPUProduct } from "./vendors/pu.js";
 import { getHHProduct } from "./vendors/hh.js";
 import { getLSProduct } from "./vendors/ls.js";
 import { getTURNProduct } from "./vendors/turn.js";
+import { getTORCProduct } from "./vendors/torc.js";
 const router = express.Router();
 
 // vendor connection point
@@ -25,6 +26,9 @@ const getProduct = async (vendor, id, search, link) => {
       break;
     case "TURN":
       response = await getTURNProduct(id, search);
+      break;
+    case "TORC":
+      response = await getTORCProduct(id, search);
       break;
     default:
       response = { error: "Unsupported vendor." };

@@ -29,6 +29,11 @@ const Index = (props) => {
       url: "/products?vendor=TURN",
       data: props.turnData,
     },
+    {
+      name: "TORC",
+      url: "/products?vendor=TORC",
+      data: props.torcData,
+    },
   ];
   return (
     <>
