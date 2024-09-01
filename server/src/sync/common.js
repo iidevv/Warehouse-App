@@ -264,6 +264,7 @@ export const getVendorProducts = async (vendor, syncedProducts) => {
       break;
     case "TURN":
       products = await getTURNProducts(skus);
+      break;
     case "TORC":
       products = await getTORCProducts(skus);
     default:
