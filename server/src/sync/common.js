@@ -443,15 +443,12 @@ const getTORCProducts = async (skus) => {
     let response = await readInventoryFile("TORC");
     let products = skus
       .map((sku) => {
-        return response.find(
-          (product) => product && product["PartNumber"] == sku
-        );
+        return response.find((product) => product && product["SKU"] == sku);
       })
       .filter((product) => product !== undefined);
 
     products = products.map((product) => {
-
-      const price = parseFloat(item.Price_Retail.replace('$', ''));
+      const price = parseFloat(product.Price_Retail.replace("$", ""));
 
       return {
         sku: product["SKU"],
