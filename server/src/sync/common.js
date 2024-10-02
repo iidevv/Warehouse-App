@@ -11,6 +11,7 @@ import { updateProductItemModel } from "../models/Inventory.js";
 import { turnMiddleLayerModel } from "../models/turnMiddleLayer.js";
 import { updateStatusModel } from "../models/updateStatus.js";
 import { sendNotification } from "../routes/tg-notifications.js";
+import { updateProductItem } from "../routes/inventory.js";
 
 export const beforeUpdateProducts = async (vendor, query = {}) => {
   if (Object.keys(query).length) {
@@ -195,7 +196,7 @@ export const updateProducts = async (vendor, productsForUpdate) => {
 
   try {
     const response = await Promise.all([
-      updateProductsBigcommerce(productsForBigcommerceUpdate),
+      updateProductsBigcommerce(vendor, productsForBigcommerceUpdate),
       updateInventoryProducts(vendor, productsForUpdate),
     ]);
     return response;
@@ -204,7 +205,23 @@ export const updateProducts = async (vendor, productsForUpdate) => {
   }
 };
 
-const updateProductsBigcommerce = async (productsForBigcommerceUpdate) => {
+const extractIdsFromErrors = (errors) => {
+  return Object.keys(errors).map(key => {
+    const idString = errors[key];
+    const idMatch = idString.match(/id (\d+)/);
+    return idMatch ? idMatch[1] : null;
+  }).filter(id => id !== null);
+};
+
+const updateProductsWithErrors = async (vendor, productsWithErrors) => {
+  const updatePromises = productsWithErrors.map(async (product) => {
+    return await updateProductItem(vendor, product.sku);
+  });
+
+  await Promise.all(updatePromises);
+};
+
+const updateProductsBigcommerce = async (vendor, productsForBigcommerceUpdate) => {
   if (!productsForBigcommerceUpdate.length) return;
   try {
     const response = await bigCommerceInstance.put(
@@ -213,8 +230,16 @@ const updateProductsBigcommerce = async (productsForBigcommerceUpdate) => {
     );
     return response.data.length;
   } catch (error) {
+    const bodyJson = JSON.parse(error.responseBody);
+    const errorIds = extractIdsFromErrors(bodyJson.errors);
+    
+    const productsWithErrors = productsForBigcommerceUpdate.filter(product => 
+      errorIds.includes(String(product.id))
+    );
+
+    await updateProductsWithErrors(vendor, productsWithErrors);
+    
     sendNotification(`updateProductsBigcommerce error: ${error}`);
-    throw error;
   }
 };
 const updateInventoryProducts = async (vendor, productsForUpdate) => {
