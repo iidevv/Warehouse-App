@@ -276,26 +276,6 @@ export const addItemsInventoryToDatabase = async (page) => {
 
 const getUpdatedPrices = async (page = 1) => {
   try {
-    // const today = new Date();
-
-    // const endDate = `${today.getFullYear()}-${String(
-    //   today.getMonth() + 1
-    // ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-
-    // const yesterday = new Date(today);
-    // yesterday.setDate(today.getDate() - 1);
-
-    // const startDate = `${yesterday.getFullYear()}-${String(
-    //   yesterday.getMonth() + 1
-    // ).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
-
-    // const response = await executeWithRetry(async () => {
-    //   const result = await turnInstance.get(
-    //     `/pricing/changes?page=${page}&start_date=${startDate}&end_date=${endDate}`
-    //   );
-    //   return result;
-    // });
-
     const response = await executeWithRetry(async () => {
       const result = await turnInstance.get(`/pricing?page=${page}`);
       return result;

@@ -9,15 +9,33 @@ export const turnInstance = axios.create({
   baseURL: "https://api.turn14.com/v1/",
 });
 
+let token = null;
+
 const getNewToken = async () => {
-  const response = await turnInstance.post("/token", {
+  const response = await axios.post("https://api.turn14.com/v1/token", {
     grant_type: "client_credentials",
     client_id: clientId,
     client_secret: accessToken,
   });
 
-  return response.data.access_token;
+  token = response.data.access_token;
+
+  return token;
 };
+
+turnInstance.interceptors.request.use(
+  async (config) => {
+    if (!token) {
+      token = await getNewToken();
+    }
+    config.headers["Authorization"] = `Bearer ${token}`;
+    console.log(config.headers["Authorization"]);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 turnInstance.interceptors.response.use(
   (response) => response,
@@ -25,9 +43,10 @@ turnInstance.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const token = await getNewToken(); // Fetch new token
-      originalRequest.headers["Authorization"] = "Bearer " + token;
-      return turnInstance(originalRequest); // Retry the request with the new token
+      token = await getNewToken();
+
+      originalRequest.headers["Authorization"] = `Bearer ${token}`;
+      return turnInstance(originalRequest);
     }
     return Promise.reject(error);
   }
