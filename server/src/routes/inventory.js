@@ -104,13 +104,22 @@ export const addProductItem = async (vendor, data) => {
 };
 
 export const updateProductItem = async (vendor, sku) => {
+  const Model = getProductItemModel(vendor);
+
   let bigCommerceItem;
   try {
     bigCommerceItem = await bigCommerceInstance.get(
       `/catalog/variants?sku=${sku}`
     );
     if (!bigCommerceItem?.data[0]?.id) {
-      sendNotification(`${sku}. Not found.`);
+      const deleteResult = await Model.deleteOne({
+        sku,
+      });
+      if (deleteResult.deletedCount === 1) {
+        sendNotification(`${sku}. has been deleted.`);
+      } else {
+        sendNotification(`${sku}. Not found.`);
+      }
       return;
     }
   } catch (error) {
@@ -119,7 +128,6 @@ export const updateProductItem = async (vendor, sku) => {
   }
   const item = bigCommerceItem.data[0];
 
-  const Model = getProductItemModel(vendor);
   const ProductItem = await Model.findOne({
     sku,
   });
