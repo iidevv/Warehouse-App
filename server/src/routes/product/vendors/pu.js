@@ -58,7 +58,7 @@ const fetchData = async (id, search) => {
         return item;
       })
     );
-    const productData = await puInstance.get(`parts/${id}/`);
+    const productData = await puInstance.get(`parts/${id}`);
     const imageExtensions = [".jpg", ".png", ".webp"];
 
     const images = productData.data.media
@@ -79,6 +79,7 @@ const fetchData = async (id, search) => {
 
     return product;
   } catch (error) {
+    console.log(error);
     return error;
   }
 };
