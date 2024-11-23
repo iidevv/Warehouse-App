@@ -29,7 +29,6 @@ turnInstance.interceptors.request.use(
       token = await getNewToken();
     }
     config.headers["Authorization"] = `Bearer ${token}`;
-    console.log(config.headers["Authorization"]);
     return config;
   },
   (error) => {

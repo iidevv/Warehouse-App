@@ -4,6 +4,7 @@ import {
   updateInventoryInDatabase,
   updatePricesInDatabase,
 } from "../middleLayer/turnMiddleLayer.js";
+import { sendNotification } from "../routes/tg-notifications.js";
 
 export const syncTurnLayerPrices = new CronJob({
   cronTime: "0 5 * * *",
