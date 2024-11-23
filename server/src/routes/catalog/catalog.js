@@ -57,7 +57,7 @@ const getPUCatalog = async (offset = 0, search = "") => {
         offset: offset,
       },
     };
-    const response = await puInstance.post("parts/search/", payload);
+    const response = await puInstance.post("parts/search", payload);
 
     catalog.data = response.data.result.hits.map((item) => {
       return {

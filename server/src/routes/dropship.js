@@ -98,7 +98,7 @@ const checkAndFormatPUOrderItems = async (orderItems) => {
             limit: 2,
           },
         };
-        puProduct = await puInstance.post("parts/search/", payload);
+        puProduct = await puInstance.post("parts/search", payload);
       }
       if (
         puDbProduct !== null ||
