@@ -22,6 +22,7 @@ import { productRouter } from "./routes/product/product.js";
 import { SyncRouter } from "./sync/index.js";
 import { productMappingRouter } from "./sync/product-mapping.js";
 import { channelRouter } from "./routes/channels/channels.js";
+import { settingsRouter } from "./routes/settings/settings.js";
 
 import "./cron/index.js";
 import "./sync/common.js";
@@ -77,6 +78,7 @@ app.use("/api/catalog", imagesOptimizationRouter);
 app.use("/api/dropship", dropshipOrderRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/gpt", chatgptRouter);
+app.use("/api/settings", settingsRouter);
 app.use("/api/products", bigcommerceRouter);
 
 mongoose.connect(

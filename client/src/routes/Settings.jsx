@@ -1,9 +1,14 @@
-const Settings = (props) => {
-    return (
-        <div className="container">
-            Settings
-        </div>
-    )
-}
+import SettingsContainer from "../components/Settings/SettingsContainer";
 
-export default Settings
+const Settings = () => {
+  return (
+    <div className="container">
+      <div className="mb-6">
+        <h1 className="text-2xl leading-tight">Settings</h1>
+      </div>
+      <SettingsContainer />
+    </div>
+  );
+};
+
+export default Settings;

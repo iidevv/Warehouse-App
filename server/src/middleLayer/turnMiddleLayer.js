@@ -1,4 +1,5 @@
 import {
+  createNewDate,
   delay,
   executeWithRetry,
   getPriceWithPercentage,
@@ -6,14 +7,17 @@ import {
 import { turnInstance } from "../instances/turn-instance.js";
 import { turnMiddleLayerModel } from "../models/turnMiddleLayer.js";
 import { sendNotification } from "../routes/tg-notifications.js";
+import { setRebuildTurnStatus } from "../sync/common.js";
 
 const getItemsData = async (page = 1) => {
   try {
     const response = await executeWithRetry(async () => {
-      const result = await turnInstance.get(`/items/data?page=${page}`);
-      return result;
+      return await turnInstance.get(`/items/data?page=${page}`);
     });
-    return response.data.data;
+    return {
+      items: response.data.data,
+      pages: response.data.meta.total_pages,
+    };
   } catch (error) {
     throw error;
   }
@@ -21,8 +25,13 @@ const getItemsData = async (page = 1) => {
 
 const getItems = async (page = 1) => {
   try {
-    const response = await turnInstance.get(`/items?page=${page}`);
-    return response.data.data;
+    const response = await executeWithRetry(async () => {
+      return await turnInstance.get(`/items?page=${page}`);
+    });
+    return {
+      items: response.data.data,
+      pages: response.data.meta.total_pages,
+    };
   } catch (error) {
     throw error;
   }
@@ -30,8 +39,13 @@ const getItems = async (page = 1) => {
 
 const getPrices = async (page = 1) => {
   try {
-    const response = await turnInstance.get(`/pricing?page=${page}`);
-    return response.data.data;
+    const response = await executeWithRetry(async () => {
+      return await turnInstance.get(`/pricing?page=${page}`);
+    });
+    return {
+      items: response.data.data,
+      pages: response.data.meta.total_pages,
+    };
   } catch (error) {
     throw error;
   }
@@ -39,8 +53,13 @@ const getPrices = async (page = 1) => {
 
 const getInventory = async (page = 1) => {
   try {
-    const response = await turnInstance.get(`/inventory?page=${page}`);
-    return response.data.data;
+    const response = await executeWithRetry(async () => {
+      return await turnInstance.get(`/inventory?page=${page}`);
+    });
+    return {
+      items: response.data.data,
+      pages: response.data.meta.total_pages,
+    };
   } catch (error) {
     throw error;
   }
@@ -200,75 +219,115 @@ const createItems = async (items) => {
   }
 };
 
-export const addItemsToDatabase = async (page) => {
-  let totalPages = 513;
-  for (let i = page; i <= totalPages; i++) {
-    const items = await getItems(page);
-    await createItems(items);
-    await delay(200);
-    console.log(page);
-    page++;
-  }
-  console.log(`Total items created: ${totalItemsCreated}`);
+// rebuild
+
+export const rebuildTurnProducts = async () => {
+  const clearResult = await clearTurnMiddleLayerModelData();
+
+  if (!clearResult) return;
+
+  await addItemsToDatabase();
+  await addItemsDataToDatabase();
+  await addItemsPricesToDatabase();
+  await addItemsInventoryToDatabase();
+
+  let date = createNewDate();
+
+  setRebuildTurnStatus(false, `Last update: ${date}`);
 };
-export const addItemsDataToDatabase = async (page) => {
-  let totalPages = 1137;
+
+const clearTurnMiddleLayerModelData = async () => {
+  try {
+    await turnMiddleLayerModel.deleteMany({});
+    return true;
+  } catch (err) {
+    sendNotification("Error clearing Turn model data:", err);
+    return false;
+  }
+};
+
+const addItemsToDatabase = async () => {
+  let page = 1;
+  let totalPages = 1;
   try {
     for (let i = page; i <= totalPages; i++) {
-      const startTime = Date.now();
-      const items = await getItemsData(page);
+      const { items, pages } = await getItems(page);
+      await createItems(items);
+      await delay(200);
+
+      setRebuildTurnStatus(true, `Adding items (page): ${page}/${totalPages}`);
+
+      totalPages = pages;
+      page++;
+    }
+  } catch (error) {
+    sendNotification("addItemsToDatabase error:", error);
+  }
+};
+
+const addItemsDataToDatabase = async () => {
+  let page = 1;
+  let totalPages = 1;
+  try {
+    for (let i = page; i <= totalPages; i++) {
+      const { items, pages } = await getItemsData(page);
       await updateItems(items, updateItemsDataInBatch);
       await delay(200);
-      const endTime = Date.now();
 
-      const elapsedTime = (endTime - startTime) / 1000;
-      console.log(`Page: ${page}, Elapsed Time: ${elapsedTime} seconds`);
+      setRebuildTurnStatus(
+        true,
+        `Adding item date (page): ${page}/${totalPages}`
+      );
+
+      totalPages = pages;
       page++;
     }
   } catch (error) {
-    console.log(error);
+    sendNotification("addItemsDataToDatabase error:", error);
   }
 };
 
-export const addItemsPricesToDatabase = async (page) => {
-  let totalPages = 513;
+const addItemsPricesToDatabase = async () => {
+  let page = 1;
+  let totalPages = 1;
   try {
     for (let i = page; i <= totalPages; i++) {
-      const startTime = Date.now();
-      const items = await getPrices(page);
+      const { items, pages } = await getPrices(page);
       await updateItems(items, updateItemsPricesInBatch);
       await delay(200);
-      const endTime = Date.now();
 
-      const elapsedTime = (endTime - startTime) / 1000;
-      console.log(
-        `Page: ${page}, Elapsed Time: ${elapsedTime} seconds | Prices`
+      setRebuildTurnStatus(
+        true,
+        `Adding item prices (page): ${page}/${totalPages}`
       );
+
+      totalPages = pages;
       page++;
     }
   } catch (error) {
-    console.log(error);
+    sendNotification("addItemsPricesToDatabase error:", error);
   }
 };
 
-export const addItemsInventoryToDatabase = async (page) => {
-  let totalPages = 513;
+const addItemsInventoryToDatabase = async () => {
+  let page = 1;
+  let totalPages = 1;
   try {
     for (let i = page; i <= totalPages; i++) {
-      const startTime = Date.now();
-      const items = await getInventory(page);
+      const { items, pages } = await getInventory(page);
       await updateItems(items, updateItemsInventoryInBatch);
       await delay(200);
-      const endTime = Date.now();
 
-      const elapsedTime = (endTime - startTime) / 1000;
-      console.log(
-        `Page: ${page}, Elapsed Time: ${elapsedTime} seconds | Inventory`
+      setRebuildTurnStatus(
+        true,
+        `Adding item inventory (page): ${page}/${totalPages}`
       );
+
+      totalPages = pages;
       page++;
     }
   } catch (error) {
-    console.log(error);
+    sendNotification("addItemsInventoryToDatabase error:", error);
   }
 };
 
@@ -340,7 +399,7 @@ const getNewItems = async (page = 1) => {
     const response = await turnInstance.get(
       `/items/updates?page=${page}&days=1`
     );
-    console.log(response.data.data.length);
+
     return response.data.data;
   } catch (error) {
     throw error;

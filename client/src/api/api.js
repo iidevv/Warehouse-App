@@ -222,6 +222,19 @@ export const optimizationAPI = {
   },
 };
 
+export const settingsAPI = {
+  rebuildTurnProducts() {
+    return instance.post(`/settings/turn/rebuild-products`).then((response) => {
+      return response.data;
+    });
+  },
+  rebuildTurnProductsStatus() {
+    return instance.get(`/settings/turn/rebuild-status`).then((response) => {
+      return response.data;
+    });
+  },
+};
+
 export const categoryMappingAPI = {
   getCategories(vendor, query, page) {
     return instance

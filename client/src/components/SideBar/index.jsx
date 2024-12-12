@@ -109,7 +109,7 @@ const SideBar = (props) => {
                   </span>
                 </NavLink>
               </li>
-              {/* <li>
+              <li>
                 <NavLink
                   to="/settings"
                   onClick={handleSetMenuActive}
@@ -119,7 +119,7 @@ const SideBar = (props) => {
                 >
                   <span className="mx-4 text-sm font-normal">Settings</span>
                 </NavLink>
-              </li> */}
+              </li>
             </ul>
           </nav>
           <div className="mt-auto mb-24 lg:mb-12 py-2 px-6">

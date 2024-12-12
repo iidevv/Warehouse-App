@@ -102,6 +102,35 @@ export const getUpdateStatus = async () => {
   }
 };
 
+export const setRebuildTurnStatus = async (isUpdating, updateStatus) => {
+  try {
+    const doc = await updateStatusModel.findOneAndUpdate(
+      {
+        _id: "675a7d2473e8bf907890abf8",
+      },
+      {
+        is_updating: isUpdating,
+        update_status: updateStatus,
+      },
+      { new: true }
+    );
+    return { is_updating: doc.is_updating, update_status: doc.update_status };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getRebuildTurnStatus = async () => {
+  try {
+    const doc = await updateStatusModel.findOne({
+      _id: "675a7d2473e8bf907890abf8",
+    });
+    return { is_updating: doc.is_updating, update_status: doc.update_status };
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getSyncedProducts = async (vendor, query = {}, page = 1) => {
   let Model;
   // if Sync with params
@@ -206,11 +235,13 @@ export const updateProducts = async (vendor, productsForUpdate) => {
 };
 
 const extractIdsFromErrors = (errors) => {
-  return Object.keys(errors).map(key => {
-    const idString = errors[key];
-    const idMatch = idString.match(/id (\d+)/);
-    return idMatch ? idMatch[1] : null;
-  }).filter(id => id !== null);
+  return Object.keys(errors)
+    .map((key) => {
+      const idString = errors[key];
+      const idMatch = idString.match(/id (\d+)/);
+      return idMatch ? idMatch[1] : null;
+    })
+    .filter((id) => id !== null);
 };
 
 const updateProductsWithErrors = async (vendor, productsWithErrors) => {
@@ -221,7 +252,10 @@ const updateProductsWithErrors = async (vendor, productsWithErrors) => {
   await Promise.all(updatePromises);
 };
 
-const updateProductsBigcommerce = async (vendor, productsForBigcommerceUpdate) => {
+const updateProductsBigcommerce = async (
+  vendor,
+  productsForBigcommerceUpdate
+) => {
   if (!productsForBigcommerceUpdate.length) return;
   try {
     const response = await bigCommerceInstance.put(
@@ -232,13 +266,13 @@ const updateProductsBigcommerce = async (vendor, productsForBigcommerceUpdate) =
   } catch (error) {
     const bodyJson = JSON.parse(error.responseBody);
     const errorIds = extractIdsFromErrors(bodyJson.errors);
-    
-    const productsWithErrors = productsForBigcommerceUpdate.filter(product => 
+
+    const productsWithErrors = productsForBigcommerceUpdate.filter((product) =>
       errorIds.includes(String(product.id))
     );
 
     await updateProductsWithErrors(vendor, productsWithErrors);
-    
+
     sendNotification(`updateProductsBigcommerce error: ${error}`);
   }
 };
