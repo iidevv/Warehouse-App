@@ -68,7 +68,7 @@ const getInventory = async (page = 1) => {
 const createItemsInBatch = async (items) => {
   const itemsToCreate = items.map((item) => ({
     id: item.id,
-    name: item.attributes.product_name,
+    name: item.attributes.part_description,
     sku: item.attributes.part_number,
     category: `${item.attributes.category} > ${item.attributes.subcategory}`,
     brand: item.attributes.brand,
