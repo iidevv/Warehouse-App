@@ -222,6 +222,8 @@ const createItems = async (items) => {
 // rebuild
 
 export const rebuildTurnProducts = async () => {
+  setRebuildTurnStatus(true, `Clearing catalog`);
+
   const clearResult = await clearTurnMiddleLayerModelData();
 
   if (!clearResult) return;
@@ -241,6 +243,7 @@ const clearTurnMiddleLayerModelData = async () => {
     await turnMiddleLayerModel.deleteMany({});
     return true;
   } catch (err) {
+    setRebuildTurnStatus(false, `Clearing catalog error`);
     sendNotification("Error clearing Turn model data:", err);
     return false;
   }

@@ -11,7 +11,40 @@ import {
 class settingsContainer extends React.Component {
   componentDidMount() {
     this.props.getRebuildTurnStatus();
+
+    if (this.props.turn_status.is_updating) {
+      this.startPolling();
+    }
   }
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.turn_status.is_updating !== this.props.turn_status.is_updating
+    ) {
+      if (this.props.turn_status.is_updating) {
+        this.startPolling();
+      } else {
+        this.stopPolling();
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this.stopPolling();
+  }
+
+  startPolling = () => {
+    this.statusInterval = setInterval(() => {
+      this.props.getRebuildTurnStatus();
+    }, 5000);
+  };
+
+  stopPolling = () => {
+    if (this.statusInterval) {
+      clearInterval(this.statusInterval);
+      this.statusInterval = null;
+    }
+  };
 
   onRebuildTurnProducts = () => {
     this.props.rebuildTurnProducts();
