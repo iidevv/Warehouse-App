@@ -1,6 +1,7 @@
 import express from "express";
 import { getRebuildTurnStatus } from "../../sync/common.js";
 import { rebuildTurnProducts } from "../../middleLayer/turnMiddleLayer.js";
+import { uploadFile } from "../../common/uploadFile.js";
 
 const router = express.Router();
 
@@ -21,6 +22,15 @@ router.get("/turn/rebuild-status", async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+});
+
+router.post("/ls/upload-catalog", uploadFile.single("catalog"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ status: "No file uploaded" });
+  }
+  res
+    .status(200)
+    .json({ status: "File uploaded successfully", file: req.file });
 });
 
 export { router as settingsRouter };
