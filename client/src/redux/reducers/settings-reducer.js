@@ -1,12 +1,14 @@
 import { settingsAPI } from "../../api/api";
 
-const SET_TURN_STATUS = "SET_STATUS";
+const SET_TURN_STATUS = "SET_TURN_STATUS";
+const SET_LS_STATUS = "SET_LS_STATUS";
 
 let initialState = {
   turn_status: {
     is_updating: false,
     update_status: "",
   },
+  ls_catalog_status: "",
 };
 
 const settingsReducer = (state = initialState, action) => {
@@ -16,7 +18,11 @@ const settingsReducer = (state = initialState, action) => {
         ...state,
         turn_status: action.status,
       };
-
+    case SET_LS_STATUS:
+      return {
+        ...state,
+        ls_catalog_status: action.status,
+      };
     default:
       return state;
   }
@@ -25,6 +31,13 @@ const settingsReducer = (state = initialState, action) => {
 export const setTurnStatus = (status) => {
   return {
     type: SET_TURN_STATUS,
+    status,
+  };
+};
+
+export const setLsStatus = (status) => {
+  return {
+    type: SET_LS_STATUS,
     status,
   };
 };
@@ -46,6 +59,22 @@ export const rebuildTurnProducts = () => {
       })
     );
     settingsAPI.rebuildTurnProducts();
+  };
+};
+
+export const uploadLSCatalog = (formData) => {
+  return (dispatch) => {
+    dispatch(setLsStatus("Uploading"));
+
+    settingsAPI
+      .uploadLSCatalog(formData)
+      .then((data) => {
+        dispatch(setLsStatus(data.status));
+      })
+      .catch((error) => {
+        dispatch(setLsStatus("Error uploading"));
+        console.error(error);
+      });
   };
 };
 

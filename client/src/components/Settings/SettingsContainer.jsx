@@ -2,10 +2,12 @@ import React from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import TurnSettings from "./TurnSettings";
+import LSSettings from "./LSSettings";
 
 import {
   rebuildTurnProducts,
   getRebuildTurnStatus,
+  uploadLSCatalog,
 } from "../../redux/reducers/settings-reducer";
 
 class settingsContainer extends React.Component {
@@ -50,12 +52,20 @@ class settingsContainer extends React.Component {
     this.props.rebuildTurnProducts();
   };
 
+  onUploadLSCatalog = (formData) => {
+    this.props.uploadLSCatalog(formData);
+  };
+
   render() {
     return (
       <>
         <TurnSettings
           onRebuildTurnProducts={this.onRebuildTurnProducts}
           status={this.props.turn_status}
+        />
+        <LSSettings
+          onUploadLSCatalog={this.onUploadLSCatalog}
+          catalog_status={this.props.catalog_status}
         />
       </>
     );
@@ -65,6 +75,7 @@ class settingsContainer extends React.Component {
 let mapStateToProps = (state) => {
   return {
     turn_status: state.settings.turn_status,
+    catalog_status: state.settings.ls_catalog_status,
   };
 };
 
@@ -72,5 +83,6 @@ export default compose(
   connect(mapStateToProps, {
     rebuildTurnProducts,
     getRebuildTurnStatus,
+    uploadLSCatalog,
   })
 )(settingsContainer);

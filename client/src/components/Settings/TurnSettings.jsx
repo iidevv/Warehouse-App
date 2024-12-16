@@ -8,7 +8,7 @@ const TurnSettings = (props) => {
   const updateStatus = props.status.update_status ? `Rebuilding (${props.status.update_status})` : "Rebuilding...";
 
   return (
-    <div className="relative w-full px-4 py-6 bg-white shadow-lg">
+    <div className="relative w-full px-4 py-6 bg-white shadow-lg mb-4">
       <h2 className="text-xl mb-2">TURN14 Settings</h2>
       <button
         onClick={() => {

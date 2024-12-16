@@ -4,6 +4,7 @@ import { lsInstance } from "../../instances/ls-instance.js";
 import { getInventory, getPrice } from "../../common/pu.js";
 import { turnMiddleLayerModel } from "../../models/turnMiddleLayer.js";
 import { readInventoryFile } from "../../ftp/index.js";
+import { readLSCatalogFile } from "../../common/ls.js";
 
 const router = express.Router();
 
@@ -156,39 +157,51 @@ const getHHCatalog = async (offset = 0, search = "") => {
 const getLSCatalog = async (offset = 0, search = "") => {
   try {
     const catalog = {};
-    if (!offset) offset = 0;
-    const response = await lsInstance.post(`/products/query`, {
-      query: {
-        filter: `{"name": {"$contains": "${search}"}}`,
-        paging: {
-          limit: 10,
-          offset: offset,
-        },
-      },
-    });
-    catalog.data = response.data.products.map((item) => {
+
+    const items = await readLSCatalogFile();
+
+    if (!items) {
+      return { error: "Failed to read inventory file for LS" };
+    }
+
+    // Filter based on the search term
+    const filteredItems = items.filter(
+      (item) =>
+        item["Product title"].toLowerCase().includes(search.toLowerCase()) ||
+        item["Part Number"].toLowerCase().includes(search.toLowerCase())
+    );
+
+    const pageSize = 10;
+    const start = offset * pageSize;
+    const paginatedItems = filteredItems.slice(start, start + pageSize);
+
+    catalog.data = paginatedItems.map((item) => {
+      let image = item["Photo 1"];
+
+      if (image && image.includes("mpgcreative")) {
+        image = null;
+      }
+
       return {
-        id: item.id,
-        name: item.name,
-        url: `/product/${item.id}?vendor=LS`,
-        sku: null,
-        image_url: item.media.mainMedia.thumbnail.url,
-        price: null,
+        id: item["Part Number"],
+        name: item["Product title"],
+        url: `/product/${item["Part Number"]}?vendor=LS`,
+        sku: item["Part Number"],
+        image_url: image || null,
+        price: item["MRP"],
         inventory: null,
       };
     });
-    // next/prev
-    const navigation = (offset, totalProducts) => {
+
+    const navigation = (offset, total, totalProducts) => {
       let next = null;
       let prev = null;
-      const pageSize = 10;
-
-      if (offset + pageSize < totalProducts) {
-        next = offset + pageSize;
+      if (offset < total) {
+        next = offset + 1;
       }
 
-      if (offset >= pageSize) {
-        prev = offset - pageSize;
+      if (offset >= 1) {
+        prev = offset - 1;
       }
 
       return {
@@ -200,12 +213,14 @@ const getLSCatalog = async (offset = 0, search = "") => {
     };
 
     catalog.meta = navigation(
-      response.data.metadata.offset,
-      response.data.totalResults
+      +offset,
+      Math.ceil(filteredItems.length / pageSize) - 1,
+      filteredItems.length
     );
+
     return catalog;
   } catch (error) {
-    return error.message;
+    return { error: error.message };
   }
 };
 
@@ -270,8 +285,10 @@ export const getTORCCatalog = async (offset = 0, search = "") => {
     }
 
     // Filter based on the search term
-    const filteredItems = items.filter((item) =>
-      item["Description"].toLowerCase().includes(search.toLowerCase()) || item["SKU"].toLowerCase().includes(search.toLowerCase())
+    const filteredItems = items.filter(
+      (item) =>
+        item["Description"].toLowerCase().includes(search.toLowerCase()) ||
+        item["SKU"].toLowerCase().includes(search.toLowerCase())
     );
 
     const pageSize = 10;
@@ -279,8 +296,7 @@ export const getTORCCatalog = async (offset = 0, search = "") => {
     const paginatedItems = filteredItems.slice(start, start + pageSize);
 
     catalog.data = paginatedItems.map((item) => {
-
-      const price = parseFloat(item.Price_Retail.replace('$', ''));
+      const price = parseFloat(item.Price_Retail.replace("$", ""));
 
       return {
         id: item["SKU"],
