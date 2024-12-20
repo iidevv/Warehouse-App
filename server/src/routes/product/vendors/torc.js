@@ -108,57 +108,60 @@ const createProduct = (obj, variantsData, id) => {
   const data = obj.variants[0];
   const price = data.price;
   const weight = obj.weight;
-  const variants = obj.variants.map((item, i) => {
-    i++;
+  const variants = obj.variants
+    .map((item, i) => {
+      i++;
 
-    const variantAdditional = variantsData.find(
-      (row) => row["SKU"] === data.sku
-    );
+      const variantAdditional = variantsData.find(
+        (row) => row["SKU"] === item.sku
+      );
 
-    if (!variantAdditional) return undefined;
+      if (!variantAdditional) return undefined;
 
-    let imageUrl = item.image_url ? item.image_url : false;
-    const is_default = i === 1 ? true : false;
+      let imageUrl = item.image_url ? item.image_url : false;
+      const is_default = i === 1 ? true : false;
 
-    const price = parseFloat(variantAdditional.Price_Retail.replace("$", ""));
+      const price = parseFloat(variantAdditional.Price_Retail.replace("$", ""));
 
-    const variant = {
-      id: item.sku,
-      sku: item.sku,
-      upc: variantAdditional["UPC"],
-      option_values: [],
-      price,
-      inventory_level: variantAdditional["Qty Avail Now"],
-      is_default: is_default,
-    };
+      const variant = {
+        id: item.sku,
+        sku: item.sku,
+        upc: variantAdditional["UPC"],
+        option_values: [],
+        price,
+        inventory_level: variantAdditional["Qty Avail Now"],
+        is_default: is_default,
+      };
 
-    if (item.color) {
-      variant.option_values.push({
-        option_display_name: `Color`,
-        label: item.color,
-      });
-    }
-    if (item.size) {
-      variant.option_values.push({
-        option_display_name: `Size`,
-        label: standardizeSize(item.size),
-      });
-    }
-    if (!item.color && !item.size) {
-      variant.option_values.push({
-        option_display_name:
-          productData["Color"].length > 2 ? "Color" : "Model",
-        label:
-          productData["Color"].length > 2
-            ? productData["Color"]
-            : productData["Model"],
-      });
-    }
-    if (imageUrl) {
-      variant.image_url = imageUrl;
-    }
-    return variant;
-  }).filter(Boolean);
+      if (item.color) {
+        variant.option_values.push({
+          option_display_name: `Color`,
+          label: item.color,
+        });
+      }
+      if (item.size) {
+        variant.option_values.push({
+          option_display_name: `Size`,
+          label: standardizeSize(item.size),
+        });
+      }
+      if (!item.color && !item.size) {
+        variant.option_values.push({
+          option_display_name:
+            productData["Color"].length > 2 ? "Color" : "Model",
+          label:
+            productData["Color"].length > 2
+              ? productData["Color"]
+              : productData["Model"],
+        });
+      }
+      if (imageUrl) {
+        variant.image_url = imageUrl;
+      }
+      return variant;
+    })
+    .filter(Boolean);
+
   const mainImages = variants
     .map((item, i) => {
       let imageUrl = item?.image_url ? item?.image_url : false;
@@ -236,8 +239,8 @@ const createProductFromFile = (id, search, variantsData) => {
   ];
 
   if (search) {
-    let additionalVariants = variantsData.filter(
-      (row) => row["SKU"] === search || row["Description"] === search
+    let additionalVariants = variantsData.filter((row) =>
+      row["Description"].includes(search)
     );
 
     const mappedVariants = additionalVariants.map((item, i) => {
