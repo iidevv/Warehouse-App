@@ -279,7 +279,7 @@ const addItemsDataToDatabase = async () => {
 
       setRebuildTurnStatus(
         true,
-        `Adding item date (page): ${page}/${totalPages}`
+        `Adding item data (page): ${page}/${totalPages}`
       );
 
       totalPages = pages;
