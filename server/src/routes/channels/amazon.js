@@ -156,7 +156,11 @@ const matchPrices = async (items) => {
   const skuPriceMap = {};
 
   priceMatchFile.forEach((row) => {
-    const skus = [row["PUSKU"], row["HH SKU"], row["WPS SKU"]];
+    const puSku = typeof row["PUSKU"] === 'string' ? row["PUSKU"].replace(/-/g, "") : null;
+    const hhSku = typeof row["HH SKU"] === 'string' ? row["HH SKU"].replace(/-/g, "") : null;
+    const wpsSku = typeof row["WPS SKU"] === 'string' ? row["WPS SKU"].replace(/-/g, "") : null;
+
+    const skus = [puSku, hhSku, wpsSku];
     
     const price = parseFloat(row["originalRetailPrice"]);
     
@@ -170,13 +174,10 @@ const matchPrices = async (items) => {
     });
   });
 
-  let i = 1;
-
   const updatedItems = items.map((item) => {
-    const matchedPrice = skuPriceMap[item.sku];
+    const sku = item.sku.replace(/-/g, "");
+    const matchedPrice = skuPriceMap[sku];
     if (matchedPrice !== undefined) {
-      console.log(`${item.sku} - price ${matchedPrice} #${i}`);
-      i++;
       return { ...item, price: matchedPrice, calculated_price: matchedPrice };
     }
     return item;
@@ -201,11 +202,10 @@ const updateAllAmazonItems = async () => {
 
       const priceMatchedItems = await matchPrices(items);
 
-      // await updateAmazonItems(priceMatchedItems);
+      await updateAmazonItems(priceMatchedItems);
 
       totalPages = meta.total_pages;
       await delay(250);
-      console.log(currentPage);
       currentPage++;
     }
 
@@ -256,13 +256,13 @@ export const updateAmazonProducts = async () => {
   await updateAllAmazonItems();
 
   // get items from db
-  // const items = await getAllItems();
+  const items = await getAllItems();
 
-  // await createFeed(items, "pricing");
-  // await uploadFeed("pricing");
+  await createFeed(items, "pricing");
+  await uploadFeed("pricing");
 
-  // await createFeed(items, "inventory");
-  // await uploadFeed("inventory");
+  await createFeed(items, "inventory");
+  await uploadFeed("inventory");
 };
 
 // add drop db
