@@ -1,11 +1,14 @@
 import fs, { createReadStream } from "fs";
-import { spClient } from './../../instances/amazon-instance.js';
+import { spClient } from "./../../instances/amazon-instance.js";
 import { create } from "xmlbuilder2";
 import { parseCSV } from "../../ftp/index.js";
 import { amazonItemModel } from "../../models/Channels.js";
 import { bigCommerceInstance } from "../../instances/index.js";
 import { delay } from "../../common/index.js";
 import { sendNotification } from "../tg-notifications.js";
+import { readPriceMatchFile } from "./channels.js";
+
+let priceMatchFile;
 
 const convertToAmazonXml = async (items, type) => {
   let messageType = "";
@@ -103,7 +106,7 @@ const readReportFile = async (localPath) => {
 
 const processItemsInBulk = async (items) => {
   await amazonItemModel.deleteMany({});
-  
+
   for (let i = 0; i < items.length; i += 100) {
     const chunk = items.slice(i, i + 100);
 
@@ -141,6 +144,48 @@ const updateAmazonItems = async (items) => {
   }
 };
 
+const matchPrices = async (items) => {
+  if (!priceMatchFile) {
+    priceMatchFile = await readPriceMatchFile("Amazon");
+  }
+
+  if (!priceMatchFile) {
+    return items;
+  }
+
+  const skuPriceMap = {};
+
+  priceMatchFile.forEach((row) => {
+    const skus = [row["PUSKU"], row["HH SKU"], row["WPS SKU"]];
+    
+    const price = parseFloat(row["originalRetailPrice"]);
+    
+    skus.forEach((sku) => {
+      if (sku !== undefined && sku !== null) {
+        const cleanSku = String(sku).trim();
+        if (cleanSku) {
+          skuPriceMap[cleanSku] = price;
+        }
+      }
+    });
+  });
+
+  let i = 1;
+
+  const updatedItems = items.map((item) => {
+    const matchedPrice = skuPriceMap[item.sku];
+    if (matchedPrice !== undefined) {
+      console.log(`${item.sku} - price ${matchedPrice} #${i}`);
+      i++;
+      return { ...item, price: matchedPrice, calculated_price: matchedPrice };
+    }
+    return item;
+  });
+
+  return updatedItems;
+};
+
+
 const updateAllAmazonItems = async () => {
   try {
     let currentPage = 1;
@@ -154,12 +199,17 @@ const updateAllAmazonItems = async () => {
       const items = response.data;
       const meta = response.meta.pagination;
 
-      await updateAmazonItems(items);
+      const priceMatchedItems = await matchPrices(items);
+
+      // await updateAmazonItems(priceMatchedItems);
 
       totalPages = meta.total_pages;
       await delay(250);
+      console.log(currentPage);
       currentPage++;
     }
+
+    priceMatchFile = null;
   } catch (error) {
     sendNotification(`updateAllAmazonItems error: ${error}`);
   }
@@ -206,13 +256,13 @@ export const updateAmazonProducts = async () => {
   await updateAllAmazonItems();
 
   // get items from db
-  const items = await getAllItems();
+  // const items = await getAllItems();
 
-  await createFeed(items, "pricing");
-  await uploadFeed("pricing");
+  // await createFeed(items, "pricing");
+  // await uploadFeed("pricing");
 
-  await createFeed(items, "inventory");
-  await uploadFeed("inventory");
+  // await createFeed(items, "inventory");
+  // await uploadFeed("inventory");
 };
 
 // add drop db

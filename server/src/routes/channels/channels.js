@@ -1,7 +1,10 @@
 import express from "express";
+import { promises as fs } from "fs";
 import { amazonItemModel } from "../../models/Channels.js";
 import { getRegExpFromString } from "../../common/index.js";
 import { refreshAmazonProducts, updateAmazonProducts } from "./amazon.js";
+import { sendNotification } from "../tg-notifications.js";
+import { parseXLSX } from "../../ftp/index.js";
 const router = express.Router();
 
 const getChannelItemModel = (vendor) => {
@@ -66,6 +69,18 @@ export const getChannelProducts = async (vendor, query = {}, page = 1) => {
     total: products.totalDocs,
     query,
   };
+};
+
+export const readPriceMatchFile = async (fileName) => {
+  const localPath = `./additional_files/${fileName}.xlsx`;
+  try {
+    const file = await fs.readFile(localPath);
+    const results = await parseXLSX(file);
+    return results;
+  } catch (err) {
+    sendNotification(`readPriceMatchFile Error: ${err}`);
+    return false;
+  }
 };
 
 router.post("/update", async (req, res) => {

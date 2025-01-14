@@ -2,6 +2,7 @@ import { settingsAPI } from "../../api/api";
 
 const SET_TURN_STATUS = "SET_TURN_STATUS";
 const SET_LS_STATUS = "SET_LS_STATUS";
+const SET_AMAZON_STATUS = "SET_AMAZON_STATUS";
 
 let initialState = {
   turn_status: {
@@ -9,6 +10,7 @@ let initialState = {
     update_status: "",
   },
   ls_catalog_status: "",
+  amazon_file_status: "",
 };
 
 const settingsReducer = (state = initialState, action) => {
@@ -22,6 +24,11 @@ const settingsReducer = (state = initialState, action) => {
       return {
         ...state,
         ls_catalog_status: action.status,
+      };
+    case SET_AMAZON_STATUS:
+      return {
+        ...state,
+        amazon_file_status: action.status,
       };
     default:
       return state;
@@ -38,6 +45,13 @@ export const setTurnStatus = (status) => {
 export const setLsStatus = (status) => {
   return {
     type: SET_LS_STATUS,
+    status,
+  };
+};
+
+export const setAmazonStatus = (status) => {
+  return {
+    type: SET_AMAZON_STATUS,
     status,
   };
 };
@@ -73,6 +87,22 @@ export const uploadLSCatalog = (formData) => {
       })
       .catch((error) => {
         dispatch(setLsStatus("Error uploading"));
+        console.error(error);
+      });
+  };
+};
+
+export const uploadAmazonFile = (formData) => {
+  return (dispatch) => {
+    dispatch(setAmazonStatus("Uploading"));
+
+    settingsAPI
+      .uploadAmazonFile(formData)
+      .then((data) => {
+        dispatch(setAmazonStatus(data.status));
+      })
+      .catch((error) => {
+        dispatch(setAmazonStatus("Error uploading"));
         console.error(error);
       });
   };

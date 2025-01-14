@@ -8,7 +8,9 @@ import {
   rebuildTurnProducts,
   getRebuildTurnStatus,
   uploadLSCatalog,
+  uploadAmazonFile
 } from "../../redux/reducers/settings-reducer";
+import AmazonSettings from "./AmazonSettings";
 
 class settingsContainer extends React.Component {
   componentDidMount() {
@@ -56,6 +58,10 @@ class settingsContainer extends React.Component {
     this.props.uploadLSCatalog(formData);
   };
 
+  onUploadAmazonFile = (formData) => {
+    this.props.uploadAmazonFile(formData);
+  };
+
   render() {
     return (
       <>
@@ -67,6 +73,10 @@ class settingsContainer extends React.Component {
           onUploadLSCatalog={this.onUploadLSCatalog}
           catalog_status={this.props.catalog_status}
         />
+        <AmazonSettings
+          onUploadAmazonFile={this.onUploadAmazonFile}
+          amazon_file_status={this.props.amazon_file_status}
+        />
       </>
     );
   }
@@ -76,6 +86,7 @@ let mapStateToProps = (state) => {
   return {
     turn_status: state.settings.turn_status,
     catalog_status: state.settings.ls_catalog_status,
+    amazon_file_status: state.settings.amazon_file_status
   };
 };
 
@@ -84,5 +95,6 @@ export default compose(
     rebuildTurnProducts,
     getRebuildTurnStatus,
     uploadLSCatalog,
+    uploadAmazonFile
   })
 )(settingsContainer);

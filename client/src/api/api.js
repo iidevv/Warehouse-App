@@ -237,6 +237,13 @@ export const settingsAPI = {
         return response.data;
       });
   },
+  uploadAmazonFile(formData) {
+    return instance
+      .post(`/settings/amazon/upload-file`, formData)
+      .then((response) => {
+        return response.data;
+      });
+  },
 };
 
 export const categoryMappingAPI = {

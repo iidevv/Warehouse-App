@@ -33,4 +33,13 @@ router.post("/ls/upload-catalog", uploadFile.single("catalog"), (req, res) => {
     .json({ status: "File uploaded successfully", file: req.file });
 });
 
+router.post("/amazon/upload-file", uploadFile.single("file"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ status: "No file uploaded" });
+  }
+  res
+    .status(200)
+    .json({ status: "File uploaded successfully", file: req.file });
+});
+
 export { router as settingsRouter };
