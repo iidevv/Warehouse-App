@@ -264,7 +264,7 @@ const uploadFeed = async (type) => {
 // add drop files
 
 export const updateAmazonProducts = async () => {
-  // await updateAllAmazonItems();
+  await updateAllAmazonItems();
 
   // get items from db
   const items = await getAllItems();
