@@ -156,14 +156,21 @@ const matchPrices = async (items) => {
   const skuPriceMap = {};
 
   priceMatchFile.forEach((row) => {
-    const puSku = typeof row["PUSKU"] === 'string' ? row["PUSKU"].replace(/-/g, "") : null;
-    const hhSku = typeof row["HH SKU"] === 'string' ? row["HH SKU"].replace(/-/g, "") : null;
-    const wpsSku = typeof row["WPS SKU"] === 'string' ? row["WPS SKU"].replace(/-/g, "") : null;
+    const puSku =
+      typeof row["PUSKU"] === "string" ? row["PUSKU"].replace(/-/g, "") : null;
+    const hhSku =
+      typeof row["HH SKU"] === "string"
+        ? row["HH SKU"].replace(/-/g, "")
+        : null;
+    const wpsSku =
+      typeof row["WPS SKU"] === "string"
+        ? row["WPS SKU"].replace(/-/g, "")
+        : null;
 
     const skus = [puSku, hhSku, wpsSku];
-    
+
     const price = parseFloat(row["originalRetailPrice"]);
-    
+
     skus.forEach((sku) => {
       if (sku !== undefined && sku !== null) {
         const cleanSku = String(sku).trim();
@@ -185,7 +192,6 @@ const matchPrices = async (items) => {
 
   return updatedItems;
 };
-
 
 const updateAllAmazonItems = async () => {
   try {
@@ -216,44 +222,49 @@ const updateAllAmazonItems = async () => {
 };
 
 const uploadFeed = async (type) => {
-  let createdFeedType = "";
+  try {
+    let createdFeedType = "";
 
-  if (type == "inventory") createdFeedType = "POST_INVENTORY_AVAILABILITY_DATA";
-  if (type == "pricing") createdFeedType = "POST_PRODUCT_PRICING_DATA";
+    if (type == "inventory")
+      createdFeedType = "POST_INVENTORY_AVAILABILITY_DATA";
+    if (type == "pricing") createdFeedType = "POST_PRODUCT_PRICING_DATA";
 
-  let feedUploadDetails = await spClient.callAPI({
-    operation: "createFeedDocument",
-    endpoint: "feeds",
-    body: {
-      contentType: "text/xml; charset=utf-8",
-    },
-  });
+    let feedUploadDetails = await spClient.callAPI({
+      operation: "createFeedDocument",
+      endpoint: "feeds",
+      body: {
+        contentType: "text/xml; charset=utf-8",
+      },
+    });
 
-  await spClient.upload(
-    { url: feedUploadDetails.url },
-    {
-      file: `./feeds/amazon_${type}_feed.xml`,
-      contentType: "text/xml; charset=utf-8",
-    }
-  );
+    await spClient.upload(
+      { url: feedUploadDetails.url },
+      {
+        file: `./feeds/amazon_${type}_feed.xml`,
+        contentType: "text/xml; charset=utf-8",
+      }
+    );
 
-  const response = await spClient.callAPI({
-    operation: "createFeed",
-    endpoint: "feeds",
-    body: {
-      marketplaceIds: ["ATVPDKIKX0DER"],
-      feedType: createdFeedType,
-      inputFeedDocumentId: feedUploadDetails.feedDocumentId,
-    },
-  });
+    const response = await spClient.callAPI({
+      operation: "createFeed",
+      endpoint: "feeds",
+      body: {
+        marketplaceIds: ["ATVPDKIKX0DER"],
+        feedType: createdFeedType,
+        inputFeedDocumentId: feedUploadDetails.feedDocumentId,
+      },
+    });
 
-  return response;
+    return response;
+  } catch (error) {
+    sendNotification(`uploadFeed error: ${error}`);
+  }
 };
 
 // add drop files
 
 export const updateAmazonProducts = async () => {
-  await updateAllAmazonItems();
+  // await updateAllAmazonItems();
 
   // get items from db
   const items = await getAllItems();
