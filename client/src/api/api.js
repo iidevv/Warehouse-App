@@ -1,4 +1,5 @@
 import axios from "axios";
+import { syncCatalog } from "../redux/reducers/settings-reducer";
 const useHttps = process.env.REACT_APP_USE_HTTPS === "true";
 
 export const instance = axios.create({
@@ -227,6 +228,16 @@ export const settingsAPI = {
   },
   rebuildTurnProductsStatus() {
     return instance.get(`/settings/turn/rebuild-status`).then((response) => {
+      return response.data;
+    });
+  },
+  syncCatalog() {
+    return instance.post(`/settings/sync/catalog`).then((response) => {
+      return response.data;
+    });
+  },
+  syncCatalogStatus() {
+    return instance.get(`/settings/sync/status`).then((response) => {
       return response.data;
     });
   },
